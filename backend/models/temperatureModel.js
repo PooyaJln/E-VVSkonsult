@@ -6,7 +6,7 @@ const temperatureSchema = new Schema({
         type: String,
         required: true,
     },
-    temperature: {
+    temperatureValue: {
         type: "Decimal128",//JSON output is in MongoDB extended JSON format (the $numberDecimal property
         // to convert it back use parseFloat()
         required: true
@@ -14,4 +14,4 @@ const temperatureSchema = new Schema({
 }, { timestamps: true });
 
 const Temperature = mongoose.model('Temperature', temperatureSchema)
-module.exports = { Temperature };
+module.exports = Temperature;

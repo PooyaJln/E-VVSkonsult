@@ -1,12 +1,11 @@
 require("dotenv").config();
 const express = require("express");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const path = require("path");
 const PORT = process.env.PORT;
 
-const heatCalcRoute = require('./routes/heatCalcRoutes');
-const beskrivningPlusRoute = require('./routes/beskrivningPlusRoutes');
-
+const heatCalcRoutes = require("./routes/heatCalcRoutes");
+const beskrivningPlusRoute = require("./routes/beskrivningPlusRoutes");
 
 // const morgan = require('morgan');
 
@@ -14,11 +13,11 @@ const beskrivningPlusRoute = require('./routes/beskrivningPlusRoutes');
 const app = express();
 
 //middleware
-app.use(express.json())
+app.use(express.json());
 
 app.use((req, res, next) => {
   console.log(req.path, req.method);
-  next()
+  next();
 });
 
 //listen for requests
@@ -27,11 +26,12 @@ app.use((req, res, next) => {
 // });
 
 // connect to the database
-dbname = 'project4'
+let dbname = "project4";
 const MONGO_URI = `${process.env.MONGO_URI}${dbname}`;
-console.log(MONGO_URI)
+console.log(MONGO_URI);
 // const MONGO_URI = process.env.MONGO_URI;
-mongoose.connect(MONGO_URI)
+mongoose
+  .connect(MONGO_URI)
   .then(() => {
     //listen for requests
     app.listen(PORT, () => {
@@ -39,8 +39,8 @@ mongoose.connect(MONGO_URI)
     });
   })
   .catch((error) => {
-    console.log(error)
-  })
+    console.log(error);
+  });
 // mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 //     .then((result) => app.listen(3000))
 //     .catch((err) => console.log(err))
@@ -50,7 +50,7 @@ app.set("view engine", "ejs");
 
 app.use(express.static(path.join(__dirname, "/public")));
 
-//To be able to parse the form data we can add an optional middleware from express as below.  
+//To be able to parse the form data we can add an optional middleware from express as below.
 app.use(express.urlencoded({ extended: true }));
 // app.use(morgan('dev'));
 
@@ -68,7 +68,7 @@ app.get("/about(.html)?", (req, res) => {
   res.render("about", { title: "About me" });
 });
 
-app.use("/heat-loss(.html)?", heatCalcRoute);
+app.use("/heat-loss(.html)?", heatCalcRoutes);
 
 app.use("/beskrivningplus(.html)?", beskrivningPlusRoute);
 

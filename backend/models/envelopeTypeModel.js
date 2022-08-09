@@ -6,6 +6,10 @@ const envelopeSchema = new Schema({
         type: String,
         required: true,
     },
+    envelopeCategory: {
+        type: String,
+        required: false
+    },
     envelopeUvalue: {
         type: Number,
         required: true
@@ -21,5 +25,5 @@ const envelopeSchema = new Schema({
     }
 }, { timestamps: true });
 
-const EnvelopeType = mongoose.model('EnvelopeType', envelopeSchema)
-module.exports = EnvelopeType 
+const EnvelopeTypeModel = mongoose.model('envelopeType', envelopeSchema)
+module.exports = EnvelopeTypeModel; 

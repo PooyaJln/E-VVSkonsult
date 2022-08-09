@@ -1,3 +1,7 @@
 node_modules
 .env
 .eslintrc.json
+userTest.js
+tests
+db.js
+roomExample.json

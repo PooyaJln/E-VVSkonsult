@@ -26,7 +26,7 @@ const envelopeUpdate = async (req, res) => {
     if (!mongoose.isValidObjectId(id)) {
         res.status(404).json({ error: "This envelope doesn't exist" })
     }
-    const envelope = await EnvelopeType.findByIdAndUpdate(id, req.body)
+    const envelope = await EnvelopeType.findByIdAndUpdate(id, req.body, { new: true }) // check for error
     if (!envelope) {
         return res.status(404).json({ error: 'No such envelope' })
     }

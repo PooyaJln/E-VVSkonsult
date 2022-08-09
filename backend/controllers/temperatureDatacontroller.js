@@ -23,7 +23,7 @@ const temperatureUpdate = async (req, res) => {
     if (!mongoose.isValidObjectId(id)) {
         res.status(404).json({ error: "This envelope doesn't exist" })
     }
-    const temperature = await Temperature.findByIdAndUpdate(id, req.body)
+    const temperature = await Temperature.findByIdAndUpdate(id, req.body, { new: true }) // check for error
     if (!temperature) {
         return res.status(404).json({ error: 'No such envelope' })
     }

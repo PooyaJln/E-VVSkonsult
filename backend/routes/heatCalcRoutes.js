@@ -14,6 +14,12 @@ const { getAllTemperatures,
     getSingleTemperature,
     deleteATemperature } = require('../controllers/temperatureDatacontroller')
 
+    const { getAllRooms,
+        createRoom,
+        roomUpdate,
+        getSingleRoom,
+        deleteARoom } = require('../controllers/roomController')
+
 router.get('/', (req, res) => {
     res.json({ mssg: "Heat loss calculation page" })
 })
@@ -50,23 +56,24 @@ router.get('/input-data/envelopes/:id', getSingleTemperature)
 router.patch('/input-data/envelopes/:id', temperatureUpdate)
 // (req, res) => {res.json({ mssg: "update envelopes input data page" })})
 
-//update a temperature
+//delete a temperature
 router.delete('/input-data/envelopes/:id', deleteATemperature)
 
 /////////////////////////////////////////////////////////////////////////
+// get all rooms
+router.get('/input-data/rooms', getAllRooms)
 
-router.get('/building-data/:id', (req, res) => {
-    res.json({ mssg: "show building :id data " })
-})
+//get a room
+router.get('/input-data/rooms/:id', getSingleRoom)
 
-router.post('/building-data', (req, res) => {
-    res.json({ mssg: "create new building " })
-})
+//create a room
+router.post('/input-data/rooms', createRoom )
 
-router.patch('/building-data/:id', (req, res) => {
-    res.json({ mssg: "show building :id data " })
-})
+//update a room
+router.patch('/input-data/rooms/:id', roomUpdate )
 
+//delete a room
+router.delete('/input-data/rooms/:id', deleteARoom)
 
 // router.get("/heat-loss(.html)?", (req, res) => {
 //     // res.sendFile('./views/heat-loss(.html)?', { root: __dirname });

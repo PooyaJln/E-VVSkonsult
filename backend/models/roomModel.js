@@ -1,17 +1,23 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
+const wallSchema = require('./wallModel')
+
 
 const roomSchema = new Schema({
-    floorPlan: {
+    Name: {
         type: String,
         required: true,
     },
-    roomName: {
+    floor: {
+        type: String,
+        required: true,
+    },
+    apartment: {
         type: String,
         required: true,
     },
     temperatureIn: {
-        type: "Decimal128",//JSON output is in MongoDB extended JSON format (the $numberDecimal property
+        type: Number,//JSON output is in MongoDB extended JSON format (the $numberDecimal property
         // to convert it back use parseFloat()
         required: true
     },
@@ -30,7 +36,9 @@ const roomSchema = new Schema({
     floorArea: {
         type: Number,
         required: true
-    }
+    },
+    walls: [wallSchema]
+
 
 }, { timestamps: true });
 

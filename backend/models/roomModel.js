@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
-const wallSchema = require('./wallModel')
-
+// const { wallSchema } = require('./wallModel')
 
 const roomSchema = new Schema({
     Name: {
@@ -36,11 +35,41 @@ const roomSchema = new Schema({
     floorArea: {
         type: Number,
         required: true
-    },
-    walls: [wallSchema]
+    }
+    // walls: [wallSchema]
+    // walls: [{
+    //     name: {
+    //         type: String,
+    //         required: true
+    //     },
+    //     uValue: {
+    //         type: "Decimal128",
+    //         required: true
+    //     },
+    //     Area: {
+    //         type: "Decimal128",
+    //         required: true
+    //     },
+    //     Height: {
+    //         type: "Decimal128",
+    //         required: false
+    //     },
+    //     Width: {
+    //         type: "Decimal128",
+    //         required: false
+    //     },
+    //     hasWindow: {
+    //         type: Boolean,
+    //         required: false
+    //     },
+    //     hasDoor: {
+    //         type: Boolean,
+    //         required: false
+    //     }
+    // }]
 
 
 }, { timestamps: true });
 
-const Room = mongoose.model('Room', roomSchema)
-module.exports = Room;
+const roomModel = mongoose.model('Room', roomSchema)
+module.exports = roomModel;

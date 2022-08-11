@@ -8,9 +8,19 @@ const getAllRooms = async (req, res) => {
 }
 // create a new room
 const createRoom = async (req, res) => {
-    const { roomName,floorName,apartmentName, temperatureIn, roofArea, floor_0_1_Area, floor_1_5_Area, floorArea, walls } = req.body;
+    const {
+        Name,
+        floor,
+        apartment,
+        temperatureIn,
+        roofArea,
+        floor_0_1_Area,
+        floor_1_5_Area,
+        floorArea,
+        walls
+    } = req.body;
     try {
-        const room = await Room.create({ roomName, floorName , apartmentName,  temperatureIn, roofArea, floor_0_1_Area, floor_1_5_Area, floorArea, walls })
+        const room = await Room.create({ Name, floor, apartment, temperatureIn, roofArea, floor_0_1_Area, floor_1_5_Area, floorArea, walls })
         res.status(200).json(room)
     } catch (error) {
         res.status(404).json({ error: error.message })
@@ -24,9 +34,9 @@ const roomUpdate = async (req, res) => {
         res.status(404).json({ error: "This room doesn't exist" })
     }
     // check if walls in the request is empty .map or .filter
-    if (req.body.walls.length != 0){
+    if (req.body.walls.length != 0) {
         console.log('new wall is not empty')
-        await Room.findByIdAndUpdate(id, {$addToSet: {walls : req.body.walls}}, { new: true })
+        await Room.findByIdAndUpdate(id, { $addToSet: { walls: req.body.walls } }, { new: true })
     }
     // if (req.body.walls.windows.length != 0){
     //     await Room.findByIdAndUpdate(id, {$addToSet: {windows : req.body.walls.windows}}, { new: true })

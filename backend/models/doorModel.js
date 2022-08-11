@@ -2,10 +2,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 
 const doorSchema = new Schema({
-    id: {
-        type: String,
-        required: true
-    },
+
     Uvalue: {
         type: "Decimal128",
         required: true

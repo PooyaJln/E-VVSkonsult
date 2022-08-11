@@ -25,5 +25,5 @@ const windowSchema = new Schema({
 
 })
 
-const windowModel = mongoose.model('Window', windowSchema)
+const windowModel = mongoose.model('window', windowSchema)
 module.exports = { windowModel, windowSchema };

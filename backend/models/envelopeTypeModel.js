@@ -14,16 +14,16 @@ const envelopeSchema = new Schema({
         type: Number,
         required: true
     },
-    envelope_T_in: {
-        type: "Decimal128",//JSON output is in MongoDB extended JSON format (the $numberDecimal property
-        // to convert it back use parseFloat()
-        required: false
-    },
-    envelope_T_out: {
-        type: "Decimal128",
-        required: false
-    }
+    // envelope_T_in: {
+    //     type: "Decimal128",//JSON output is in MongoDB extended JSON format (the $numberDecimal property
+    //     // to convert it back use parseFloat()
+    //     required: false
+    // },
+    // envelope_T_out: {
+    //     type: "Decimal128",
+    //     required: false
+    // }
 }, { timestamps: true });
 
-const EnvelopeTypeModel = mongoose.model('envelopeType', envelopeSchema)
-module.exports = EnvelopeTypeModel; 
+const envelopeTypeModel = mongoose.model('envelopeType', envelopeSchema)
+module.exports = { envelopeTypeModel, envelopeSchema }; 

@@ -1,13 +1,23 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
-// const { windowModel, windowSchema } = require('./windowModel')
-// const { doorModel, doorSchema } = require('./doorModel');
+const { windowModel, windowSchema } = require('./windowModel')
+const { doorModel, doorSchema } = require('./doorModel');
+const { envelopeTypeModel, envelopeSchema } = require('./envelopeTypeModel')
 
 
 const wallSchema = new Schema({
-    name: {
+    Name: {
         type: String,
         required: true
+    },
+    roomName: {
+        type: String,
+        required: true
+    },
+    envelopeType_id: {
+        type: Schema.Types.ObjectID,
+        ref: 'envelopeTypeModel',
+        required: true,
     },
     uValue: {
         type: "Decimal128",
@@ -33,50 +43,14 @@ const wallSchema = new Schema({
         type: Boolean,
         required: false
     },
-    windows: [{
-        id: {
-            type: String,
-            required: true
-        },
-        Uvalue: {
-            type: "Decimal128",
-            required: true
-        },
-        Area: {
-            type: "Decimal128",
-            required: true
-        },
-        Height: {
-            type: "Decimal128",
-            required: false
-        },
-        Width: {
-            type: "Decimal128",
-            required: false
-        }
-    }],
-    doors: [{
-        id: {
-            type: String,
-            required: true
-        },
-        Uvalue: {
-            type: "Decimal128",
-            required: true
-        },
-        Area: {
-            type: "Decimal128",
-            required: true
-        },
-        Height: {
-            type: "Decimal128",
-            required: false
-        },
-        Width: {
-            type: "Decimal128",
-            required: false
-        }
-    }]
+    windows: {
+        type: [windowSchema],
+        required: false
+    },
+    doors: {
+        type: [doorSchema],
+        required: false
+    }
 
 })
 

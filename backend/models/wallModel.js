@@ -1,59 +1,89 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
-const { windowModel, windowSchema } = require('./windowModel')
-const { doorModel, doorSchema } = require('./doorModel');
-const { envelopeTypeModel, envelopeSchema } = require('./envelopeTypeModel')
+const { Room } = require('./roomModel')
+const { EnvelopeType } = require('./envelopeTypeModel')
 
-
-const wallSchema = new Schema({
-    Name: {
-        type: String,
-        required: true
-    },
-    roomName: {
-        type: String,
-        required: true
-    },
-    envelopeType_id: {
-        type: Schema.Types.ObjectID,
-        ref: 'envelopeTypeModel',
-        required: true,
-    },
-    uValue: {
-        type: "Decimal128",
-        required: true
-    },
-    Area: {
-        type: "Decimal128",
-        required: true
-    },
-    Height: {
-        type: "Decimal128",
-        required: false
-    },
-    Width: {
-        type: "Decimal128",
-        required: false
-    },
-    hasWindow: {
-        type: Boolean,
-        required: false
-    },
-    hasDoor: {
-        type: Boolean,
-        required: false
-    },
-    windows: {
-        type: [windowSchema],
-        required: false
-    },
-    doors: {
-        type: [doorSchema],
-        required: false
+const openingSchema = new Schema(
+    {
+        index: {
+            type: String,
+            required: true
+        },
+        Height: {
+            type: Number,
+            required: false
+        },
+        Width: {
+            type: Number,
+            required: false
+        },
+        Area: {
+            type: Number,
+            required: true,
+            // required: [true, function () {
+            //     if (this.Height != 0 && this.Width != 0) {
+            //         return this.Height * this.Width
+            //     }
+            // }]
+        }
     }
+)
 
-})
 
-const wallModel = mongoose.model('wall', wallSchema)
+// const Opening = mongoose.model('opening', openingSchema)
 
-module.exports = { wallModel, wallSchema };
+const wallSchema = new Schema(
+    {
+        index: {
+            type: String,
+            required: true
+        },
+        Room: {
+            type: Schema.Types.ObjectId,
+            ref: 'room',
+            required: true
+        },
+        envelopeType: {
+            type: Schema.Types.ObjectId,
+            ref: 'envelopeType',
+            required: true
+        },
+        // uValue: {
+        //     type: Number,
+        //     required: false
+        // },
+        Area: {
+            type: Number,
+            required: true,
+            // required: [true, function () {
+            //     if (this.Height != 0 && this.Width != 0) {
+            //         let openingArea = 0;
+            //         for (let opening of this.openings) {
+            //             openingArea += opening.Area
+            //         }
+            //         return this.Height * this.Width - openingArea
+            //     }
+            // }]
+        },
+        Height: {
+            type: Number,
+            required: false
+        },
+        Width: {
+            type: Number,
+            required: false
+        },
+        openings: {
+            type: [openingSchema],
+            required: false
+        },
+        heatLoss: {
+            type: "Decimal128",
+            required: false
+        }
+
+    },
+)
+
+const WallModel = mongoose.model('wall', wallSchema)
+module.exports = { WallModel, wallSchema };

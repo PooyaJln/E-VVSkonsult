@@ -2,6 +2,9 @@ node_modules
 .env
 .eslintrc.json
 userTest.js
+userServer.js
 tests
 db.js
 roomExample.json
+models/users.json
+models/employees.json

@@ -3,25 +3,31 @@ const express = require("express");
 const cors = require('cors');
 const mongoose = require("mongoose");
 const path = require("path");
-const cookieParser = require('cookie-parser');
 const corsOptions = require('./config/corsOptions')
-const { logger } = require('./middlewares/logEvents')
+const { logger, logEvents } = require('./middlewares/logEvents')
 const errorHandler = require('./middlewares/errorHandler')
 const projPort = process.env.PROJPORT;
+const MONGO_URI = `${process.env.MONGO_URI}`;
 
 //import databses info
 const { usersDbName, projDbName } = require('./config/databasesInfo')
+// import required schemas
+const userSchema = require('./models/userModel')
 
-// import routes
+const projDbConnections = require('./connections/projdbConnection');
+const userDbConnections = require('./connections/userDbConnection');
+const { dbConnectColl } = require('./connections/dbConnection');
+
 const inputDataRoutes = require("./routes/inputDataRoutes");
 const spaceDataRoutes = require('./routes/spaceDataRoutes');
+const userRoutes = require('./routes/userRoutes');
+
 // const beskrivningPlusRoute = require("./routes/beskrivningPlusRoutes");
 
 // const morgan = require('morgan');
 
 //express app
 const app = express();
-
 
 //custom middleware
 
@@ -34,32 +40,28 @@ app.use(logger);
 //built-in middleware
 
 app.use(express.json());
-app.use(cookieParser());
 
 
-// connect to the project database
+// connect to the users database
+// let usersDbName = "UserData";
+console.log(usersDbName)
+const URI_DB = `${MONGO_URI}${usersDbName}`;
+mongoose.createConnection(URI_DB, { useNewUrlParser: true, useUnifiedTopology: true })
+app.listen(projPort, () => console.log(`connected to db ${usersDbName} & listening on port ${projPort}`))
+
+// connect to the proj database
 // let projDbName = "project4";
-const MONGO_URI = `${process.env.MONGO_URI}${projDbName}`;
-console.log(MONGO_URI);
-// const MONGO_URI = process.env.MONGO_URI;
-mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    //listen for requests
-    app.listen(projPort, () => {
-      console.log(`connected to db ${projDbName} & listening on port ${projPort}`);
-    });
-  })
-  .catch((error) => {
-    console.log(error);
-  });
-// mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-//     .then((result) => app.listen(3000))
-//     .catch((err) => console.log(err))
+// const URI_PROJ = `${MONGO_URI}${projDbName}`;
+// mongoose.createConnection(URI_PROJ, { useNewUrlParser: true, useUnifiedTopology: true })
+// app.listen(projPort, () => {
+//   console.log(`connected to db ${projDbName} & listening on port ${projPort}`);
+// });
+
 
 // register view engine
 app.set("view engine", "ejs");
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "/public")));
 
 //To be able to parse the form data we can add an optional middleware from express as below.
 app.use(express.urlencoded({ extended: true }));
@@ -76,6 +78,7 @@ app.get("/about(.html)?", (req, res) => {
 
 app.use("/heat-loss/input-data(.html)?", inputDataRoutes);
 app.use("/heat-loss/spaces(.html)?", spaceDataRoutes);
+app.use("/usersData(.html)?", userRoutes);
 // app.use("/beskrivningplus(.html)?", beskrivningPlusRoute);
 
 app.use((req, res) => {
@@ -83,3 +86,12 @@ app.use((req, res) => {
 });
 
 app.use(errorHandler)
+
+// mongoose.connection.once('open', () => {
+//   app.listen(projPort, () => console.log(`connected to db ${usersDbName} & listening on port ${projPort}`))
+// }
+// );
+// mongoose.connection.on('error', err => {
+//   console.log(err)
+//   logEvents(`${err.no}: ${err.code}\t${err.syscall}\t${err.hostname}`, 'mongoErrLog.log')
+// })

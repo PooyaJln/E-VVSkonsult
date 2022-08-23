@@ -1,29 +1,34 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
+// const { temperatureModel, temperatureSchema } = require('./temperatureModel');
 
 const envelopeSchema = new Schema({
-    envelopeName: {
+    Name: {
         type: String,
         required: true,
     },
-    envelopeCategory: {
+    Category: {
         type: String,
+        enum: ['wall', 'window', 'door', 'ceilling', 'floor'],
         required: false
     },
-    envelopeUvalue: {
+    uValue: {
         type: Number,
         required: true
     },
-    // envelope_T_in: {
-    //     type: "Decimal128",//JSON output is in MongoDB extended JSON format (the $numberDecimal property
-    //     // to convert it back use parseFloat()
-    //     required: false
-    // },
-    // envelope_T_out: {
-    //     type: "Decimal128",
-    //     required: false
-    // }
+    tempIn: {
+        type: Schema.Types.ObjectId,
+        ref: 'temperature',
+        required: false
+    },
+    tempOut: {
+        type: Schema.Types.ObjectId,
+        ref: 'temperature',
+        // type: "Decimal128",   // type: "Decimal128",//JSON output is in MongoDB extended JSON format (the $numberDecimal property
+        // to convert it back use parseFloat()
+        required: false
+    }
 }, { timestamps: true });
 
-const envelopeTypeModel = mongoose.model('envelopeType', envelopeSchema)
-module.exports = { envelopeTypeModel, envelopeSchema }; 
+const EnvelopeType = mongoose.model('envelopeType', envelopeSchema)
+module.exports = { EnvelopeType, envelopeSchema };

@@ -29,7 +29,7 @@ router.post('/login', handleLogin)
 // refreshToken renewal
 router.get('/refresh', handleRefreshToken)
 
-// refreshToken renewal
+// logout
 router.get('/logout', handleLogOut)
 
 // get a single user

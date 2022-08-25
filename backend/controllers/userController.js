@@ -171,16 +171,19 @@ const handleLogOut = async (req, res) => {
     if (!cookies?.jwt) return res.sendStatus(204); // the access token already doesn't exist in the cookie.
 
     const refreshToken = cookies.jwt;
-    let foundUser = await usersDbCollection.findOne({ 'refreshToken': refreshToken });
+    const foundUser = await usersDbCollection.findOne({ 'refreshToken': refreshToken });
     console.log(foundUser)
     if (!foundUser) {
-        res.clearCookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }) // we clear the cookie with the same condition we created it
+        res.clearCookie('jwt', { httpOnly: true }) // we clear the cookie with the same condition we created it
         return res.sendStatus(204)
     }
     // delete refresh token from databse
-    await foundUser.update({ $unset: { 'refreshToken': 1 } })
-    res.clearCookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }) // under production, we addd secure:true for https
-    return res.sendStatus(204)
+    foundUser.set('refreshToken', undefined);
+    await foundUser.save()
+    console.log(foundUser)
+
+    res.clearCookie('jwt', { httpOnly: true }) // under production, we addd secure:true for https
+    res.status(204).json(foundUser)
 }
 module.exports = {
     getAllUsers,

@@ -8,3 +8,6 @@ db.js
 roomExample.json
 models/users.json
 models/employees.json
+logs/errLog.txt
+logs/reqLog.log
+logs/reqLog.txt

@@ -22,7 +22,7 @@ const logger = (req, res, next) => {
     logEvents(`${req.method}\t${req.headers.origin}\t${req.url}`, 'reqLog.log')
     console.log(req.path)
     console.log(req.method);
-    console.log(req.headers);
+
 
     next();
 }

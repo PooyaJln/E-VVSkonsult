@@ -2,10 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const cors = require('cors');
 const mongoose = require("mongoose");
+const cookieParser = require('cookie-parser')
 const path = require("path");
 const corsOptions = require('./config/corsOptions')
 const { logger, logEvents } = require('./middlewares/logEvents')
 const errorHandler = require('./middlewares/errorHandler')
+
 const projPort = process.env.PROJPORT;
 const MONGO_URI = `${process.env.MONGO_URI}`;
 
@@ -38,10 +40,10 @@ app.use(logger);
 
 
 //built-in middleware
-
 app.use(express.json());
 
-
+// middleware for cookies
+app.use(cookieParser()) // is added for the refreshToken processing
 // connect to the users database
 // let usersDbName = "UserData";
 console.log(usersDbName)

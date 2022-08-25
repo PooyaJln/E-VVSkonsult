@@ -7,7 +7,9 @@ const { getAllUsers,
     userUpdate,
     getSingleUser,
     deleteUser,
-    handleLogin } = require('../controllers/userController')
+    handleLogin,
+    handleRefreshToken,
+    handleLogOut } = require('../controllers/userController')
 
 const verifyJWT = require('../middlewares/verifyJWT')
 
@@ -16,25 +18,33 @@ router.get('/', (req, res) => {
 })
 
 //////////////////////////////////////////////////////
-// get all user
-router.get('/users', getAllUsers)
-// (req, res) => {res.json({ mssg: "show input data page" })})
+
 
 // create new user
-router.post('/users/signup', signupUser)
+router.post('/signup', signupUser)
+
+// user login (authentication)
+router.post('/login', handleLogin)
+
+// refreshToken renewal
+router.get('/refresh', handleRefreshToken)
+
+// refreshToken renewal
+router.get('/logout', handleLogOut)
 
 // get a single user
-router.get('/users/:id', getSingleUser)
+router.get('/get/:id', verifyJWT, getSingleUser)
 
 //update an user 
-router.patch('/users/:id', verifyJWT, userUpdate)
+router.patch('/update/:id', verifyJWT, userUpdate)
 // (req, res) => {res.json({ mssg: "update users input data page" })})
 
 //delete an user
-router.delete('/users/:id', deleteUser)
+router.delete('/delete/:id', verifyJWT, deleteUser)
 
-// user login
-router.post('/users/login', handleLogin)
+// get all user
+router.get('/allusers', verifyJWT, getAllUsers)
+// (req, res) => {res.json({ mssg: "show input data page" })})
 //////////////////////////////////////////////////////////////////////////
 
 

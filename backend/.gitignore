@@ -5,9 +5,9 @@ userTest.js
 userServer.js
 tests
 db.js
+test.js
 roomExample.json
 models/users.json
 models/employees.json
-logs/errLog.txt
-logs/reqLog.log
-logs/reqLog.txt
+logs
+envelopeTypeExamples.json

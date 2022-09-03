@@ -23,6 +23,7 @@ const { dbConnectColl } = require('./connections/dbConnection');
 const inputDataRoutes = require("./routes/inputDataRoutes");
 const spaceDataRoutes = require('./routes/spaceDataRoutes');
 const userRoutes = require('./routes/userRoutes');
+const credentials = require("./middlewares/credentials");
 
 // const beskrivningPlusRoute = require("./routes/beskrivningPlusRoutes");
 
@@ -31,8 +32,11 @@ const userRoutes = require('./routes/userRoutes');
 //express app
 const app = express();
 
-//custom middleware
+// handle option credentials check, before CORS!
+// and fetch cookies credentials requirement
+app.use(credentials)
 
+//custom middleware
 app.use(cors(corsOptions));
 
 // using the custom-written request logging middleware by Dave Gray
@@ -48,8 +52,11 @@ app.use(cookieParser()) // is added for the refreshToken processing
 // let usersDbName = "UserData";
 console.log(usersDbName)
 const URI_DB = `${MONGO_URI}${usersDbName}`;
-mongoose.createConnection(URI_DB, { useNewUrlParser: true, useUnifiedTopology: true })
-app.listen(projPort, () => console.log(`connected to db ${usersDbName} & listening on port ${projPort}`))
+mongoose.createConnection(URI_DB, { useNewUrlParser: true, useUnifiedTopology: true }).once('open', () => {
+  console.log('connected to MongoDB')
+  app.listen(projPort, () => console.log(`connected to db ${usersDbName} & listening on port ${projPort}`))
+})
+
 
 // connect to the proj database
 // let projDbName = "project4";

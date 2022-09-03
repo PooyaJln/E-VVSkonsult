@@ -1,7 +1,7 @@
 require("dotenv").config();
-const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+
+const jwt = require('jsonwebtoken');
+
 
 const verifyJWT = (req, res, next) => {
     const authHeader = req.headers['authorization'];
@@ -15,4 +15,23 @@ const verifyJWT = (req, res, next) => {
     })
 }
 
-module.exports = verifyJWT
+const verifyJWT2 = (req, res, next) => {
+    const token = req.cookies.jwt;
+    if (token) {
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, decodedToken) => {
+            if (error) {
+                console.log(error.message)
+                res.status(403).json({ error: error.message }) //'message': 'not a valid token',
+            } // invalid token, forbidden
+            else {
+                console.log(decodedToken)
+                next()
+            }
+        })
+    } else {
+        return res.status(403).json({ 'message': 'no token' }) // invalid token, forbidden
+    }
+
+}
+
+module.exports = { verifyJWT, verifyJWT2 }

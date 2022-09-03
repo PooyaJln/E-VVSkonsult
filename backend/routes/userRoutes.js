@@ -11,7 +11,7 @@ const { getAllUsers,
     handleRefreshToken,
     handleLogOut } = require('../controllers/userController')
 
-const verifyJWT = require('../middlewares/verifyJWT')
+const { verifyJWT, verifyJWT2 } = require('../middlewares/verifyJWT')
 
 router.get('/', (req, res) => {
     res.json({ mssg: "users' data page" })
@@ -43,7 +43,7 @@ router.patch('/update/:id', verifyJWT, userUpdate)
 router.delete('/delete/:id', verifyJWT, deleteUser)
 
 // get all user
-router.get('/allusers', verifyJWT, getAllUsers)
+router.get('/allusers', verifyJWT2, getAllUsers)
 // (req, res) => {res.json({ mssg: "show input data page" })})
 //////////////////////////////////////////////////////////////////////////
 

@@ -28,6 +28,12 @@ const openingSchema = new Schema(
         }
     }
 )
+// openingSchema.pre('init', function (next) {
+//     if (this.Height != 0 && this.Width != 0) {
+//         this.Area = this.Height * this.Width
+//     }
+//     next();
+// })
 
 
 // const Opening = mongoose.model('opening', openingSchema)
@@ -48,22 +54,18 @@ const wallSchema = new Schema(
             ref: 'envelopeType',
             required: true
         },
-        // uValue: {
-        //     type: Number,
-        //     required: false
-        // },
+        uValue: {
+            type: Number,
+            required: false
+        },
         Area: {
             type: Number,
-            required: true,
-            // required: [true, function () {
-            //     if (this.Height != 0 && this.Width != 0) {
-            //         let openingArea = 0;
-            //         for (let opening of this.openings) {
-            //             openingArea += opening.Area
-            //         }
-            //         return this.Height * this.Width - openingArea
-            //     }
-            // }]
+
+            required: function () {
+                if (!this.Height && !this.Width) {
+                    return true
+                }
+            }
         },
         Height: {
             type: Number,
@@ -83,7 +85,18 @@ const wallSchema = new Schema(
         }
 
     },
-)
+);
+
+wallSchema.pre('save', function (next) {
+    if (this.Area != 0) {
+        this.Area
+    }
+    if (this.Height != 0 && this.Width != 0) {
+        this.Area = this.Height * this.Width
+    }
+    next();
+})
+
 
 const WallModel = mongoose.model('wall', wallSchema)
 module.exports = { WallModel, wallSchema };

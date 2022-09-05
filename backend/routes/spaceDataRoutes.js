@@ -16,6 +16,8 @@ const { getAllRooms,
     deleteARoom,
     roomsInApartment } = require('../controllers/roomController')
 
+const { createWall } = require('../controllers/wallController')
+
 
 ///////////////////////////////////////////
 //create a apartment
@@ -52,8 +54,8 @@ router.patch('/rooms/:id', roomUpdate)
 router.delete('/rooms/:id', deleteARoom)
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// //create a wall
-// router.post('/walls', createWall)
+//create a wall
+router.post('/walls', createWall)
 
 // // get all walls
 // router.get('/walls', getAllWalls)

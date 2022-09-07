@@ -12,3 +12,4 @@ models/employees.json
 logs
 envelopeTypeExamples.json
 controllers/unusedControllers.js
+tests/test.js

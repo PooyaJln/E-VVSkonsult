@@ -83,4 +83,4 @@ const roomSchema = new Schema({
 }, { timestamps: true });
 
 const Room = mongoose.model('Room', roomSchema)
-module.exports = { apartmentSchema, roomSchema };
+module.exports = { Room, apartmentSchema, roomSchema };

@@ -12,5 +12,5 @@ const temperatureSchema = new Schema({
     }
 }, { timestamps: true });
 
-// const temperatureModel = mongoose.model('temperature', temperatureSchema)
-module.exports = { temperatureSchema };
+const temperatureModel = mongoose.model('temperature', temperatureSchema)
+module.exports = { temperatureModel, temperatureSchema };

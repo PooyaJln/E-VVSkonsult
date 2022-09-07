@@ -1,16 +1,27 @@
-const mongoose = require('mongoose')
+// const mongoose = require('mongoose')
 const { WallModel } = require('../models/wallModel');
-const projDbConnections = require('../connections/projdbConnection')
+// const projDbConnections = require('../connections/projdbConnection');
+const { Room } = require('../models/roomModel')
+const { EnvelopeType } = require('../models/envelopeTypeModel');
 
 const createWall = async (req, res) => {
-    const { index, Room, envelopeType, Area, Height, Width } = req.body;
+    const { index, Room, envelopeType, Area, Height, Width, openings, temperatureOut } = req.body;
     try {
-        const newWall = await WallModel.create({ index, Room, envelopeType, Area, Height, Width })
+        let passedValues;
+        const wallType = await EnvelopeType.findById({ _id: envelopeType })
+        const uValue = wallType.uValue
+        if (!Area) {
+            passedValues = { index, Room, envelopeType, Area, Height, Width, openings, uValue, temperatureOut }
+        } else {
+            passedValues = { index, Room, envelopeType, Area, openings, uValue, temperatureOut }
+        }
+        const newWall = await WallModel.create(passedValues)
         res.status(200).json(newWall)
     } catch (error) {
         res.status(404).json({ error: error.message })
     }
 }
+
 
 
 
@@ -24,3 +35,4 @@ module.exports = {
 //     getSingleWall,
 //     wallUpdate,
 //     deleteAWall
+

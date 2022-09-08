@@ -8,12 +8,11 @@ const createWall = async (req, res) => {
     const { index, Room, envelopeType, Area, Height, Width, openings, temperatureOut } = req.body;
     try {
         let passedValues;
-        const wallType = await EnvelopeType.findById({ _id: envelopeType })
-        const uValue = wallType.uValue
+
         if (!Area) {
-            passedValues = { index, Room, envelopeType, Area, Height, Width, openings, uValue, temperatureOut }
+            passedValues = { index, Room, envelopeType, Area, Height, Width, openings, temperatureOut }
         } else {
-            passedValues = { index, Room, envelopeType, Area, openings, uValue, temperatureOut }
+            passedValues = { index, Room, envelopeType, Area, openings, temperatureOut }
         }
         const newWall = await WallModel.create(passedValues)
         res.status(200).json(newWall)

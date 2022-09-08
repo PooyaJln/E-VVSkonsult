@@ -13,7 +13,7 @@ const openingSchema = new Schema(
         envelopeType: {
             type: Schema.Types.ObjectId,
             ref: 'envelopeType',
-            required: false
+            required: true
         },
         Height: {
             type: Number,
@@ -37,7 +37,7 @@ const openingSchema = new Schema(
         },
         temperatureOut: {
             type: Number,
-            required: true
+            required: false
         },
         heatLoss: {
             type: "Decimal128",
@@ -47,14 +47,24 @@ const openingSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: 'room',
             required: false
-        },
+        }
     }
 )
-openingSchema.pre('save', function (next) {
+openingSchema.pre('save', async function (next) {
+    this.Room = this.parent().Room
+    const fetchedRoom = await Room.findById({ _id: this.Room })
+    const temperatureInId = fetchedRoom.temperatureIn
+    const temperatureInDoc = await temperatureModel.findById({ _id: temperatureInId })
+    this.temperatureIn = temperatureInDoc.Value
+    this.temperatureOut = this.parent().temperatureOut
+    const openingType = await EnvelopeType.findById({ _id: this.envelopeType })
+    this.uValue = openingType.uValue
     if (!this.Area) {
         this.Area = this.Height * this.Width
+    } else {
+        this.Area
     }
-    this.heatLoss = this.Area * this.uValue
+    this.heatLoss = this.Area * this.uValue * (this.temperatureIn - this.temperatureOut)
     next();
 })
 
@@ -67,10 +77,15 @@ const wallSchema = new Schema(
             type: String,
             required: true
         },
+        Room: {
+            type: Schema.Types.ObjectId,
+            ref: 'room',
+            required: false
+        },
         envelopeType: {
             type: Schema.Types.ObjectId,
             ref: 'envelopeType',
-            required: false
+            required: true
         },
         uValue: {
             type: Number,
@@ -118,6 +133,8 @@ wallSchema.pre('save', async function (next) {
     const temperatureInId = fetchedRoom.temperatureIn
     const temperatureInDoc = await temperatureModel.findById({ _id: temperatureInId })
     this.temperatureIn = temperatureInDoc.Value
+    const wallType = await EnvelopeType.findById({ _id: this.envelopeType })
+    this.uValue = wallType.uValue
     this.openings.forEach(element => {
         openingsArea += element.Area
     });

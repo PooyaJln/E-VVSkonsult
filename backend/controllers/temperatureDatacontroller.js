@@ -1,6 +1,9 @@
 const mongoose = require('mongoose')
-const temperatureModel = require('../models/temperatureModel');
-const projDbConnections = require('../connections/projdbConnection')
+const { temperatureSchema } = require('../models/temperatureModel');
+
+
+// const temperatureModel = connection.model('temperature', temperatureSchema)
+
 // get all temperatures
 const getAllTemperatures = async (req, res) => {
     const allTemperatures = await temperatureModel.find({}).sort('Name asc')

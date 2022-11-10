@@ -1,6 +1,8 @@
 // const mongoose = require('mongoose')
-const { WallModel } = require('../models/wallModel');
-// const projDbConnections = require('../connections/projdbConnection');
+// const { WallModel } = require('../models/wallModel');
+const { wallSchema } = require('../models/wallModel');
+
+// const WallModel = connection.model('wall', wallSchema)
 const { Room } = require('../models/roomModel')
 const { EnvelopeType } = require('../models/envelopeTypeModel');
 
@@ -8,7 +10,6 @@ const createWall = async (req, res) => {
     const { index, Room, envelopeType, Area, Height, Width, openings, temperatureOut } = req.body;
     try {
         let passedValues;
-
         if (!Area) {
             passedValues = { index, Room, envelopeType, Area, Height, Width, openings, temperatureOut }
         } else {
@@ -20,9 +21,6 @@ const createWall = async (req, res) => {
         res.status(404).json({ error: error.message })
     }
 }
-
-
-
 
 module.exports = {
     createWall

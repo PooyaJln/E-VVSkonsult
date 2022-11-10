@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
-const { EnvelopeType } = require('../models/envelopeTypeModel');
-const projDbConnections = require('../connections/projdbConnection');
+const { envelopeSchema } = require('../models/envelopeTypeModel');
+
+
+// const EnvelopeType = connection.model('envelope', envelopeSchema)
 
 // get all envelope types
 const getAllEnvelopeTypes = async (req, res) => {

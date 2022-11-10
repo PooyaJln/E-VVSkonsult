@@ -148,8 +148,6 @@ wallSchema.pre('save', async function (next) {
 })
 
 
-
-
-
-const WallModel = mongoose.model('wall', wallSchema)
-module.exports = { WallModel, wallSchema };
+// const WallModel = mongoose.model('wall', wallSchema)
+// module.exports = { WallModel, wallSchema };
+module.exports = { wallSchema };

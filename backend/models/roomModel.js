@@ -13,7 +13,7 @@ const apartmentSchema = new Schema({
     }
 })
 
-const Apartment = mongoose.model('apartment', apartmentSchema)
+// const Apartment = mongoose.model('apartment', apartmentSchema)
 
 const roomSchema = new Schema({
     Name: {
@@ -82,5 +82,6 @@ const roomSchema = new Schema({
 
 }, { timestamps: true });
 
-const Room = mongoose.model('Room', roomSchema)
-module.exports = { Room, apartmentSchema, roomSchema };
+// const Room = mongoose.model('Room', roomSchema)
+// module.exports = { Room, apartmentSchema, roomSchema };
+module.exports = { apartmentSchema, roomSchema };

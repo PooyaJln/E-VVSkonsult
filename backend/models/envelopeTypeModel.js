@@ -30,5 +30,6 @@ const envelopeSchema = new Schema({
     }
 }, { timestamps: true });
 
-const EnvelopeType = mongoose.model('envelopeType', envelopeSchema)
-module.exports = { EnvelopeType, envelopeSchema };
+// const EnvelopeType = mongoose.model('envelopeType', envelopeSchema)
+// module.exports = { EnvelopeType, envelopeSchema };
+module.exports = { envelopeSchema };

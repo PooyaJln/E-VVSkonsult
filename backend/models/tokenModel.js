@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-
+// const connection = require('../connections/dbConnection')
+// const connection = require('../connections/dbConnections')
 
 const accessTokenSchema = new Schema({
     userId: {
@@ -18,5 +19,7 @@ const accessTokenSchema = new Schema({
     }
 }, { timestamps: true })
 
-
-module.exports = accessTokenSchema;
+const accessTokenModel = mongoose.model('accessToken', accessTokenSchema)
+// const accessTokenModel = connection.model('accessToken', accessTokenSchema)
+// const accessTokenModel = connection.usersDbConnection.model('accessToken', accessTokenSchema)
+module.exports = accessTokenModel;

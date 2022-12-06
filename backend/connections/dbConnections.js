@@ -1,28 +1,26 @@
-require("dotenv").config();
-const mongoose = require("mongoose");
-const MONGO_URI = `${process.env.MONGO_URI}`;
-// let schemaList = [
-//     ['user', '../models/userModel']
-// ]
+// require("dotenv").config();
+// const mongoose = require('mongoose');
+
+// const MONGO_URI = `${process.env.MONGO_URI}`;
+// const { usersDbName, appDbName } = require('../config/databasesInfo')
+
+// const appDbURI = `${MONGO_URI}${appDbName}`;
+// const usersDbURI = `${MONGO_URI}${usersDbName}`;
+
+// mongoose.appDbConnection = mongoose.createConnection(appDbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+//     .once('connected', () => {
+//         console.log(`connected to app database ${appDbName}`)
+//     })
+//     .on('error', error => {
+//         console.log(error)
+//     })
+// mongoose.usersDbConnection = mongoose.createConnection(usersDbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+//     .once('connected', () => {
+//         console.log(`connected to database ${usersDbName}`)
+//     })
+//     .on('error', error => {
+//         console.log(error)
+//     })
 
 
-const dbConnectModel = function (db, collname, schema) {
-    const URI = `${MONGO_URI}${db}`;
-    const conn = mongoose.createConnection(URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    const model = conn.model(collname, schema)
-    return model
-}
-
-const dbConnect = function (db, schemaList) {
-    const URI = `${MONGO_URI}${db}`;
-    const conn = mongoose.createConnection(URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    schemaList.forEach(schema => {
-        conn.model(schema[0], require(schema[1]))
-    })
-
-    // console.log(`db ${db} is connected`)
-    return conn
-}
-
-
-module.exports = { dbConnectModel, dbConnect };
+// module.exports = mongoose 

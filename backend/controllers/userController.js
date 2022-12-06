@@ -2,21 +2,15 @@ require("dotenv").config();
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const userSchema = require('../models/userModel')
-const accessTokenSchema = require('../models/tokenModel')
-// const userDbConnections = require('../connections/userDbConnection');
-// const { dbConnectModel } = require('../connections/dbConnection');
 
+// const userSchema = require('../models/userModel')
+// const connection = require('../connections/dbConnections')
+// const users = connection.usersDbConnection.model('User', userSchema)
+const users = require('../models/userModel')
 
-//import databses info
-const { usersDbName } = require('../config/databasesInfo')
-
-//create connections to the databases
-const MONGO_URI = `${process.env.MONGO_URI}`;
-const URI_DB = `${MONGO_URI}${usersDbName}`;
-const conn = mongoose.createConnection(URI_DB, { useNewUrlParser: true, useUnifiedTopology: true })
-const usersCollection = conn.model('user', userSchema)
-const accessTokenCollection = conn.model('accessToken', accessTokenSchema)
+// const accessTokenSchema = require('../models/tokenModel')
+// const accessTokenCollection = connection.usersDbConnection.model('accessToken', accessTokenSchema)
+const accessTokenCollection = require('../models/tokenModel')
 
 var maxAge = 2 * 60 * 1000
 
@@ -28,7 +22,7 @@ const createToken = (_id) => {
 
 // get all users
 const getAllUsers = async (req, res) => {
-    const allUsers = await usersCollection.find({}).sort('email asc')
+    const allUsers = await users.find({}).sort('email asc')
     res.status(200).json(allUsers)
 }
 
@@ -36,7 +30,7 @@ const getAllUsers = async (req, res) => {
 const signupUser = async (req, res) => {
     const { email, password } = req.body;
     try {
-        const user = await usersCollection.signup(email, password)
+        const user = await users.signup(email, password)
         // create token
         const accessToken = createToken(user._id)
         await accessTokenCollection.create({ userId: user._id, accessToken })
@@ -52,7 +46,7 @@ const handleLogin = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const user = await usersCollection.login(email, password)
+        const user = await users.login(email, password)
         // create token
         const accessToken = createToken(user._id)
         const tokenDoc = await accessTokenCollection.create({ userId: user._id, accessToken: accessToken })
@@ -86,7 +80,7 @@ const userUpdate = async (req, res) => {
     if (!mongoose.isValidObjectId(id)) {
         res.status(404).json({ error: "This user doesn't exist" })
     }
-    const user = await usersCollection.findByIdAndUpdate(id, req.body, { new: true }) // check for error
+    const user = await users.findByIdAndUpdate(id, req.body, { new: true }) // check for error
     if (!user) {
         return res.status(404).json({ error: 'No such user to update' })
     }
@@ -102,7 +96,7 @@ const getSingleUser = async (req, res) => {
         // if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({ error: 'No such single user' })
     }
-    const user = await usersCollection.findById(id)
+    const user = await users.findById(id)
     if (!user) {
         return res.status(404).json({ error: 'No such single user to fetch' })
     }
@@ -115,7 +109,7 @@ const deleteUser = async (req, res) => {
     if (!mongoose.isValidObjectId(id)) {
         res.status(404).json({ error: "User was not found" })
     }
-    const user = await usersCollection.findByIdAndDelete(id)
+    const user = await users.findByIdAndDelete(id)
     if (!user) {
         return res.status(404).json({ error: 'No such user to delete' })
     }

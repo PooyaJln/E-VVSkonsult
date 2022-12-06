@@ -7,7 +7,6 @@ const corsOptions = require('./config/corsOptions')
 const { logger } = require('./middlewares/logEvents')
 const errorHandler = require('./middlewares/errorHandler')
 
-
 // import routes
 const inputDataRoutes = require("./routes/inputDataRoutes");
 const spaceDataRoutes = require('./routes/spaceDataRoutes');
@@ -35,7 +34,6 @@ app.use(express.static(path.join(__dirname, "public")));
 
 //To be able to parse the form data we can add an optional middleware from express as below.
 app.use(express.urlencoded({ extended: true }));
-
 
 //routes
 // app.get("^/$|/index(.html)?", (req, res) => {

@@ -1,19 +1,17 @@
 const mongoose = require('mongoose')
-const { temperatureSchema } = require('../models/temperatureModel');
 
-
-// const temperatureModel = connection.model('temperature', temperatureSchema)
+const temperatures = require('../models/temperatureModel');
 
 // get all temperatures
 const getAllTemperatures = async (req, res) => {
-    const allTemperatures = await temperatureModel.find({}).sort('Name asc')
+    const allTemperatures = await temperatures.find({}).sort('Name asc')
     res.status(200).json(allTemperatures)
 }
 // create new temperatures
 const createTemperature = async (req, res) => {
     const { Name, Value } = req.body;
     try {
-        const newTemperature = await temperatureModel.create({ Name, Value })
+        const newTemperature = await temperatures.create({ Name, Value })
         res.status(200).json(newTemperature)
     } catch (error) {
         res.status(404).json({ error: error.message })
@@ -26,7 +24,7 @@ const temperatureUpdate = async (req, res) => {
     if (!mongoose.isValidObjectId(id)) {
         res.status(404).json({ error: "This envelope doesn't exist" })
     }
-    const temperature = await temperatureModel.findByIdAndUpdate(id, req.body, { new: true }) // check for error
+    const temperature = await temperatures.findByIdAndUpdate(id, req.body, { new: true }) // check for error
     if (!temperature) {
         return res.status(404).json({ error: 'No such envelope' })
     }
@@ -42,7 +40,7 @@ const getSingleTemperature = async (req, res) => {
         // if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({ error: 'No such envelope' })
     }
-    const temperature = await temperatureModel.findById(id)
+    const temperature = await temperatures.findById(id)
     if (!temperature) {
         return res.status(404).json({ error: 'No such envelope' })
     }
@@ -55,7 +53,7 @@ const deleteATemperature = async (req, res) => {
     if (!mongoose.isValidObjectId(id)) {
         res.status(404).json({ error: "Envelope was not found" })
     }
-    const temperature = await temperatureModel.findByIdAndDelete(id)
+    const temperature = await temperatures.findByIdAndDelete(id)
     if (!temperature) {
         return res.status(404).json({ error: 'No such envelope' })
     }

@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
-// const { temperatureModel, temperatureSchema } = require('./temperatureModel');
+// const connection = require('../connections/dbConnection');
+// const connection = require('../connections/dbConnections');
+
 
 const envelopeSchema = new Schema({
     Name: {
@@ -30,6 +32,9 @@ const envelopeSchema = new Schema({
     }
 }, { timestamps: true });
 
-// const EnvelopeType = mongoose.model('envelopeType', envelopeSchema)
-// module.exports = { EnvelopeType, envelopeSchema };
-module.exports = { envelopeSchema };
+
+const EnvelopeTypeModel = mongoose.model('envelopeType', envelopeSchema)
+// const EnvelopeTypeModel = connection.cmodel('envelopeType', envelopeSchema)
+// let EnvelopeTypeModel = connection.appDbConnection.model('envelopeType', envelopeSchema)
+module.exports = EnvelopeTypeModel
+// module.exports = envelopeSchema

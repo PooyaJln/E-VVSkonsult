@@ -4,19 +4,30 @@ const multer = require('multer')
 const router = express.Router();
 const upload = multer()
 
-const { createProject } = require('../controllers/projectController')
+const { createProject,
+    createProjectSql,
+    getAllProjects,
+    getAllProjectsSql,
+    getSingleProject,
+    getSingleProjectSql,
+    projectUpdate,
+    deleteProject,
+    deleteProjectSql } = require('../controllers/projectController')
 
 
-router.get('/', (req, res) => {
-    res.json({ mssg: "projects' page" })
-})
 
 //////////////////////////////////////////////////////
 // create new project
-router.post('/create-project', upload.none(), createProject)
+router.post('/create-project', createProjectSql)
 
 // get a single envelope
-// router.get('/projects/:name', getSingleProject)
+router.get('/:project_id', getSingleProjectSql)
+
+// show all projects
+router.get('/', getAllProjectsSql)
+
+// delete a single envelope
+router.delete('/:project_id', deleteProjectSql)
 
 
 module.exports = router

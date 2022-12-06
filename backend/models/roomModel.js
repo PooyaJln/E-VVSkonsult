@@ -1,19 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const { temperatureSchema } = require('./temperatureModel')
-
-const apartmentSchema = new Schema({
-    Name: {
-        type: String,
-        required: true
-    },
-    floorNr: {
-        type: String,
-        required: true
-    }
-})
-
-// const Apartment = mongoose.model('apartment', apartmentSchema)
+// const connection = require('../connections/dbConnection');
+// const connection = require('../connections/dbConnections');
 
 const roomSchema = new Schema({
     Name: {
@@ -24,11 +12,6 @@ const roomSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'apartment',
         required: true,
-    },
-    temperatureIn: {
-        type: Schema.Types.ObjectId,
-        ref: 'temperature',
-        required: true
     },
     roofArea: {
         type: Number,
@@ -82,6 +65,8 @@ const roomSchema = new Schema({
 
 }, { timestamps: true });
 
-// const Room = mongoose.model('Room', roomSchema)
-// module.exports = { Room, apartmentSchema, roomSchema };
-module.exports = { apartmentSchema, roomSchema };
+const roomModel = mongoose.model('Room', roomSchema)
+// const roomModel = connection.model('Room', roomSchema)
+// // const roomModel = connection.appDbConnection.model('Room', roomSchema)
+module.exports = roomModel
+// module.exports = roomSchema

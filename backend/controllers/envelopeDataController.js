@@ -1,12 +1,12 @@
 const mongoose = require('mongoose')
-const { envelopeSchema } = require('../models/envelopeTypeModel');
+
+const EnvelopeTypes = require('../models/envelopeTypeModel');
 
 
-// const EnvelopeType = connection.model('envelope', envelopeSchema)
 
 // get all envelope types
 const getAllEnvelopeTypes = async (req, res) => {
-    const allEnvelopeTypes = await EnvelopeType.find({}).sort('Name asc')
+    const allEnvelopeTypes = await EnvelopeTypes.find({}).sort('Name asc')
     res.status(200).json(allEnvelopeTypes)
     // .sort('envelopeName asc')
 }
@@ -15,7 +15,7 @@ const getAllEnvelopeTypes = async (req, res) => {
 const createEnvelopeType = async (req, res) => {
     const { Name, Category, uValue, tempIn, tempOut } = req.body;
     try {
-        const newEnvelopeType = await EnvelopeType.create({ Name, Category, uValue, tempIn, tempOut })
+        const newEnvelopeType = await EnvelopeTypes.create({ Name, Category, uValue, tempIn, tempOut })
         res.status(200).json(newEnvelopeType)
     } catch (error) {
         res.status(404).json({ error: error.message })
@@ -28,7 +28,7 @@ const envelopeUpdate = async (req, res) => {
     if (!mongoose.isValidObjectId(id)) {
         res.status(404).json({ error: "This envelope doesn't exist" })
     }
-    const envelope = await EnvelopeType.findByIdAndUpdate(id, req.body, { new: true }) // check for error
+    const envelope = await EnvelopeTypes.findByIdAndUpdate(id, req.body, { new: true }) // check for error
     if (!envelope) {
         return res.status(404).json({ error: 'No such envelope' })
     }
@@ -44,7 +44,7 @@ const getSingleEnvelope = async (req, res) => {
     if (!mongoose.isValidObjectId(id)) {
         return res.status(404).json({ error: 'No such envelope' })
     }
-    const envelope = await EnvelopeType.findById(id)
+    const envelope = await EnvelopeTypes.findById(id)
     if (!envelope) {
         return res.status(404).json({ error: 'No such envelope' })
     }
@@ -57,7 +57,7 @@ const deleteAnEnveleope = async (req, res) => {
     if (!mongoose.isValidObjectId(id)) {
         res.status(404).json({ error: "Envelope was not found" })
     }
-    const envelope = await EnvelopeType.findByIdAndDelete(id)
+    const envelope = await EnvelopeTypes.findByIdAndDelete(id)
     if (!envelope) {
         return res.status(404).json({ error: 'No such envelope' })
     }

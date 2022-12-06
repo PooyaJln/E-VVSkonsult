@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
-const { apartmentSchema } = require('../models/roomModel');
-// const apartmentModel = connection.model('wall', apartmentSchema)
+
+const connection = require('../connections/dbConnections');
+const apartmentModel = require('../models/apartmentModel');
 
 
 // get all apartments

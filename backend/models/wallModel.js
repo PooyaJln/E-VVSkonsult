@@ -1,8 +1,10 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
-const { Room } = require('./roomModel')
-const { EnvelopeType } = require('./envelopeTypeModel');
-const { temperatureModel } = require('./temperatureModel');
+// const connection = require('../connections/dbConnection');
+// const connection = require('../connections/dbConnections');
+const Room = require('./roomModel')
+const temperature = require('./temperatureModel')
+const EnvelopeType = require('./envelopeTypeModel')
 
 const openingSchema = new Schema(
     {
@@ -54,7 +56,7 @@ openingSchema.pre('save', async function (next) {
     this.Room = this.parent().Room
     const fetchedRoom = await Room.findById({ _id: this.Room })
     const temperatureInId = fetchedRoom.temperatureIn
-    const temperatureInDoc = await temperatureModel.findById({ _id: temperatureInId })
+    const temperatureInDoc = await temperature.findById({ _id: temperatureInId })
     this.temperatureIn = temperatureInDoc.Value
     this.temperatureOut = this.parent().temperatureOut
     const openingType = await EnvelopeType.findById({ _id: this.envelopeType })
@@ -112,7 +114,8 @@ const wallSchema = new Schema(
             required: false
         },
         temperatureIn: {
-            type: Number,
+            type: Schema.Types.ObjectId,
+            ref: 'room',
             required: false
         },
         temperatureOut: {
@@ -131,7 +134,7 @@ wallSchema.pre('save', async function (next) {
     let openingsArea = 0;
     const fetchedRoom = await Room.findById({ _id: this.Room })
     const temperatureInId = fetchedRoom.temperatureIn
-    const temperatureInDoc = await temperatureModel.findById({ _id: temperatureInId })
+    const temperatureInDoc = await temperature.findById({ _id: temperatureInId })
     this.temperatureIn = temperatureInDoc.Value
     const wallType = await EnvelopeType.findById({ _id: this.envelopeType })
     this.uValue = wallType.uValue
@@ -148,6 +151,9 @@ wallSchema.pre('save', async function (next) {
 })
 
 
-// const WallModel = mongoose.model('wall', wallSchema)
-// module.exports = { WallModel, wallSchema };
-module.exports = { wallSchema };
+const wallModel = mongoose.model('Wall', wallSchema)
+// const wallModel = connection.model('Wall', wallSchema)
+// const wallModel = connection.appDbConnection.model('Wall', wallSchema)
+module.exports = wallModel
+
+// module.exports = wallSchema

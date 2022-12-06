@@ -1,12 +1,12 @@
 const mongoose = require('mongoose')
-const { apartmentSchema, roomSchema } = require('../models/roomModel')
-// const roomModel = connection.model('room', roomSchema)
-// const apartmentModel = connection.model('apartment', apartmentSchema)
+
+const rooms = require('../models/roomModel')
+const apartments = require('../models/apartmentModel')
 
 
 // get all rooms
 const getAllRooms = async (req, res) => {
-    const allRooms = await roomModel.find({}).sort('Name asc')
+    const allRooms = await rooms.find({}).sort('Name asc')
     res.status(200).json(allRooms)
 }
 
@@ -14,9 +14,9 @@ const getAllRooms = async (req, res) => {
 const roomsInApartment = async (req, res) => {
     const { name } = req.params;
     try {
-        const apartment = await apartmentModel.findOne({ Name: name }).exec()
+        const apartment = await apartments.findOne({ Name: name }).exec()
         const apartmentId = apartment._id
-        const allRoomsInApartment = await roomModel.find({ 'apartment': apartmentId }, 'apartment roofArea floorArea').populate('apartment').exec()
+        const allRoomsInApartment = await rooms.find({ 'apartment': apartmentId }, 'apartment roofArea floorArea').populate('apartment').exec()
         console.log(allRoomsInApartment.length)
         res.status(200).json(allRoomsInApartment)
 
@@ -37,7 +37,7 @@ const createRoom = async (req, res) => {
         floorArea,
     } = req.body;
     try {
-        const room = await roomModel.create({ Name, apartment, temperatureIn, roofArea, floor_0_1_Area, floor_1_5_Area, floorArea })
+        const room = await rooms.create({ Name, apartment, temperatureIn, roofArea, floor_0_1_Area, floor_1_5_Area, floorArea })
         res.status(200).json(room)
     } catch (error) {
         res.status(404).json({ error: error.message })
@@ -51,13 +51,13 @@ const roomUpdate = async (req, res) => {
     if (!mongoose.isValidObjectId(id)) {
         res.status(404).json({ error: "This room doesn't exist" })
     }
-    var room = await roomModel.findByIdAndUpdate(id)
+    var room = await rooms.findByIdAndUpdate(id)
     // check if walls in the request is empty .map or .filter
     if (req.body.walls.length != 0) {
         console.log('new wall is not empty')
-        room = await roomModel.findByIdAndUpdate(id, { $addToSet: { walls: req.body.walls } }, { new: true })
+        room = await rooms.findByIdAndUpdate(id, { $addToSet: { walls: req.body.walls } }, { new: true })
     } else {
-        room = await roomModel.findByIdAndUpdate(id, req.body, { new: true })
+        room = await rooms.findByIdAndUpdate(id, req.body, { new: true })
     }
     if (!room) {
         return res.status(404).json({ error: 'No such a room' })
@@ -74,7 +74,7 @@ const getSingleRoom = async (req, res) => {
         // if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({ error: "This room doesn't exist" })
     }
-    const room = await roomModel.findById(id)
+    const room = await rooms.findById(id)
     if (!room) {
         return res.status(404).json({ error: 'No such a room' })
     }
@@ -87,7 +87,7 @@ const deleteARoom = async (req, res) => {
     if (!mongoose.isValidObjectId(id)) {
         res.status(404).json({ error: "Rooms was not found" })
     }
-    const room = await roomModel.findByIdAndDelete(id)
+    const room = await rooms.findByIdAndDelete(id)
     if (!room) {
         return res.status(404).json({ error: 'No such a room' })
     }

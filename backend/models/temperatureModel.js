@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
+// const connection = require('../connections/dbConnection');
+// const connection = require('../connections/dbConnections');
 
 const temperatureSchema = new Schema({
     Name: {
@@ -12,6 +14,8 @@ const temperatureSchema = new Schema({
     }
 }, { timestamps: true });
 
-// const temperatureModel = mongoose.model('temperature', temperatureSchema)
-// module.exports = { temperatureModel, temperatureSchema };
-module.exports = { temperatureSchema };
+const temperatureModel = mongoose.model('temperature', temperatureSchema)
+// const temperatureModel = connection.model('temperature', temperatureSchema)
+// const temperatureModel = connection.appDbConnection.model('temperature', temperatureSchema)
+module.exports = temperatureModel
+// module.exports = temperatureSchema

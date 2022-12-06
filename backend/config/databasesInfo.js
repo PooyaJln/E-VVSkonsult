@@ -1,4 +1,5 @@
 const usersDbName = 'UsersData';
-const projDbName = "project4";
+const appDbName = "heatLossApp";
 
-module.exports = { usersDbName, projDbName }
+// module.exports = { usersDbName, appDbName }
+module.exports = { appDbName } 

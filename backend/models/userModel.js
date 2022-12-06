@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt');
 const validator = require('validator')
+// const connection = require('../connections/dbConnection')
+// const connection = require('../connections/dbConnections')
 
 const userSchema = new Schema({
     // Name: {
@@ -57,5 +59,8 @@ userSchema.statics.login = async function (email, password) {
     }
     return user
 }
-
-module.exports = userSchema;
+const userModel = mongoose.model('User', userSchema)
+// const userModel = connection.model('User', userSchema)
+// const userModel = connection.usersDbConnection.model('User', userSchema)
+module.exports = userModel
+// module.exports = userSchema

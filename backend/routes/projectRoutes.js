@@ -11,6 +11,7 @@ const { createProject,
     getSingleProject,
     getSingleProjectSql,
     projectUpdate,
+    projectUpdateSql,
     deleteProject,
     deleteProjectSql } = require('../controllers/projectController')
 
@@ -26,7 +27,10 @@ router.get('/:project_id', getSingleProjectSql)
 // show all projects
 router.get('/', getAllProjectsSql)
 
-// delete a single envelope
+// update a project
+router.patch('/:project_id', projectUpdateSql)
+
+// delete a project
 router.delete('/:project_id', deleteProjectSql)
 
 

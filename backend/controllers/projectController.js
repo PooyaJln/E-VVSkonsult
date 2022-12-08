@@ -97,6 +97,32 @@ const deleteProjectSql = async (req, res) => {
     }
 }
 
+//update a single project
+const projectUpdateSql = async (req, res) => {
+    const id = req.params.project_id;
+    const { project_name } = req.body
+    try {
+        if (await idCheckSql(id)) {
+            await poolPromise.query(`
+                                UPDATE projects 
+                                SET project_name = ?
+                                WHERE project_id = ?
+                            `, [project_name, id]
+            )
+                .then(async () => {
+                    const Updated = await getAprojectSql(id)
+                    res.status(200).json(Updated)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        } else {
+            res.status(404).json({ error: "Project was not found" })
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
 //---------------------------------------------------------MongoDB
 const getSingleProject = async (req, res) => {
     const { name } = req.params;
@@ -165,6 +191,7 @@ module.exports = {
     getSingleProject,
     getSingleProjectSql,
     projectUpdate,
+    projectUpdateSql,
     deleteProject,
     deleteProjectSql
 }

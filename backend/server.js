@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const app = require('./app');
-const projPort = process.env.PROJPORT;
+const SERVER_PORT = process.env.SERVER_PORT;
 
 // const { appDbName } = require('./config/databasesInfo')
 // const MONGO_URI = `${process.env.MONGO_URI}`;
@@ -19,7 +19,7 @@ const projPort = process.env.PROJPORT;
 //   })
 
 
-app.listen(projPort, () => {
-  console.log(`server started and listening on port ${projPort}`);
+app.listen(SERVER_PORT, () => {
+  console.log(`server started. Go to http://localhost:${SERVER_PORT}/`);
 });
 

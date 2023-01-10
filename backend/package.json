@@ -2,12 +2,11 @@
   "name": "e-vvskonsult",
   "version": "1.0.0",
   "description": "",
+  
   "main": "server.js",
   "scripts": {
     "test": "mocha",
-    "dev": "nodemon server.js",
-    "dev0": "nodemon server0.js",
-    "dev2": "nodemon server2.js"
+    "dev": "nodemon server.js"
   },
   "author": "Pooya.JLN",
   "license": "ISC",

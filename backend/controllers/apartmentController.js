@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 
-const connection = require('../connections/dbConnections');
 const apartmentModel = require('../models/apartmentModel');
 
 

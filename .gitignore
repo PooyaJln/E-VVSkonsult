@@ -1,6 +1,9 @@
-_frontend
 frontend
 backupData
-ERD.mwb
-ERD.mwb.bak
-heatLossWebApp_schema.sql
+tests
+trash
+*/trash
+init
+mysql
+.gitignore
+docker-compose.yml

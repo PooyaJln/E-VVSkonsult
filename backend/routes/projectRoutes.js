@@ -20,11 +20,13 @@ const {
 // create new project
 router.post('/create-project', createProjectSql)
 
-// get a single project
-router.get('/:project_id', getSingleProjectByIdSql)
-
 // show all projects
-router.get('/', getAllProjectsSql)
+router.get('/all$', getAllProjectsSql)
+
+// get a single project
+// router.get('/:project_id([0-9]{1,}$)/', getSingleProjectByIdSql)
+router.get('/:project_id(\\d+$)', getSingleProjectByIdSql)
+
 
 // update a project
 router.patch('/:project_id', projectUpdateSql)

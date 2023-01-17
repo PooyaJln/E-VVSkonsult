@@ -6,45 +6,76 @@ const { poolPromise } = require('../connections/dbConnection')
 
 //------------------------ logic functions
 const projectIdCheckSql = async (id) => {
-    const [foundId] = await poolPromise.query(`
+    try {
+        const [foundId] = await poolPromise.query(`
                                         SELECT project_id 
                                         FROM projects 
                                         WHERE project_id = ?;
                                         `, [id])
-    console.log(foundId[0])
-    if (!foundId.length) {
-        return false
-    } else {
-        return true
+        console.log(foundId[0])
+        if (!foundId.length) {
+            return false
+        } else {
+            return true
+        }
+    } catch (error) {
+        console.error(error)
     }
 }
 
 
 const findProjectByIdSql = async (id) => {
-    const [row] = await poolPromise.query(`
-                                    SELECT *
-                                    FROM projects
-                                    WHERE project_id = ?
-                                    `, [id])
-    console.log(row)
-    console.log(row[0])
-    return row[0]
+    try {
+        const [row] = await poolPromise.query(`
+                                            SELECT *
+                                            FROM projects
+                                            WHERE project_id = ?`, [id])
+
+        console.log("findProjectByIdSql:", row[0])
+        return row[0]
+    } catch (error) {
+        console.error(error)
+    }
 }
 const findProjectIdByNameSql = async (name) => {
-    const [row] = await poolPromise.query(`
+    try {
+        const [row] = await poolPromise.query(`
                                     SELECT project_id
                                     FROM projects
                                     WHERE project_name = ?
                                     `, [name])
-    // console.log('findProjectIdByNameSql -> project: ', row[0])
-    return row[0]
+        console.log('findProjectIdByNameSql: ', row[0])
+        return row[0]
+    } catch (error) {
+        console.error(error)
+    }
 }
 
 const allProjectsSql = async () => {
-    const [rows] = await poolPromise.query(`SELECT * FROM projects`)
-    return rows
+    try {
+        const [rows] = await poolPromise.query(`SELECT * FROM projects`)
+        return rows
+    } catch (error) {
+        console.error(error)
+    }
 }
 
+
+const fetchAllBuildingsInProjectById = async (id) => {
+    const sqlQuery = `SELECT building_name
+                            FROM buildings 
+                            JOIN projects USING(project_id)  
+                            WHERE project_id = ? ;`
+    const sqlArgum = [id]
+    try {
+        const [buildings] = await poolPromise.query(sqlQuery, sqlArgum)
+        console.log("fetchAllBuildingsInProjectById: ", buildings)
+        return buildings
+    } catch (error) {
+        console.error()
+    }
+
+}
 
 //---------------------------------- MySQL CRUD functions---------------------------
 // create a new project
@@ -84,6 +115,9 @@ const getSingleProjectByIdSql = async (req, res) => {
     try {
         if (await projectIdCheckSql(id)) {
             const project = await findProjectByIdSql(id)
+            const foundBuildings = await fetchAllBuildingsInProjectById(id)
+            const buildings = foundBuildings.map(item => item.building_name)
+            project.buildings = buildings
             return res.status(200).json(project)
         } else {
             return res.status(404).json({ error: "Project was not found" })

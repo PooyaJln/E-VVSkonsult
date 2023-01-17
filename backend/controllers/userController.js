@@ -18,32 +18,45 @@ const createToken = (id) => {
 //---------------------------------------MySql-------------------------------------------
 //------------------------ logic functions
 const idCheckSql = async (id) => {
-    const [foundId] = await poolPromise.query(`
+    try {
+        const [foundId] = await poolPromise.query(`
                                         SELECT user_id 
                                         FROM users 
                                         WHERE user_id = ?;
                                         `, [id])
-    if (!foundId.length) {
-        return false
-    } else return true
+        if (!foundId.length) {
+            return false
+        } else return true
+    } catch (error) {
+        console.error(error)
+    }
 }
 
 
 const getUserSql = async (id) => {
-    const [row] = await poolPromise.query(`
+    try {
+        const [row] = await poolPromise.query(`
                                     SELECT *
                                     FROM users
                                     WHERE user_id = ?
                                     `, [id])
-    return row[0]
+        return row[0]
+
+    } catch (error) {
+        console.error(error)
+    }
 }
 
 const allUsersSql = async () => {
-    const [rows] = await poolPromise.query(`SELECT * FROM users`)
-    if (!rows.length) {
-        throw Error('seems like the database is empty')
+    try {
+        const [rows] = await poolPromise.query(`SELECT * FROM users`)
+        if (!rows.length) {
+            throw Error('seems like the database is empty')
+        }
+        return rows
+    } catch (error) {
+        console.error(error)
     }
-    return rows
 }
 const generateHash = async (password) => {
     const salt = await bcrypt.genSalt(10)

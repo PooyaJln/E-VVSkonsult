@@ -12,6 +12,7 @@ const inputDataRoutes = require("./routes/inputDataRoutes");
 const spaceDataRoutes = require('./routes/spaceDataRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const buildingRoutes = require('./routes/buildingRoutes');
+const storeyRoutes = require('./routes/storeyRoutes');
 const userRoutes = require('./routes/userRoutes');
 
 //express app
@@ -38,8 +39,6 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 
 
-buildingRouteRegex = /^project\/*/
-
 //routes
 app.get("^/$|/index(.html)?", (req, res) => {
     res.render("index", { title: "Homepage" });
@@ -53,7 +52,9 @@ app.use("/heat-loss/input-data(.html)?", inputDataRoutes);
 
 app.use("/heat-loss/spaces(.html)?", spaceDataRoutes);
 
-app.use("/heat-loss/projects/", buildingRoutes);
+app.use("/heat-loss/stories(.html)?", storeyRoutes);
+
+app.use("/heat-loss/buildings(.html)?", buildingRoutes);
 
 app.use("/heat-loss/projects(.html)?", projectRoutes);
 

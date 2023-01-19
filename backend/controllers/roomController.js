@@ -1,8 +1,11 @@
-const mongoose = require('mongoose')
+// // const mongoose = require('mongoose')
 
-const rooms = require('../models/roomModel')
-const apartments = require('../models/apartmentModel')
+// // const rooms = require('../models/roomModel')
+// // const apartments = require('../models/apartmentModel')
 
+const { poolPromise, pool } = require('../connections/dbConnection')
+const { findProjectIdByNameSql } = require('./projectController')
+const { findBuildingByIdSql, findBuildingIdByNameSql } = require('./buildingController')
 
 // get all rooms
 const getAllRooms = async (req, res) => {

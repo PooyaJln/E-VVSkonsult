@@ -1,7 +1,7 @@
 
 // const projects = require('../models/projectModel')
 const { poolPromise, pool } = require('../connections/dbConnection')
-const { projectIdCheckSql, findProjectIdByNameSql } = require('./projectController')
+const { projectIdCheckSql, findProjectIdByNameSql, fetchAllBuildingsInProjectById } = require('./projectController')
 //----------------------------------------MySql
 
 //------------------------ logic functions
@@ -32,15 +32,15 @@ const findBuildingIdByNameSql = async (p_name, b_name) => {
         WHERE (project_name) = ? AND (building_name) = ?;`
     const sqlArgum = [p_name, b_name]
     try {
-        const [foundfindBuildingIdByName] = await poolPromise.query(sqlQuery, sqlArgum)
+        const [foundBuildingIdByName] = await poolPromise.query(sqlQuery, sqlArgum)
         // console.log(foundId[0].building_id)
         // if (!foundId.length) {
         //     return false
         // } else {
         //     return true
         // }
-        console.log("foundfindBuildingIdByName[0]: ", foundfindBuildingIdByName[0])
-        return foundfindBuildingIdByName[0]
+        console.log("foundBuildingIdByName[0]: ", foundBuildingIdByName[0])
+        return foundBuildingIdByName[0]
     } catch (error) {
         console.error()
     }
@@ -77,14 +77,15 @@ const findBuildingByIdSql = async (id) => {
 
 }
 
-const fetchAllBuildingsInProject = async (project_name) => {
+const fetchAllBuildingsByProjectName = async (project_name) => {
     const sqlQuery = `SELECT building_name
                             FROM buildings 
                             JOIN projects USING(project_id)  
                             WHERE project_name = ? ;`
     const sqlArgum = [project_name]
     try {
-        const [buildings] = await poolPromise.query(sqlQuery, sqlArgum)
+        const [foundBuildings] = await poolPromise.query(sqlQuery, sqlArgum)
+        const buildings = foundBuildings.map(item => item.building_name).sort()
         console.log("fetchAllBuildingsInProject: ", buildings)
         return buildings
     } catch (error) {
@@ -93,19 +94,33 @@ const fetchAllBuildingsInProject = async (project_name) => {
 
 }
 
+const fetchAllStoriesInBuildingById = async (id) => {
+    const sqlQuery = `SELECT storey_name
+                            FROM stories 
+                            JOIN buildings USING(building_id)  
+                            WHERE building_id = ? ;`
+    const sqlArgum = [id]
+    try {
+        const [foundStories] = await poolPromise.query(sqlQuery, sqlArgum)
+        const stories = foundStories.map(item => item.storey_name)
+        console.log("fetchAllStoriesInBuildingById: ", stories)
+        return stories
+    } catch (error) {
+        console.error()
+    }
 
+}
 //---------------------------------- MySQL CRUD functions---------------------------
 // create a new building
 const createBuildingSql = async (req, res) => {
-    const project_name = req.params.project_name
-    const { building_name } = req.body;
+
+    const { building_name, project_name } = req.body;
     const project = await findProjectIdByNameSql(project_name)
     if (!project) {
-        return res.status(400).json({ error: `Project name '${project_name}' in the URL was not found in the database` })
+        return res.status(400).json({ error: `Project name '${project_name}' was not found in the database` })
     }
     try {
         const project_id = project.project_id
-        console.log(project_id)
         const [row] = await poolPromise.query(`
                                                     SELECT building_id,building_name
                                                     FROM buildings
@@ -123,33 +138,50 @@ const createBuildingSql = async (req, res) => {
             const id = newBuildingSql.insertId
             const result = await findBuildingByIdSql(id)
             res.status(201).json(result)
-        } else throw Error(`Building '${building_name}' already exists in the database. Enter a new name.`)
+        } else {
+            console.error(`Building '${building_name}' already exists in the database. Enter a new name.`)
+            res.status(400).json({ error: `Building '${building_name}' already exists in the database. Enter a new name.` })
+        }
     } catch (error) {
         console.log(error)
         res.status(400).json({ error: "couldn't create this building" })
     }
 }
 
-// show a single buildings info by id.
+// show a single buildings info by id and its all stories
 const getSingleBuildingByIdSql = async (req, res, next) => {
     const project_name = req.params.project_name;
     const building_id = req.params.building_id;
-    try {
-        const foundBuilding = await findBuildingByIdSql(building_id)
-        if (foundBuilding) {
-            const sqlQuery = `SELECT building_id, building_name, project_name
+    const project = await findProjectIdByNameSql(project_name)
+    if (!project) {
+        return res.status(400).json({ error: `Project name '${project_name}' was not found in the database` })
+    }
+    const project_id = project.project_id
+    let sqlQuery = `SELECT building_id
+                    FROM buildings
+                    WHERE project_id = ? ;`
+    let sqlArgum = [project_id]
+    const [allBuildingIds] = await poolPromise.query(sqlQuery, sqlArgum)
+    const allBuildingIdsArray = allBuildingIds.map(item => item.building_id)
+    if (!allBuildingIdsArray?.includes(Number(building_id))) {
+        return res.status(400).json({ error: `the building with id ${building_id} doesn't belong to project ${project_name}` })
+    }
+    sqlQuery = `SELECT project_name, building_id, building_name 
                             FROM buildings 
                             JOIN projects USING(project_id)  
-                            WHERE project_name = ? and building_id = ?;`
-            const sqlArgum = [project_name, building_id]
-            const [sqlResponse] = await poolPromise.query(sqlQuery, sqlArgum)
-            const message = `this function will be completted with a list of storeys in a building ${building_id}`
-            const building = sqlResponse[0]
-            building.message = message
+                            WHERE building_id = ? ;`
+    sqlArgum = [building_id]
+    try {
+        // const project_id = await findProjectIdByNameSql(project_name)
+        const [foundBuilding] = await poolPromise.query(sqlQuery, sqlArgum)
+
+        if (foundBuilding) {
+            const building = foundBuilding[0]
+            const stories = await fetchAllStoriesInBuildingById(building_id)
+            building.stories = stories
             return res.status(200).json(building)
         } else {
             res.status(404).json({ error: "this Building was not found1" })
-
         }
     } catch (error) {
         console.log(error)
@@ -239,9 +271,8 @@ const deleteBuildingSql = async (req, res) => {
                                 WHERE building_id = ?
                                 `, [building_id])
                 .then(async () => {
-                    const buildings = await fetchAllBuildingsInProject(project_name)
-                    const buildingsArray = buildings.map(item => item.building_name).sort()
-                    res.status(200).json({ project_name: project_name, buildings: buildingsArray })
+                    const buildings = await fetchAllBuildingsByProjectName(project_name)
+                    res.status(200).json({ project_name: project_name, buildings: buildings })
                 })
                 .catch(err => {
                     console.log(err)

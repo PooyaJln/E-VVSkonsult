@@ -68,7 +68,8 @@ const fetchAllBuildingsInProjectById = async (id) => {
                             WHERE project_id = ? ;`
     const sqlArgum = [id]
     try {
-        const [buildings] = await poolPromise.query(sqlQuery, sqlArgum)
+        const [foundBuildings] = await poolPromise.query(sqlQuery, sqlArgum)
+        const buildings = foundBuildings.map(item => item.building_name)
         console.log("fetchAllBuildingsInProjectById: ", buildings)
         return buildings
     } catch (error) {
@@ -109,14 +110,13 @@ const createProjectSql = async (req, res) => {
     }
 
 }
-
+// get a single project info and all its buildings
 const getSingleProjectByIdSql = async (req, res) => {
     const id = req.params.project_id;
     try {
         if (await projectIdCheckSql(id)) {
             const project = await findProjectByIdSql(id)
-            const foundBuildings = await fetchAllBuildingsInProjectById(id)
-            const buildings = foundBuildings.map(item => item.building_name)
+            const buildings = await fetchAllBuildingsInProjectById(id)
             project.buildings = buildings
             return res.status(200).json(project)
         } else {
@@ -134,32 +134,32 @@ const getAllProjectsSql = async (req, res) => {
 }
 
 // get all buildings in a project
-const getProjectsBuildingsSql = async (req, res) => {
-    const project_name = req.params.project_name
-    console.log(project_name)
-    const project = await findProjectIdByNameSql(project_name)
-    if (!project) {
-        return res.status(400).json({ error: `Project name ${project_name} in the URL was not found in the database` })
-    }
-    try {
-        let projectBuildingObj = {}
-        const project_id = project.project_id
-        const [allBuildings] = await poolPromise.query(`
-                                            SELECT building_name
-                                            FROM buildings
-                                            WHERE project_id = ?
-                                            `, [project_id])
-        const allBuildingsArray = allBuildings.map(item => item.building_name)
-        if (allBuildings.length) {
-            projectBuildingObj.project_name = project_name
-            projectBuildingObj.buildings = allBuildingsArray
-            res.status(200).json(projectBuildingObj)
-        } else return res.status(200).json({ message: 'no building in this project yet' })
-    } catch (error) {
-        console.log(error.message)
-        res.status(404).json({ error: error.message })
-    }
-}
+// const getProjectsBuildingsSql = async (req, res) => {
+//     const project_name = req.params.project_name
+//     console.log(project_name)
+//     const project = await findProjectIdByNameSql(project_name)
+//     if (!project) {
+//         return res.status(400).json({ error: `Project name ${project_name} in the URL was not found in the database` })
+//     }
+//     try {
+//         let projectBuildingObj = {}
+//         const project_id = project.project_id
+//         const [allBuildings] = await poolPromise.query(`
+//                                             SELECT building_name
+//                                             FROM buildings
+//                                             WHERE project_id = ?
+//                                             `, [project_id])
+//         const allBuildingsArray = allBuildings.map(item => item.building_name)
+//         if (allBuildings.length) {
+//             projectBuildingObj.project_name = project_name
+//             projectBuildingObj.buildings = allBuildingsArray
+//             res.status(200).json(projectBuildingObj)
+//         } else return res.status(200).json({ message: 'no building in this project yet' })
+//     } catch (error) {
+//         console.log(error.message)
+//         res.status(404).json({ error: error.message })
+//     }
+// }
 
 //delete a single project
 const deleteProjectSql = async (req, res) => {
@@ -272,8 +272,8 @@ const projectUpdateSql = async (req, res) => {
 module.exports = {
     projectIdCheckSql,
     findProjectIdByNameSql,
+    fetchAllBuildingsInProjectById,
     getAllProjectsSql,
-    getProjectsBuildingsSql,
     getSingleProjectByIdSql,
     createProjectSql,
     projectUpdateSql,

@@ -2,7 +2,20 @@ const mongoose = require('mongoose')
 
 const apartmentModel = require('../models/apartmentModel');
 
+const { poolPromise, pool } = require('../connections/dbConnection')
+const { findProjectIdByNameSql } = require('./projectController')
+const { findBuildingByIdSql, findBuildingIdByNameSql } = require('./buildingController')
 
+//----------------------------------------MySql
+//------------------------ logic functions
+
+
+
+//---------------------------------- MySQL CRUD functions---------------------------
+// create a new building
+
+
+//---------------------------------------------------------MongoDB CRUD functions
 // get all apartments
 const getAllApartment = async (req, res) => {
     const allApartment = await apartmentModel.find({}).sort('Name asc')

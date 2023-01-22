@@ -12,17 +12,10 @@ const { appDbName, mysqlConfig } = require('../config/db.config')
 //         console.log(error)
 //     })
 
-// const MYSQL_HOST = `${process.env.MYSQL_HOST}`
-// const MYSQL_USER = `${process.env.MYSQL_USER}`
-// const MYSQL_PASSWORD = `${process.env.MYSQL_PASSWORD}`
+
 const MYSQL_DATABASE = appDbName
 const mysql = require('mysql2');
 
-// console.log('process.env.MYSQL_HOST:', process.env.MYSQL_HOST)
-// console.log('process.env.MYSQL_USER:', process.env.MYSQL_USER)
-// console.log('process.env.MYSQL_PASSWORD:', process.env.MYSQL_PASSWORD)
-// console.log('process.env.MYSQL_DATABASE', process.env.MYSQL_DATABASE)
-// console.log('process.env.MYSQL_PORT:', process.env.MYSQL_PORT)
 
 const pool = mysql.createPool({
     host: process.env.MYSQL_HOST,
@@ -37,5 +30,7 @@ let poolPromise = pool.promise();
 pool.on('connection', function (connection) {
     console.log('Connection %d acquired', connection.threadId);
 });
+
+
 
 module.exports = { pool, poolPromise }

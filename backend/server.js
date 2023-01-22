@@ -1,7 +1,15 @@
 require("dotenv").config();
+const { pool } = require('./connections/dbConnection')
+const appFuncDb = require('./app');
 
-const app = require('./app');
+const app = appFuncDb(pool)
+
+
 const SERVER_PORT = process.env.SERVER_PORT;
+app.listen(SERVER_PORT, () => {
+  console.log(`server started. Go to http://localhost:${SERVER_PORT}/`);
+});
+
 
 // const { appDbName } = require('./config/databasesInfo')
 // const MONGO_URI = `${process.env.MONGO_URI}`;
@@ -19,7 +27,5 @@ const SERVER_PORT = process.env.SERVER_PORT;
 //   })
 
 
-app.listen(SERVER_PORT, () => {
-  console.log(`server started. Go to http://localhost:${SERVER_PORT}/`);
-});
+
 

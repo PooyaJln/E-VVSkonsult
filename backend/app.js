@@ -8,11 +8,12 @@ const { logger } = require('./middlewares/logEvents')
 const errorHandler = require('./middlewares/errorHandler')
 
 // import routes
-const inputDataRoutes = require("./routes/inputDataRoutes");
+const temperatureRoutes = require("./routes/temperatureRoutes");
 const spaceDataRoutes = require('./routes/spaceDataRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const buildingRoutes = require('./routes/buildingRoutes');
 const storeyRoutes = require('./routes/storeyRoutes');
+// const apartmentRoutes = require('./routes/apartmentRoutes');
 const userRoutes = require('./routes/userRoutes');
 
 // //express app
@@ -102,9 +103,11 @@ const appFuncDb = (database) => {
         res.render("about", { title: "About me" });
     });
 
-    app.use("/heat-loss/input-data(.html)?", inputDataRoutes);
+    app.use("/heat-loss/temperatures(.html)?", temperatureRoutes);
 
     app.use("/heat-loss/spaces(.html)?", spaceDataRoutes);
+
+    // app.use("/heat-loss/apartments(.html)?", apartmentRoutes);
 
     app.use("/heat-loss/stories(.html)?", storeyRoutes);
 

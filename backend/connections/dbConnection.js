@@ -24,10 +24,14 @@ const pool = mysql.createPool({
     database: process.env.MYSQL_DATABASE,
     port: process.env.MYSQL_PORT
 })
+
 // const pool = mysql.createPool(mysqlConfig)
 let poolPromise = pool.promise();
 
-pool.on('connection', function (connection) {
+pool.on('connection', function (connection, err) {
+    if (err) {
+        console.log(err);
+    }
     console.log('Connection %d acquired', connection.threadId);
 });
 

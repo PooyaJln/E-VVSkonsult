@@ -1,36 +1,32 @@
-const express = require('express');
+const express = require("express");
 
 const router = express.Router();
 
-const { getAllTemperatures,
-    createTemperature,
-    temperatureUpdate,
-    getSingleTemperature,
-    deleteATemperature } = require('../controllers/temperatureDatacontroller')
+const {
+  temperatureControllers,
+} = require("../controllers/temperatureDatacontroller");
 
-
-router.get('/', (req, res) => {
-    res.status(200).json("temperature CRUD page")
-})
+// router.get('/', (req, res) => {
+//     res.status(200).json("temperature CRUD page")
+// })
 
 //////////////////////////////////////////////////////////////////////////
 // get all temperatures
-router.get('/temperatures', getAllTemperatures)
+router.get("/", temperatureControllers.getAllTemperatures);
 
 // create new temperature
-router.post('/create-temperature', createTemperature)
+router.post("/create-temperature", temperatureControllers.createTemperature);
 
 // get a single temperature
-router.get('/temperatures/:id', getSingleTemperature)
+router.get("/temperatures/:id", temperatureControllers.getSingleTemperature);
 
 //update a temperature
-router.patch('/temperatures/:id', temperatureUpdate)
+router.patch("/temperatures/:id", temperatureControllers.temperatureUpdate);
 // (req, res) => {res.json({ mssg: "update envelopes input data page" })})
 
 //delete a temperature
-router.delete('/temperatures/:id', deleteATemperature)
+router.delete("/temperatures/:id", temperatureControllers.deleteATemperature);
 
 /////////////////////////////////////////////////////////////////////////
-
 
 module.exports = router;

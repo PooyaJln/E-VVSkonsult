@@ -1,65 +1,103 @@
-
-const { poolPromise, pool } = require('../connections/dbConnection')
+const { poolPromise, pool } = require("../connections/dbConnection");
+const Errors = require("../utils/errors");
 
 class Temperature {
-    constructor(name, value) {
-        this.temperature_name = name
-        this.temp_value = value
-    }
+  constructor(name, value) {
+    this.temperature_name = name;
+    this.temp_value = value;
+  }
 
-    async findTemperatureById(id) {
-        const sqlQuery = `
+  async returnPublicTemperatureInfoById(id) {
+    const sqlQuery = `
+                    SELECT temperature_name, temp_value
+                    FROM temperatures
+                    WHERE temperature_id = ?;`;
+    const sqlArgum = [id];
+    try {
+      const [foundTemp] = await poolPromise.query(sqlQuery, sqlArgum);
+      return foundTemp[0];
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+  async findTemperatureById(id) {
+    const sqlQuery = `
                     SELECT *
                     FROM temperatures
-                    WHERE temperature_id = ?;`
-        const sqlArgum = [id]
-        try {
-            const [foundTemp] = await poolPromise.query(sqlQuery, sqlArgum)
-            return foundTemp[0]
-        } catch (error) {
-            console.error(error)
-            throw error
-        }
+                    WHERE temperature_id = ?;`;
+    const sqlArgum = [id];
+    try {
+      const [foundTemp] = await poolPromise.query(sqlQuery, sqlArgum);
+      return foundTemp[0];
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
+  }
 
-    async findTemperatureByName(_name) {
-        const sqlQuery = `
+  async findTemperatureByName(_name) {
+    const sqlQuery = `
                     SELECT *
                     FROM temperatures
-                    WHERE temperature_name = ?;`
-        const sqlArgum = [_name]
-        try {
-            const [foundTemp] = await poolPromise.query(sqlQuery, sqlArgum)
-            return foundTemp[0]
-        } catch (error) {
-            console.error(error)
-            throw error
-        }
+                    WHERE temperature_name = ?;`;
+    const sqlArgum = [_name];
+    try {
+      const [foundTemp] = await poolPromise.query(sqlQuery, sqlArgum);
+      return foundTemp[0];
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
+  }
 
-    async save() {
-        try {
+  static async Alltemperatures() {
+    const sqlQuery = `
+                    SELECT temperature_name, temp_value
+                    FROM temperatures;`;
 
-            let foundTemp = await this.findTemperatureByName(this.temperature_name)
-            if (foundTemp) {
-                throw new Error(`temperature with name ${this.temperature_name} already exists.`)
-            }
-            let sqlQuery = `
+    try {
+      const [foundTemp] = await poolPromise.query(sqlQuery);
+      return foundTemp;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async create() {
+    try {
+      let foundTemp = await this.findTemperatureByName(this.temperature_name);
+      if (foundTemp) {
+        throw new Errors.badRequestError(
+          `temperature with name ${this.temperature_name} already exists.`
+        );
+      }
+      let sqlQuery = `
                     INSERT INTO temperatures
                     (temperature_name, temp_value)
-                    VALUES (?,?)`
-            let sqlArgum = [this.temperature_name, this.temp_value]
-            const [newTemperature] = await poolPromise.query(sqlQuery, sqlArgum)
-            const id = newTemperature.insertId
-            const createdTemperature = await this.findTemperatureById(id)
-            return createdTemperature
-        } catch (error) {
-            console.error(error)
-            throw error
-        }
-
-
+                    VALUES (?,?)`;
+      let sqlArgum = [this.temperature_name, this.temp_value];
+      const [newTemperature] = await poolPromise.query(sqlQuery, sqlArgum);
+      const id = newTemperature.insertId;
+      const createdTemperature = await this.returnPublicTemperatureInfoById(id);
+      return createdTemperature;
+    } catch (error) {
+      throw error;
     }
+  }
+
+  async update(id, _name, value) {
+    try {
+      const foundTemp = await this.findTemperatureById(id);
+      if (!foundTemp) {
+        throw new badRequestError("the requested temperature was not found");
+      }
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
 }
 /* --------------------------------------------MongoDb */
 // const mongoose = require('mongoose')
@@ -82,4 +120,4 @@ class Temperature {
 // const temperatureModel = connection.model('temperature', temperatureSchema)
 // const temperatureModel = connection.appDbConnection.model('temperature', temperatureSchema)
 // module.exports = temperatureSchema
-module.exports = Temperature
+module.exports = Temperature;

@@ -1,4 +1,3 @@
-const { poolPromise, pool } = require("../connections/dbConnection");
 const Errors = require("../utils/errors");
 const { temperatureServices } = require("../services/temperatureServices");
 
@@ -13,12 +12,12 @@ temperatureControllers.createTemperature = async (req, res, next) => {
     const newTemperature = await temperatureServices.createTemperature(
       req.body
     );
-    res.status(200).json(newTemperature);
+    res.status(201).json(newTemperature);
   } catch (error) {
     next(error);
-    // res.status(404).json({ error: error.message });
   }
 };
+
 // get all temperatures
 temperatureControllers.getAllTemperatures = async (req, res, next) => {
   try {
@@ -32,18 +31,21 @@ temperatureControllers.getAllTemperatures = async (req, res, next) => {
 
 // update an envelope
 temperatureControllers.temperatureUpdate = async (req, res, next) => {
-  const { id } = req.params;
-  const { newTempName, newTempValue } = req.body;
   try {
-    const updatedTemperature = await temperatureServices.updatedTemperature(
-      id,
-      newTempName,
-      newTempValue
+    if (!req.body.newTempName && !req.body.newTempValue) {
+      throw new Errors.badRequestError(
+        "either new name or temperature should be filled in"
+      );
+    }
+    const query = { id: req.params.id, ...req.body };
+    const updatedTemperature = await temperatureServices.updateTemperature(
+      query
     );
+    res.status(200).json(updatedTemperature);
   } catch (error) {
     next(error);
-    console.error(error);
-    res.status(404).json({ error: error.message });
+    // console.error(error);
+    // res.status(404).json({ error: error.message });
   }
 };
 

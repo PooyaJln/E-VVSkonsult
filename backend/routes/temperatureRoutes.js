@@ -18,14 +18,14 @@ router.get("/", temperatureControllers.getAllTemperatures);
 router.post("/create-temperature", temperatureControllers.createTemperature);
 
 // get a single temperature
-router.get("/temperatures/:id", temperatureControllers.getSingleTemperature);
+router.get("/:id", temperatureControllers.getSingleTemperature);
 
 //update a temperature
-router.patch("/temperatures/:id", temperatureControllers.temperatureUpdate);
+router.patch("/:id", temperatureControllers.temperatureUpdate);
 // (req, res) => {res.json({ mssg: "update envelopes input data page" })})
 
 //delete a temperature
-router.delete("/temperatures/:id", temperatureControllers.deleteATemperature);
+router.delete("/:id", temperatureControllers.deleteATemperature);
 
 /////////////////////////////////////////////////////////////////////////
 

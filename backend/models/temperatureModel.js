@@ -7,7 +7,7 @@ class Temperature {
     this.temp_value = value;
   }
 
-  async returnPublicTemperatureInfoById(id) {
+  static async publicTemperatureInfoById(id) {
     const sqlQuery = `
                     SELECT temperature_name, temp_value
                     FROM temperatures
@@ -17,11 +17,10 @@ class Temperature {
       const [foundTemp] = await poolPromise.query(sqlQuery, sqlArgum);
       return foundTemp[0];
     } catch (error) {
-      console.error(error);
       throw error;
     }
   }
-  async findTemperatureById(id) {
+  static async findTemperatureById(id) {
     const sqlQuery = `
                     SELECT *
                     FROM temperatures
@@ -29,9 +28,13 @@ class Temperature {
     const sqlArgum = [id];
     try {
       const [foundTemp] = await poolPromise.query(sqlQuery, sqlArgum);
+      if (!foundTemp.length) {
+        throw new Errors.badRequestError(
+          "the requested temperature was not found"
+        );
+      }
       return foundTemp[0];
     } catch (error) {
-      console.error(error);
       throw error;
     }
   }
@@ -46,7 +49,6 @@ class Temperature {
       const [foundTemp] = await poolPromise.query(sqlQuery, sqlArgum);
       return foundTemp[0];
     } catch (error) {
-      console.error(error);
       throw error;
     }
   }
@@ -60,7 +62,6 @@ class Temperature {
       const [foundTemp] = await poolPromise.query(sqlQuery);
       return foundTemp;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   }
@@ -80,25 +81,102 @@ class Temperature {
       let sqlArgum = [this.temperature_name, this.temp_value];
       const [newTemperature] = await poolPromise.query(sqlQuery, sqlArgum);
       const id = newTemperature.insertId;
-      const createdTemperature = await this.returnPublicTemperatureInfoById(id);
+      const createdTemperature = await Temperature.publicTemperatureInfoById(
+        id
+      );
       return createdTemperature;
     } catch (error) {
       throw error;
     }
   }
 
-  async update(id, _name, value) {
+  static async updateNameById(id, _name) {
     try {
-      const foundTemp = await this.findTemperatureById(id);
-      if (!foundTemp) {
-        throw new badRequestError("the requested temperature was not found");
+      const foundTemp = await Temperature.findTemperatureById(id);
+
+      if (_name === foundTemp.temperature_name) {
+        throw new Errors.badRequestError(
+          "the name is the same, enter a different name to update"
+        );
       }
+      let sqlQuery = `
+                    UPDATE temperatures
+                    SET temperature_name = ?
+                    WHERE temperature_id = ?`;
+      let sqlArgum = [_name, id];
+      const updatedTemperature = await poolPromise
+        .query(sqlQuery, sqlArgum)
+        .then(async () => {
+          return await Temperature.publicTemperatureInfoById(id);
+        })
+        .catch((error) => {
+          throw error;
+        });
+      return updatedTemperature;
     } catch (error) {
-      console.error(error);
+      throw error;
+    }
+  }
+
+  static async updateValueById(id, value) {
+    try {
+      const foundTemp = await Temperature.findTemperatureById(id);
+
+      if (value == foundTemp.temp_value) {
+        throw new Errors.badRequestError(
+          "the value is the same, enter a different value to update"
+        );
+      }
+      let sqlQuery = `
+                    UPDATE temperatures
+                    SET temp_value = ?
+                    WHERE temperature_id = ?`;
+      let sqlArgum = [value, id];
+      const updatedTemperature = await poolPromise
+        .query(sqlQuery, sqlArgum)
+        .then(async () => {
+          return await Temperature.publicTemperatureInfoById(id);
+        })
+        .catch((error) => {
+          throw error;
+        });
+      return updatedTemperature;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async updateNameValueById(id, _name, value) {
+    try {
+      const foundTemp = await Temperature.findTemperatureById(id);
+      if (
+        _name === foundTemp.temperature_name &&
+        value === foundTemp.temp_value
+      ) {
+        throw new Errors.badRequestError(
+          "the name and values are the same, enter new name or new value to update"
+        );
+      }
+      let sqlQuery = `
+                    UPDATE temperatures
+                    SET temperature_name = ?, temp_value = ?
+                    WHERE temperature_id = ?`;
+      let sqlArgum = [_name, value, id];
+      const updatedTemperature = await poolPromise
+        .query(sqlQuery, sqlArgum)
+        .then(async () => {
+          return await Temperature.publicTemperatureInfoById(id);
+        })
+        .catch((error) => {
+          throw error;
+        });
+      return updatedTemperature;
+    } catch (error) {
       throw error;
     }
   }
 }
+
 /* --------------------------------------------MongoDb */
 // const mongoose = require('mongoose')
 // const Schema = mongoose.Schema;

@@ -1,12 +1,12 @@
 const { poolPromise, pool } = require("../connections/dbConnection");
-const temperatureModel = require("../models/temperatureModel");
+const Temperature = require("../models/temperatureModel");
 const Errors = require("../utils/errors");
 
 const temperatureServices = {};
 
 temperatureServices.createTemperature = async (query) => {
   try {
-    const temperature = new temperatureModel(
+    const temperature = new Temperature(
       query.temperature_name,
       query.temp_value
     );
@@ -19,7 +19,7 @@ temperatureServices.createTemperature = async (query) => {
 
 temperatureServices.getAlltemperatures = async () => {
   try {
-    const allTemperatures = await temperatureModel.Alltemperatures();
+    const allTemperatures = await Temperature.Alltemperatures();
     return allTemperatures;
   } catch (error) {
     throw error;
@@ -28,12 +28,33 @@ temperatureServices.getAlltemperatures = async () => {
 
 temperatureServices.updateTemperature = async (query) => {
   try {
-    const updatedTemperature = await temperature.temperatureUpdate(
-      query.id,
-      query.newTempName,
-      query.newTempvalue
-    );
-    return updatedTemperature;
+    const { id, newTempName, newTempValue } = query;
+
+    if (newTempName && !newTempValue) {
+      let updatedTemperature = await Temperature.updateNameById(
+        id,
+        newTempName
+      );
+
+      return updatedTemperature;
+    }
+    if (!newTempName && newTempValue) {
+      let updatedTemperature = await Temperature.updateValueById(
+        id,
+        newTempValue
+      );
+
+      return updatedTemperature;
+    }
+    if (newTempName && newTempValue) {
+      let updatedTemperature = await Temperature.updateNameValueById(
+        id,
+        newTempName,
+        newTempValue
+      );
+
+      return updatedTemperature;
+    }
   } catch (error) {
     throw error;
   }

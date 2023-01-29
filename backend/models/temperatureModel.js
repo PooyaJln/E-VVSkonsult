@@ -175,6 +175,26 @@ class Temperature {
       throw error;
     }
   }
+
+  static async delete(id) {
+    try {
+      let sqlQuery = `
+                    DELETE FROM temperatures
+                    WHERE temperature_id = ?`;
+      let sqlArgum = [id];
+      const message = await poolPromise
+        .query(sqlQuery, sqlArgum)
+        .then(() => {
+          return `the temperature with id ${id} is deleted`;
+        })
+        .catch((error) => {
+          throw error;
+        });
+      return message;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 /* --------------------------------------------MongoDb */

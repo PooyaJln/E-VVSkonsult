@@ -25,7 +25,7 @@ router.patch("/:id", temperatureControllers.temperatureUpdate);
 // (req, res) => {res.json({ mssg: "update envelopes input data page" })})
 
 //delete a temperature
-router.delete("/:id", temperatureControllers.deleteATemperature);
+router.delete("/:id", temperatureControllers.deleteTemperature);
 
 /////////////////////////////////////////////////////////////////////////
 

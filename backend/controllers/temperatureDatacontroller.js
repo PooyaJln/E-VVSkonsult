@@ -66,16 +66,14 @@ temperatureControllers.getSingleTemperature = async (req, res, next) => {
 };
 
 //delete a single envelope
-temperatureControllers.deleteATemperature = async (req, res, next) => {
-  const { id } = req.params;
-  if (!mongoose.isValidObjectId(id)) {
-    res.status(404).json({ error: "Envelope was not found" });
+temperatureControllers.deleteTemperature = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const message = await temperatureServices.deleteTemperature(id);
+    res.status(200).json({ message });
+  } catch (error) {
+    next(error);
   }
-  const temperature = await temperatures.findByIdAndDelete(id);
-  if (!temperature) {
-    return res.status(404).json({ error: "No such envelope" });
-  }
-  res.status(200).json(temperature);
 };
 
 /* ------------------------------MongoDB CRUD operations*/

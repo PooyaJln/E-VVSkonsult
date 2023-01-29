@@ -60,6 +60,21 @@ temperatureServices.updateTemperature = async (query) => {
   }
 };
 
+temperatureServices.deleteTemperature = async (query) => {
+  try {
+    let existingTemperature = await Temperature.findTemperatureById(query);
+    if (!existingTemperature) {
+      throw new Errors.badRequestError(
+        `the temperature with id ${query} was not found`
+      );
+    }
+    const message = await Temperature.delete(query);
+    return message;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   temperatureServices,
 };

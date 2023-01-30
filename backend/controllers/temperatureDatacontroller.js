@@ -53,16 +53,12 @@ temperatureControllers.temperatureUpdate = async (req, res, next) => {
 temperatureControllers.getSingleTemperature = async (req, res, next) => {
   // const id = req.param.id;
   const { id } = req.params;
-  // we need to validate type of the id
-  if (!mongoose.isValidObjectId(id)) {
-    // if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: "No such envelope" });
+  try {
+    const temperature = await temperatureServices.getSingleTemperature(id);
+    res.status(200).json(temperature);
+  } catch (error) {
+    next(error);
   }
-  const temperature = await temperatures.findById(id);
-  if (!temperature) {
-    return res.status(404).json({ error: "No such envelope" });
-  }
-  res.status(200).json(temperature);
 };
 
 //delete a single envelope

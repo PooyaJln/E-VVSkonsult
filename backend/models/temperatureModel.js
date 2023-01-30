@@ -92,13 +92,12 @@ class Temperature {
 
   static async updateNameById(id, _name) {
     try {
-      const foundTemp = await Temperature.findTemperatureById(id);
-
-      if (_name === foundTemp.temperature_name) {
-        throw new Errors.badRequestError(
-          "the name is the same, enter a different name to update"
-        );
-      }
+      // const foundTemp = await Temperature.findTemperatureById(id);
+      // if (_name === foundTemp.temperature_name) {
+      //   throw new Errors.badRequestError(
+      //     "the name is the same, enter a different name to update"
+      //   );
+      // }
       let sqlQuery = `
                     UPDATE temperatures
                     SET temperature_name = ?
@@ -120,13 +119,12 @@ class Temperature {
 
   static async updateValueById(id, value) {
     try {
-      const foundTemp = await Temperature.findTemperatureById(id);
-
-      if (value == foundTemp.temp_value) {
-        throw new Errors.badRequestError(
-          "the value is the same, enter a different value to update"
-        );
-      }
+      // const foundTemp = await Temperature.findTemperatureById(id);
+      // if (value == foundTemp.temp_value) {
+      //   throw new Errors.badRequestError(
+      //     "the value is the same, enter a different value to update"
+      //   );
+      // }
       let sqlQuery = `
                     UPDATE temperatures
                     SET temp_value = ?
@@ -148,15 +146,15 @@ class Temperature {
 
   static async updateNameValueById(id, _name, value) {
     try {
-      const foundTemp = await Temperature.findTemperatureById(id);
-      if (
-        _name === foundTemp.temperature_name &&
-        value === foundTemp.temp_value
-      ) {
-        throw new Errors.badRequestError(
-          "the name and values are the same, enter new name or new value to update"
-        );
-      }
+      // const foundTemp = await Temperature.findTemperatureById(id);
+      // if (
+      //   _name === foundTemp.temperature_name &&
+      //   value === foundTemp.temp_value
+      // ) {
+      //   throw new Errors.badRequestError(
+      //     "the name and values are the same, enter new name or new value to update"
+      //   );
+      // }
       let sqlQuery = `
                     UPDATE temperatures
                     SET temperature_name = ?, temp_value = ?

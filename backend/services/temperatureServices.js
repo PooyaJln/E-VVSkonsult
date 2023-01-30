@@ -29,8 +29,14 @@ temperatureServices.getAlltemperatures = async () => {
 temperatureServices.updateTemperature = async (query) => {
   try {
     const { id, newTempName, newTempValue } = query;
+    const foundTemp = await Temperature.findTemperatureById(id);
 
     if (newTempName && !newTempValue) {
+      if (newTempName === foundTemp.temperature_name) {
+        throw new Errors.badRequestError(
+          "the name is the same, enter a different name to update"
+        );
+      }
       let updatedTemperature = await Temperature.updateNameById(
         id,
         newTempName
@@ -39,6 +45,11 @@ temperatureServices.updateTemperature = async (query) => {
       return updatedTemperature;
     }
     if (!newTempName && newTempValue) {
+      if (newTempValue == foundTemp.temp_value) {
+        throw new Errors.badRequestError(
+          "the value is the same, enter a different value to update"
+        );
+      }
       let updatedTemperature = await Temperature.updateValueById(
         id,
         newTempValue
@@ -47,6 +58,14 @@ temperatureServices.updateTemperature = async (query) => {
       return updatedTemperature;
     }
     if (newTempName && newTempValue) {
+      if (
+        newTempName == foundTemp.temperature_name &&
+        newTempValue == foundTemp.temp_value
+      ) {
+        throw new Errors.badRequestError(
+          "the name and values are the same, enter new name or new value to update"
+        );
+      }
       let updatedTemperature = await Temperature.updateNameValueById(
         id,
         newTempName,
@@ -62,14 +81,30 @@ temperatureServices.updateTemperature = async (query) => {
 
 temperatureServices.deleteTemperature = async (query) => {
   try {
-    let existingTemperature = await Temperature.findTemperatureById(query);
-    if (!existingTemperature) {
-      throw new Errors.badRequestError(
-        `the temperature with id ${query} was not found`
-      );
-    }
-    const message = await Temperature.delete(query);
+    let message = await Temperature.findTemperatureById(query)
+      .then(async () => {
+        return await Temperature.delete(query);
+      })
+      .catch((error) => {
+        throw error;
+      });
     return message;
+  } catch (error) {
+    throw error;
+  }
+};
+
+temperatureServices.getSingleTemperature = async (query) => {
+  try {
+    let temperature = await Temperature.findTemperatureById(query)
+      .then(async () => {
+        return await Temperature.publicTemperatureInfoById(query);
+      })
+      .catch((error) => {
+        throw error;
+      });
+
+    return temperature;
   } catch (error) {
     throw error;
   }

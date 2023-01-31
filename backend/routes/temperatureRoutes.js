@@ -1,10 +1,11 @@
+// @ts-check
 const express = require("express");
 
 const router = express.Router();
 
 const {
   temperatureControllers,
-} = require("../controllers/temperatureDatacontroller");
+} = require("../controllers/temperatureController");
 
 // router.get('/', (req, res) => {
 //     res.status(200).json("temperature CRUD page")

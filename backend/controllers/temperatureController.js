@@ -1,17 +1,19 @@
+// @ts-check
 const Errors = require("../utils/errors");
-const { temperatureServices } = require("../services/temperatureServices");
+const Temperature = require("../models/temperatureModel");
+// const { temperatureServices } = require("../services/temperatureServices");
 
 const temperatureControllers = {};
 
 // create new temperatures
 temperatureControllers.createTemperature = async (req, res, next) => {
   try {
-    if (!req.body.temperature_name || !req.body.temp_value) {
+    const { temperature_name, temp_value } = req.body;
+    if (!temperature_name || !temp_value) {
       throw new Errors.badRequestError("incomplete input data");
     }
-    const newTemperature = await temperatureServices.createTemperature(
-      req.body
-    );
+    const temperature = new Temperature(temperature_name, temp_value);
+    const newTemperature = await temperature.create();
     res.status(201).json(newTemperature);
   } catch (error) {
     next(error);
@@ -21,7 +23,7 @@ temperatureControllers.createTemperature = async (req, res, next) => {
 // get all temperatures
 temperatureControllers.getAllTemperatures = async (req, res, next) => {
   try {
-    const allTemperatures = await temperatureServices.getAlltemperatures();
+    const allTemperatures = await Temperature.Alltemperatures();
     res.status(200).json(allTemperatures);
   } catch (error) {
     console.error(error);
@@ -32,16 +34,57 @@ temperatureControllers.getAllTemperatures = async (req, res, next) => {
 // update an envelope
 temperatureControllers.temperatureUpdate = async (req, res, next) => {
   try {
-    if (!req.body.newTempName && !req.body.newTempValue) {
+    const id = req.params.id;
+    const { newTempName, newTempValue } = req.body;
+    if (!newTempName && !newTempValue) {
       throw new Errors.badRequestError(
         "either new name or temperature should be filled in"
       );
     }
-    const query = { id: req.params.id, ...req.body };
-    const updatedTemperature = await temperatureServices.updateTemperature(
-      query
-    );
-    res.status(200).json(updatedTemperature);
+    const foundTemp = await Temperature.findTemperatureById(id);
+    if (newTempName && !newTempValue) {
+      if (newTempName === foundTemp.temperature_name) {
+        throw new Errors.badRequestError(
+          "the name is the same, enter a different name to update"
+        );
+      }
+      let updatedTemperature = await Temperature.updateNameById(
+        id,
+        newTempName
+      );
+
+      return res.status(200).json(updatedTemperature);
+    }
+    if (!newTempName && newTempValue) {
+      if (newTempValue == foundTemp.temp_value) {
+        throw new Errors.badRequestError(
+          "the value is the same, enter a different value to update"
+        );
+      }
+      let updatedTemperature = await Temperature.updateValueById(
+        id,
+        newTempValue
+      );
+
+      return res.status(200).json(updatedTemperature);
+    }
+    if (newTempName && newTempValue) {
+      if (
+        newTempName == foundTemp.temperature_name &&
+        newTempValue == foundTemp.temp_value
+      ) {
+        throw new Errors.badRequestError(
+          "the name and values are the same, enter new name or new value to update"
+        );
+      }
+      let updatedTemperature = await Temperature.updateNameValueById(
+        id,
+        newTempName,
+        newTempValue
+      );
+
+      return res.status(200).json(updatedTemperature);
+    }
   } catch (error) {
     next(error);
     // console.error(error);
@@ -51,21 +94,32 @@ temperatureControllers.temperatureUpdate = async (req, res, next) => {
 
 //get a single envelope
 temperatureControllers.getSingleTemperature = async (req, res, next) => {
-  // const id = req.param.id;
-  const { id } = req.params;
   try {
-    const temperature = await temperatureServices.getSingleTemperature(id);
+    const id = req.params.id;
+    let temperature = await Temperature.findTemperatureById(id)
+      .then(async () => {
+        return await Temperature.publicTemperatureInfoById(id);
+      })
+      .catch((error) => {
+        throw error;
+      });
     res.status(200).json(temperature);
   } catch (error) {
     next(error);
   }
 };
 
-//delete a single envelope
+//delete a single temperature
 temperatureControllers.deleteTemperature = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const message = await temperatureServices.deleteTemperature(id);
+    let message = await Temperature.findTemperatureById(id)
+      .then(async () => {
+        return await Temperature.delete(id);
+      })
+      .catch((error) => {
+        throw error;
+      });
     res.status(200).json({ message });
   } catch (error) {
     next(error);

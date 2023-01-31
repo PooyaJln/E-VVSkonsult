@@ -9,6 +9,7 @@ const errorHandler = require("./middlewares/errorHandler");
 
 // import routes
 // const apartmentRoutes = require('./routes/apartmentRoutes');
+const materialRoutes = require("./routes/materialRoutes");
 const temperatureRoutes = require("./routes/temperatureRoutes");
 const spaceDataRoutes = require("./routes/spaceDataRoutes");
 const projectRoutes = require("./routes/projectRoutes");
@@ -76,7 +77,7 @@ const appFuncDb = (database) => {
   app.use(cors(corsOptions));
 
   // using the custom-written request logging middleware by Dave Gray
-  app.use(logger);
+  // app.use(logger);
 
   //built-in middleware
   app.use(express.json());
@@ -99,6 +100,8 @@ const appFuncDb = (database) => {
     res.render("about", { title: "About me" });
   });
 
+  app.use("/heat-loss/materials(.html)?", materialRoutes);
+
   app.use("/heat-loss/temperatures(.html)?", temperatureRoutes);
 
   app.use("/heat-loss/spaces(.html)?", spaceDataRoutes);
@@ -115,9 +118,9 @@ const appFuncDb = (database) => {
 
   app.use(errorHandler);
 
-  app.use((req, res) => {
-    res.status(404).render("404", { title: "404" });
-  });
+  // app.use((req, res) => {
+  //   res.status(404).render("404", { title: "404" });
+  // });
 
   return app;
 };

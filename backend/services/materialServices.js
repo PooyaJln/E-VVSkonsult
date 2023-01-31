@@ -2,9 +2,9 @@
 const Temperature = require("../models/temperatureModel");
 const Errors = require("../utils/errors");
 
-const temperatureServices = {};
+const materialServices = {};
 
-temperatureServices.createTemperature = async (query) => {
+materialServices.createTemperature = async (query) => {
   try {
     const temperature = new Temperature(
       query.temperature_name,
@@ -17,7 +17,7 @@ temperatureServices.createTemperature = async (query) => {
   }
 };
 
-temperatureServices.getAlltemperatures = async () => {
+materialServices.getAlltemperatures = async () => {
   try {
     const allTemperatures = await Temperature.Alltemperatures();
     return allTemperatures;
@@ -26,7 +26,7 @@ temperatureServices.getAlltemperatures = async () => {
   }
 };
 
-temperatureServices.updateTemperature = async (query) => {
+materialServices.updateTemperature = async (query) => {
   try {
     const { id, newTempName, newTempValue } = query;
     const foundTemp = await Temperature.findTemperatureById(id);
@@ -79,7 +79,7 @@ temperatureServices.updateTemperature = async (query) => {
   }
 };
 
-temperatureServices.deleteTemperature = async (query) => {
+materialServices.deleteTemperature = async (query) => {
   try {
     let message = await Temperature.findTemperatureById(query)
       .then(async () => {
@@ -94,7 +94,7 @@ temperatureServices.deleteTemperature = async (query) => {
   }
 };
 
-temperatureServices.getSingleTemperature = async (query) => {
+materialServices.getSingleTemperature = async (query) => {
   try {
     let temperature = await Temperature.findTemperatureById(query)
       .then(async () => {
@@ -110,6 +110,6 @@ temperatureServices.getSingleTemperature = async (query) => {
   }
 };
 
-// module.exports = {
-//   temperatureServices,
-// };
+module.exports = {
+  materialServices,
+};

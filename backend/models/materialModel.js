@@ -3,16 +3,16 @@ const Errors = require("../utils/errors");
 
 class Material {
   constructor(_name, categ, value) {
-    this.mtrl_name = _name;
-    this.mtrl_uValue = value;
-    this.mtrl_categ = categ;
+    this.material_name = _name;
+    this.material_uValue = value;
+    this.material_categ = categ;
   }
 
   static async publicInfoById(id) {
     const sqlQuery = `
-                    SELECT mtrl_name, mtrl_uValue, mtrl_categ
+                    SELECT ${this.name.toLowerCase()}_name, material_uValue, material_categ
                     FROM ${this.name.toLowerCase()}s
-                    WHERE mtrl_id = ? ;`;
+                    WHERE ${this.name.toLowerCase()}_id = ? ;`;
     const sqlArgum = [id];
     try {
       const [foundRow] = await poolPromise.query(sqlQuery, sqlArgum);
@@ -25,7 +25,7 @@ class Material {
     const sqlQuery = `
                     SELECT *
                     FROM ${this.name.toLowerCase()}s
-                    WHERE mtrl_id = ?;`;
+                    WHERE ${this.name.toLowerCase()}_id = ?;`;
     const sqlArgum = [id];
     try {
       const [foundRow] = await poolPromise.query(sqlQuery, sqlArgum);
@@ -40,11 +40,11 @@ class Material {
     }
   }
 
-  async findByName(_name) {
+  static async findByName(_name) {
     const sqlQuery = `
                     SELECT *
-                    FROM materials
-                    WHERE mtrl_name = ?;`;
+                    FROM ${this.name.toLowerCase()}s
+                    WHERE ${this.name.toLowerCase()}_name = ?;`;
     const sqlArgum = [_name];
     try {
       const [foundRow] = await poolPromise.query(sqlQuery, sqlArgum);
@@ -54,7 +54,7 @@ class Material {
     }
   }
 
-  static async allMaterials() {
+  static async getAll() {
     const sqlQuery = `SELECT * FROM ${this.name.toLowerCase()}s;`;
     try {
       const [foundRow] = await poolPromise.query(sqlQuery);
@@ -64,8 +64,8 @@ class Material {
     }
   }
 
-  static async publicAllMaterials() {
-    const sqlQuery = `SELECT mtrl_name, mtrl_uValue, mtrl_categ
+  static async publicGetAll() {
+    const sqlQuery = `SELECT ${this.name.toLowerCase()}_name, material_uValue, material_categ
                     FROM ${this.name.toLowerCase()}s;`;
     try {
       const [foundRow] = await poolPromise.query(sqlQuery);
@@ -75,23 +75,24 @@ class Material {
     }
   }
 
-  async create() {
+  static async create(query) {
     try {
-      let foundRow = await this.findByName(this.mtrl_name);
+      const { material_name, material_uValue, material_categ } = query;
+      let foundRow = await Material.findByName(material_name);
       if (foundRow) {
         throw new Errors.badRequestError(
-          `material with name ${this.mtrl_name} already exists.`
+          `${this.name.toLowerCase()} with name ${material_name} already exists.`
         );
       }
       let sqlQuery = `
-                    INSERT INTO materials
-                    (mtrl_name, mtrl_categ, mtrl_uValue)
+                    INSERT INTO ${this.name.toLowerCase()}s
+                    (${this.name.toLowerCase()}_name, material_uValue, material_categ)
                     VALUES (?,?,?)`;
-      let sqlArgum = [this.mtrl_name, this.mtrl_uValue, this.mtrl_categ];
-      const [newMaterial] = await poolPromise.query(sqlQuery, sqlArgum);
-      const id = newMaterial.insertId;
-      const createdMaterial = await Material.publicInfoById(id);
-      return createdMaterial;
+      let sqlArgum = [material_name, material_uValue, material_categ];
+      const [newRow] = await poolPromise.query(sqlQuery, sqlArgum);
+      const id = newRow.insertId;
+      const createdRow = await Material.publicInfoById(id);
+      return createdRow;
     } catch (error) {
       throw error;
     }
@@ -99,44 +100,34 @@ class Material {
 
   static async update(id, query) {
     try {
-      let queryPropertyArray = Object.keys(query);
-      // console.log("queryPropertyArray: ", queryPropertyArray);
-      // let queryValueArray = Object.keys(query).map((item) => query[item]);
-      // for (const property in query) {
-      //   queryValueArray.push(query[property]);
-      // }
-      // console.log("queryValueArray: ", queryValueArray);
       const foundRow = await Material.findById(id);
+      if (query.material_name === foundRow.material_name) {
+        throw new Errors.badRequestError(
+          "this name is already used for another material. Enter another name"
+        );
+      }
+      let filteredQueryKeysArray = [];
+      let sqlArgum = [];
+      Object.keys(query).map((key) => {
+        if (query[key] !== foundRow[key]) {
+          filteredQueryKeysArray.push(key);
+          sqlArgum.push(query[key]);
+        }
+      });
+      sqlArgum.push(id);
 
-      // defining the MySQL query string based on items in the request query
-      let sqlQueryArray = queryPropertyArray.filter(
-        (item) => query[item] !== foundRow[item]
-      );
-      if (!sqlQueryArray.length) {
+      if (!filteredQueryKeysArray.length) {
         throw new Errors.badRequestError(
           "all the entered values are the same, enter new values to update"
         );
       }
-      // console.log("sqlQueryArray: ", sqlQueryArray);
-      let SETLine = "SET ";
-      sqlQueryArray.forEach((item) => {
-        if (sqlQueryArray.indexOf(item) === 0) {
-          SETLine += `${item}=?`;
-        } else {
-          SETLine += `, ${item}=?`;
-        }
-      });
-      let sqlQuery = `UPDATE ${this.name.toLowerCase()}s ${SETLine} WHERE mtrl_id= ?;`;
-      // console.log(sqlQuery);
-      // defining the MySQL query argument based on items in the request query
-      let sqlArgum = [];
-      sqlQueryArray.forEach((item) => {
-        if (query[item] !== foundRow[item]) {
-          sqlArgum.push(query[item]);
-        }
-      });
-      sqlArgum.push(id);
-      // console.log("sqlArgum: ", sqlArgum);
+
+      const setClause = filteredQueryKeysArray
+        .map((item) => `${item} = ?`)
+        .join(", ");
+      let sqlQuery = `UPDATE ${this.name.toLowerCase()}s SET ${setClause} WHERE ${this.name.toLowerCase()}_id= ?;`;
+      console.log(sqlQuery);
+      console.log(sqlArgum);
 
       const updatedRow = await poolPromise
         .query(sqlQuery, sqlArgum)
@@ -157,13 +148,13 @@ class Material {
       const foundRow = await Material.findById(id);
       let sqlQuery = `
                     DELETE FROM ${this.name.toLowerCase()}s
-                    WHERE mtrl_id = ?`;
+                    WHERE material_id = ?`;
       let sqlArgum = [id];
       const message = await poolPromise
         .query(sqlQuery, sqlArgum)
         .then(() => {
           return `the ${this.name.toLowerCase()} with name ${
-            foundRow.mtrl_name
+            foundRow.material_name
           } is deleted`;
         })
         .catch((error) => {

@@ -5,14 +5,13 @@ const Material = require("../models/materialModel");
 const materialControllers = {};
 
 // create new materials
-materialControllers.createMaterial = async (req, res, next) => {
+materialControllers.createItem = async (req, res, next) => {
   try {
-    const { mtrl_name, mtrl_uValue, mtrl_categ } = req.body;
-    if (!mtrl_name || !mtrl_uValue || !mtrl_categ) {
+    const { material_name, material_uValue, material_categ } = req.body;
+    if (!material_name || !material_uValue || !material_categ) {
       throw new Errors.badRequestError("incomplete input data");
     }
-    const material = new Material(mtrl_name, mtrl_uValue, mtrl_categ);
-    const newMaterial = await material.create();
+    const newMaterial = await Material.create(req.body);
     res.status(201).json(newMaterial);
   } catch (error) {
     next(error);
@@ -20,9 +19,9 @@ materialControllers.createMaterial = async (req, res, next) => {
 };
 
 // get all materials
-materialControllers.getAllMaterials = async (req, res, next) => {
+materialControllers.getAllItems = async (req, res, next) => {
   try {
-    const allMaterials = await Material.publicAllMaterials();
+    const allMaterials = await Material.publicGetAll();
     res.status(200).json(allMaterials);
   } catch (error) {
     console.error(error);
@@ -31,9 +30,10 @@ materialControllers.getAllMaterials = async (req, res, next) => {
 };
 
 // update an envelope
-materialControllers.updateMaterial = async (req, res, next) => {
+materialControllers.updateItem = async (req, res, next) => {
   try {
-    const id = Number(req.params.id);
+    const id = req.params.id;
+    // console.log("req.body: ", req.body);
     let updatedMaterial = await Material.update(id, req.body);
     return res.status(200).json(updatedMaterial);
   } catch (error) {
@@ -42,7 +42,7 @@ materialControllers.updateMaterial = async (req, res, next) => {
 };
 
 //get a single envelope
-materialControllers.getMaterial = async (req, res, next) => {
+materialControllers.getSingleItem = async (req, res, next) => {
   try {
     const id = req.params.id;
     let material = await Material.findById(id)
@@ -59,7 +59,7 @@ materialControllers.getMaterial = async (req, res, next) => {
 };
 
 //delete a single material
-materialControllers.deleteMaterial = async (req, res, next) => {
+materialControllers.deleteItem = async (req, res, next) => {
   try {
     const id = req.params.id;
     let message = await Material.delete(id);

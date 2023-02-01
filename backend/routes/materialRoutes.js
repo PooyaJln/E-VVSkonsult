@@ -6,20 +6,20 @@ const { materialControllers } = require("../controllers/materialController");
 
 //////////////////////////////////////////////////////
 // get all envelope types
-router.get("/", materialControllers.getAllMaterials);
+router.get("/", materialControllers.getAllItems);
 // (req, res) => {res.json({ mssg: "show input data page" })})
 
 // create new envelope type
-router.post("/create-material", materialControllers.createMaterial);
+router.post("/create-material", materialControllers.createItem);
 
 // get a single envelope
-router.get("/:id", materialControllers.getMaterial);
+router.get("/:id", materialControllers.getSingleItem);
 
 //update an envelope
-router.patch("/:id", materialControllers.updateMaterial);
+router.patch("/:id", materialControllers.updateItem);
 // (req, res) => {res.json({ mssg: "update envelopes input data page" })})
 
 //delete an envelope
-router.delete("/:id", materialControllers.deleteMaterial);
+router.delete("/:id", materialControllers.deleteItem);
 
 module.exports = router;

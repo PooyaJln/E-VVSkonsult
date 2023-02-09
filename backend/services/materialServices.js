@@ -1,5 +1,4 @@
-// @ts-check
-const Temperature = require("../models/temperatureModel");
+// const Temperature = require("../models/temperatureModel");
 const Errors = require("../utils/errors");
 
 const materialServices = {};

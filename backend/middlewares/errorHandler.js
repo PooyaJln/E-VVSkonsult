@@ -6,6 +6,9 @@
 //     res.status(500).send(err.message)
 // }
 const errorHandler = (err, req, res, next) => {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get("env") === "development" ? err : {};
   if ((err && err.status == 400) || (err && err.status == 404)) {
     console.error(err);
     return res.status(err.status).json({ error: err.message });

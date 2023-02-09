@@ -1,26 +1,26 @@
 require("dotenv").config();
 
 //////////////////////// MySQL connection
-const mysql = require("mysql2");
+// const mysql = require("mysql2");
 
-const pool = mysql.createPool({
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DATABASE,
-  port: process.env.MYSQL_PORT,
-});
+// const pool = mysql.createPool({
+//   host: process.env.MYSQL_HOST,
+//   user: process.env.MYSQL_USER,
+//   password: process.env.MYSQL_PASSWORD,
+//   database: process.env.MYSQL_DATABASE,
+//   port: process.env.MYSQL_PORT,
+// });
 
-let poolPromise = pool.promise();
+// let poolPromise = pool.promise();
 
-pool.on("connection", function (connection, err) {
-  if (err) {
-    console.log(err);
-  }
-  console.log("Connection %d acquired", connection.threadId);
-});
+// pool.on("connection", function (connection, err) {
+//   if (err) {
+//     console.log(err);
+//   }
+//   console.log("Connection %d acquired", connection.threadId);
+// });
 
-module.exports = { pool, poolPromise };
+// module.exports = { pool, poolPromise };
 
 ///////////////////////MongoDB connection
 // const mongoose = require("mongoose");

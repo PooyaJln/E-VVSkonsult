@@ -10,12 +10,12 @@ const errorHandler = require("./middlewares/errorHandler");
 // import routes
 // const apartmentRoutes = require('./routes/apartmentRoutes');
 const materialRoutes = require("./routes/materialRoutes");
-// const temperatureRoutes = require("./routes/temperatureRoutes");
+const temperatureRoutes = require("./routes/temperatureRoutes");
 // const spaceDataRoutes = require("./routes/spaceDataRoutes");
-// const projectRoutes = require("./routes/projectRoutes");
-// const buildingRoutes = require("./routes/buildingRoutes");
-// const storeyRoutes = require("./routes/storeyRoutes");
-// const userRoutes = require("./routes/userRoutes");
+const projectRoutes = require("./routes/projectRoutes");
+const buildingRoutes = require("./routes/buildingRoutes");
+const storeyRoutes = require("./routes/storeyRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 //express app
 const app = express();
@@ -49,7 +49,7 @@ app.get("/about(.html)?", (req, res) => {
   res.render("about", { title: "About me" });
 });
 
-app.use("/heat-loss/materials(.html)?", materialRoutes);
+// app.use("/heat-loss/materials(.html)?", materialRoutes);
 
 // app.use("/heat-loss/temperatures(.html)?", temperatureRoutes);
 
@@ -61,9 +61,9 @@ app.use("/heat-loss/materials(.html)?", materialRoutes);
 
 // app.use("/heat-loss/buildings(.html)?", buildingRoutes);
 
-// app.use("/heat-loss/projects(.html)?", projectRoutes);
+app.use("/heat-loss/projects(.html)?", projectRoutes);
 
-// app.use("/usersData(.html)?", userRoutes);
+app.use("/usersData(.html)?", userRoutes);
 
 app.use(errorHandler);
 
@@ -104,7 +104,7 @@ const appFnDb = (database) => {
     res.render("about", { title: "About me" });
   });
 
-  app.use("/heat-loss/materials(.html)?", materialRoutes);
+  // app.use("/heat-loss/materials(.html)?", materialRoutes);
 
   // app.use("/heat-loss/temperatures(.html)?", temperatureRoutes);
 
@@ -116,9 +116,9 @@ const appFnDb = (database) => {
 
   // app.use("/heat-loss/buildings(.html)?", buildingRoutes);
 
-  // app.use("/heat-loss/projects(.html)?", projectRoutes);
+  app.use("/heat-loss/projects(.html)?", projectRoutes);
 
-  // app.use("/usersData(.html)?", userRoutes);
+  app.use("/usersData(.html)?", userRoutes);
 
   app.use(errorHandler);
 

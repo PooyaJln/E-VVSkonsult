@@ -31,6 +31,7 @@ const sequelize = new Sequelize(
   {
     host: config.host,
     dialect: "mysql",
+    logging: false,
   }
 );
 
@@ -57,21 +58,17 @@ Object.keys(db).forEach((modelName) => {
   }
 });
 
-db.project.belongsTo(db.user, {
-  foreignKey: "user_id",
-  onDelete: "RESTRICT",
-  onUpdate: "CASCADE",
-});
 db.user.hasMany(db.project, {
-  foreignKey: "user_id",
+  foreignKey: "owner_id",
+});
+db.project.belongsTo(db.user, {
+  foreignKey: "owner_id",
   onDelete: "RESTRICT",
   onUpdate: "CASCADE",
 });
 
 db.project.hasMany(db.building, {
   foreignKey: "project_id",
-  onDelete: "RESTRICT",
-  onUpdate: "CASCADE",
 });
 db.building.belongsTo(db.project, {
   foreignKey: "project_id",
@@ -84,6 +81,8 @@ db.building.hasMany(db.storey, {
 });
 db.storey.belongsTo(db.building, {
   foreignKey: "building_id",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
 });
 
 db.storey.hasMany(db.apartment, {
@@ -91,6 +90,8 @@ db.storey.hasMany(db.apartment, {
 });
 db.apartment.belongsTo(db.storey, {
   foreignKey: "storey_id",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
 });
 
 db.apartment.hasMany(db.room, {
@@ -98,6 +99,8 @@ db.apartment.hasMany(db.room, {
 });
 db.room.belongsTo(db.apartment, {
   foreignKey: "apartment_id",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
 });
 
 db.roomBoundary.hasMany(db.room, {
@@ -105,6 +108,8 @@ db.roomBoundary.hasMany(db.room, {
 });
 db.room.belongsTo(db.roomBoundary, {
   foreignKey: "room_id",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
 });
 
 try {
@@ -123,6 +128,7 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 module.exports = db;
+
 // module.exports.db = db;
 
 /* test database */

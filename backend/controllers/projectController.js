@@ -1,15 +1,77 @@
 const projects = require("../models/projectModel");
+const Errors = require("../utils/errors");
 const { poolPromise } = require("../connections/dbConnection");
-const validator = require("validator");
-
+const Project = require("../models/projectModel");
+const projectServices = require("../services/projectServices");
+const db = require("../models");
 //----------------------------------------
 const projectControllers = {};
-projectControllers.create = async (req, res, next) => {
+
+// create new projects
+projectControllers.createItem = async (req, res, next) => {
   try {
-    const { project_name } = req.body;
-    if (!project_name) {
-      throw Errors.badRequestError("the name is empty, enter a name");
+    const { project_name, owner_id } = req.body;
+    if (!project_name || !owner_id) {
+      throw new Errors.badRequestError("incomplete input data");
     }
+    const newProject = await db.Project.create(req.body);
+    res.status(201).json(newProject);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get all projects
+projectControllers.getAllItems = async (req, res, next) => {
+  try {
+    const { owner_id } = req.body;
+
+    const allProjects = await db.project.findAll({
+      attributes: ["project_name", "owner_id"],
+      where: { owner_id },
+    });
+    res.status(200).json(allProjects);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+// update an project
+projectControllers.updateItem = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    // console.log("req.body: ", req.body);
+    let updatedProject = await Project.update(id, req.body);
+    return res.status(200).json(updatedProject);
+  } catch (error) {
+    next(error);
+  }
+};
+
+//get a single project
+projectControllers.getSingleItem = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    let project = await Project.findById(id)
+      .then(async () => {
+        return await Project.publicInfoById(id);
+      })
+      .catch((error) => {
+        throw error;
+      });
+    res.status(200).json(project);
+  } catch (error) {
+    next(error);
+  }
+};
+
+//delete a single project
+projectControllers.deleteItem = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    let message = await Project.delete(id);
+    res.status(200).json({ message });
   } catch (error) {
     next(error);
   }
@@ -243,6 +305,9 @@ const projectUpdateSql = async (req, res) => {
     console.log(error);
   }
 };
+
+module.exports = projectControllers;
+
 //---------------------------------------------------------MongoDB
 // const getSingleProject = async (req, res) => {
 //     const { project_name } = req.params;
@@ -301,19 +366,3 @@ const projectUpdateSql = async (req, res) => {
 //     }
 //     res.status(200).json(project)
 // }
-
-module.exports = {
-  projectIdCheckSql,
-  findProjectIdByNameSql,
-  fetchAllBuildingsInProjectById,
-  getAllProjectsSql,
-  getSingleProjectByIdSql,
-  createProjectSql,
-  projectUpdateSql,
-  deleteProjectSql,
-  // createProject,
-  // getAllProjects,
-  // getSingleProject,
-  // projectUpdate,
-  // deleteProject
-};

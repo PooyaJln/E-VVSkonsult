@@ -1,18 +1,26 @@
 require("dotenv").config();
-// const { pool } = require("./connections/dbConnection");
-const db = require("./models/index");
-const { app, appFnDb } = require("./app");
+const {
+  pool,
+  poolPromise,
+  prisma,
+  connectDB,
+} = require("./connections/dbConnection");
+const { appFnDb } = require("./app");
+const db = require("./models");
 
 const SERVER_PORT = process.env.SERVER_PORT;
-
 try {
   (async () => {
     await db.sequelize.sync();
-    console.log(`All models were synchronized successfully.`);
+    console.log(
+      `${db.sequelize.config.database} is synchronized successfully.`
+    );
   })();
 } catch (error) {
-  console.error(error);
+  console.log(`Unable to connect to the ${config.database} database:`);
+  console.error(err);
 }
+const app = appFnDb(db);
 
 app.listen(SERVER_PORT, () => {
   console.log(`server started. Go to http://localhost:${SERVER_PORT}/`);

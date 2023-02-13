@@ -2,7 +2,8 @@ const projects = require("../models/projectModel");
 const Errors = require("../utils/errors");
 const { poolPromise } = require("../connections/dbConnection");
 const Project = require("../models/projectModel");
-const projectServices = require("../services/projectServices");
+const projectDbServices = require("../services/projectDbServices");
+const userDbServices = require("../services/userServices/userDbServices");
 const db = require("../models");
 //----------------------------------------
 const projectControllers = {};
@@ -14,8 +15,20 @@ projectControllers.createItem = async (req, res, next) => {
     if (!project_name || !owner_id) {
       throw new Errors.badRequestError("incomplete input data");
     }
-    const newProject = await db.Project.create(req.body);
-    res.status(201).json(newProject);
+    const projectNameExists = await projectDbServices.itemNameExists(
+      project_name,
+      owner_id
+    );
+    if (projectNameExists) {
+      throw new Errors.badRequestError("this name is already used.");
+    }
+    if (!projectNameExists) {
+      const newProject = await projectDbServices.createItem(
+        project_name,
+        owner_id
+      );
+      res.status(201).json(newProject);
+    }
   } catch (error) {
     next(error);
   }
@@ -25,14 +38,12 @@ projectControllers.createItem = async (req, res, next) => {
 projectControllers.getAllItems = async (req, res, next) => {
   try {
     const { owner_id } = req.body;
+    const user = await userDbServices.userExists(owner_id);
+    if (!user) throw new Errors.notFoundError("user was not found");
 
-    const allProjects = await db.project.findAll({
-      attributes: ["project_name", "owner_id"],
-      where: { owner_id },
-    });
-    res.status(200).json(allProjects);
+    const allItems = await projectDbServices.getAllItems(owner_id);
+    res.status(200).json(allItems);
   } catch (error) {
-    console.error(error);
     next(error);
   }
 };
@@ -40,9 +51,12 @@ projectControllers.getAllItems = async (req, res, next) => {
 // update an project
 projectControllers.updateItem = async (req, res, next) => {
   try {
-    const id = req.params.id;
-    // console.log("req.body: ", req.body);
-    let updatedProject = await Project.update(id, req.body);
+    const id = req.params.project_id;
+    const { project_name, owner_id } = req.body;
+    let updatedProject = await projectDbServices.updateItem(id, {
+      project_name,
+      owner_id,
+    });
     return res.status(200).json(updatedProject);
   } catch (error) {
     next(error);
@@ -50,16 +64,10 @@ projectControllers.updateItem = async (req, res, next) => {
 };
 
 //get a single project
-projectControllers.getSingleItem = async (req, res, next) => {
+projectControllers.getItem = async (req, res, next) => {
   try {
-    const id = req.params.id;
-    let project = await Project.findById(id)
-      .then(async () => {
-        return await Project.publicInfoById(id);
-      })
-      .catch((error) => {
-        throw error;
-      });
+    const project_id = req.params.project_id;
+    let project = await projectDbServices.getItemAndchildren(project_id);
     res.status(200).json(project);
   } catch (error) {
     next(error);
@@ -69,157 +77,159 @@ projectControllers.getSingleItem = async (req, res, next) => {
 //delete a single project
 projectControllers.deleteItem = async (req, res, next) => {
   try {
-    const id = req.params.id;
-    let message = await Project.delete(id);
+    const project_id = req.params.project_id;
+    let message = await projectDbServices.deleteItem(project_id);
     res.status(200).json({ message });
   } catch (error) {
     next(error);
   }
 };
+
+module.exports = projectControllers;
 //----------------------------------------MySql
 
 //------------------------ logic functions
-const projectIdCheckSql = async (id) => {
-  try {
-    const [foundId] = await poolPromise.query(
-      `
-                                        SELECT project_id 
-                                        FROM projects 
-                                        WHERE project_id = ?;
-                                        `,
-      [id]
-    );
-    console.log(foundId[0]);
-    if (!foundId.length) {
-      return false;
-    } else {
-      return true;
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
+// const projectIdCheckSql = async (id) => {
+//   try {
+//     const [foundId] = await poolPromise.query(
+//       `
+//                                         SELECT project_id
+//                                         FROM projects
+//                                         WHERE project_id = ?;
+//                                         `,
+//       [id]
+//     );
+//     console.log(foundId[0]);
+//     if (!foundId.length) {
+//       return false;
+//     } else {
+//       return true;
+//     }
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
-const findProjectByIdSql = async (id) => {
-  try {
-    const [row] = await poolPromise.query(
-      `
-                                            SELECT *
-                                            FROM projects
-                                            WHERE project_id = ?`,
-      [id]
-    );
+// const findProjectByIdSql = async (id) => {
+//   try {
+//     const [row] = await poolPromise.query(
+//       `
+//                                             SELECT *
+//                                             FROM projects
+//                                             WHERE project_id = ?`,
+//       [id]
+//     );
 
-    console.log("findProjectByIdSql:", row[0]);
-    return row[0];
-  } catch (error) {
-    console.error(error);
-  }
-};
-const findProjectIdByNameSql = async (name) => {
-  try {
-    const [row] = await poolPromise.query(
-      `
-                                    SELECT project_id
-                                    FROM projects
-                                    WHERE project_name = ?
-                                    `,
-      [name]
-    );
-    console.log("findProjectIdByNameSql: ", row[0]);
-    return row[0];
-  } catch (error) {
-    console.error(error);
-  }
-};
+//     console.log("findProjectByIdSql:", row[0]);
+//     return row[0];
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
+// const findProjectIdByNameSql = async (name) => {
+//   try {
+//     const [row] = await poolPromise.query(
+//       `
+//                                     SELECT project_id
+//                                     FROM projects
+//                                     WHERE project_name = ?
+//                                     `,
+//       [name]
+//     );
+//     console.log("findProjectIdByNameSql: ", row[0]);
+//     return row[0];
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
-const allProjectsSql = async () => {
-  try {
-    const [rows] = await poolPromise.query(`SELECT * FROM projects`);
-    return rows;
-  } catch (error) {
-    console.error(error);
-  }
-};
+// const allProjectsSql = async () => {
+//   try {
+//     const [rows] = await poolPromise.query(`SELECT * FROM projects`);
+//     return rows;
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
-const fetchAllBuildingsInProjectById = async (id) => {
-  const sqlQuery = `SELECT building_name
-                            FROM buildings 
-                            JOIN projects USING(project_id)  
-                            WHERE project_id = ? ;`;
-  const sqlArgum = [id];
-  try {
-    const [foundBuildings] = await poolPromise.query(sqlQuery, sqlArgum);
-    const buildings = foundBuildings.map((item) => item.building_name);
-    console.log("fetchAllBuildingsInProjectById: ", buildings);
-    return buildings;
-  } catch (error) {
-    console.error();
-  }
-};
+// const fetchAllBuildingsInProjectById = async (id) => {
+//   const sqlQuery = `SELECT building_name
+//                             FROM buildings
+//                             JOIN projects USING(project_id)
+//                             WHERE project_id = ? ;`;
+//   const sqlArgum = [id];
+//   try {
+//     const [foundBuildings] = await poolPromise.query(sqlQuery, sqlArgum);
+//     const buildings = foundBuildings.map((item) => item.building_name);
+//     console.log("fetchAllBuildingsInProjectById: ", buildings);
+//     return buildings;
+//   } catch (error) {
+//     console.error();
+//   }
+// };
 
 //---------------------------------- MySQL CRUD functions---------------------------
 // create a new project
-const createProjectSql = async (req, res) => {
-  const { project_name } = req.body;
-  try {
-    const [row] = await poolPromise.query(
-      `
-                                        SELECT project_id
-                                        FROM projects
-                                        WHERE project_name = ?
-                                        `,
-      [project_name]
-    );
-    console.log(row);
-    if (!row.length) {
-      try {
-        const [newProjectSql] = await poolPromise.query(
-          `
-                                                        INSERT INTO projects 
-                                                        (project_name) 
-                                                        VALUES (?)
-                                                        `,
-          [project_name]
-        );
+// const createProjectSql = async (req, res) => {
+//   const { project_name } = req.body;
+//   try {
+//     const [row] = await poolPromise.query(
+//       `
+//                                         SELECT project_id
+//                                         FROM projects
+//                                         WHERE project_name = ?
+//                                         `,
+//       [project_name]
+//     );
+//     console.log(row);
+//     if (!row.length) {
+//       try {
+//         const [newProjectSql] = await poolPromise.query(
+//           `
+//                                                         INSERT INTO projects
+//                                                         (project_name)
+//                                                         VALUES (?)
+//                                                         `,
+//           [project_name]
+//         );
 
-        const id = newProjectSql.insertId;
-        const result = await findProjectByIdSql(id);
-        res.status(201).json(result);
-      } catch (error) {
-        console.log(error);
-      }
-    } else
-      throw Error(
-        `the project name '${project_name}' already exists in the database. Enter a new name.`
-      );
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ error: error.message });
-  }
-};
-// get a single project info and all its buildings
-const getSingleProjectByIdSql = async (req, res) => {
-  const id = req.params.project_id;
-  try {
-    if (await projectIdCheckSql(id)) {
-      const project = await findProjectByIdSql(id);
-      const buildings = await fetchAllBuildingsInProjectById(id);
-      project.buildings = buildings;
-      return res.status(200).json(project);
-    } else {
-      return res.status(404).json({ error: "Project was not found" });
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
+//         const id = newProjectSql.insertId;
+//         const result = await findProjectByIdSql(id);
+//         res.status(201).json(result);
+//       } catch (error) {
+//         console.log(error);
+//       }
+//     } else
+//       throw Error(
+//         `the project name '${project_name}' already exists in the database. Enter a new name.`
+//       );
+//   } catch (error) {
+//     console.error(error);
+//     res.status(400).json({ error: error.message });
+//   }
+// };
+// // get a single project info and all its buildings
+// const getSingleProjectByIdSql = async (req, res) => {
+//   const id = req.params.project_id;
+//   try {
+//     if (await projectIdCheckSql(id)) {
+//       const project = await findProjectByIdSql(id);
+//       const buildings = await fetchAllBuildingsInProjectById(id);
+//       project.buildings = buildings;
+//       return res.status(200).json(project);
+//     } else {
+//       return res.status(404).json({ error: "Project was not found" });
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
-// get all Projects
-const getAllProjectsSql = async (req, res) => {
-  const projects = await allProjectsSql();
-  res.status(200).json(projects);
-};
+// // get all Projects
+// const getAllProjectsSql = async (req, res) => {
+//   const projects = await allProjectsSql();
+//   res.status(200).json(projects);
+// };
 
 // get all buildings in a project
 // const getProjectsBuildingsSql = async (req, res) => {
@@ -250,63 +260,61 @@ const getAllProjectsSql = async (req, res) => {
 // }
 
 //delete a single project
-const deleteProjectSql = async (req, res) => {
-  const id = req.params.project_id;
-  try {
-    if (await projectIdCheckSql(id)) {
-      await poolPromise
-        .query(
-          `
-                                DELETE FROM projects 
-                                WHERE project_id = ?
-                                `,
-          [id]
-        )
-        .then(async () => {
-          res.status(200).json(await allProjectsSql());
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } else {
-      res.status(404).json({ error: "Project was not found" });
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
+// const deleteProjectSql = async (req, res) => {
+//   const id = req.params.project_id;
+//   try {
+//     if (await projectIdCheckSql(id)) {
+//       await poolPromise
+//         .query(
+//           `
+//                                 DELETE FROM projects
+//                                 WHERE project_id = ?
+//                                 `,
+//           [id]
+//         )
+//         .then(async () => {
+//           res.status(200).json(await allProjectsSql());
+//         })
+//         .catch((err) => {
+//           console.log(err);
+//         });
+//     } else {
+//       res.status(404).json({ error: "Project was not found" });
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
-//update a single project
-const projectUpdateSql = async (req, res) => {
-  const id = req.params.project_id;
-  const { newProject_name } = req.body;
-  try {
-    if (await projectIdCheckSql(id)) {
-      await poolPromise
-        .query(
-          `
-                                UPDATE projects 
-                                SET project_name = ?
-                                WHERE project_id = ?
-                                `,
-          [newProject_name, id]
-        )
-        .then(async () => {
-          const Updated = await findProjectByIdSql(id);
-          res.status(200).json(Updated);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } else {
-      res.status(404).json({ error: "Project was not found" });
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-module.exports = projectControllers;
+// //update a single project
+// const projectUpdateSql = async (req, res) => {
+//   const id = req.params.project_id;
+//   const { newProject_name } = req.body;
+//   try {
+//     if (await projectIdCheckSql(id)) {
+//       await poolPromise
+//         .query(
+//           `
+//                                 UPDATE projects
+//                                 SET project_name = ?
+//                                 WHERE project_id = ?
+//                                 `,
+//           [newProject_name, id]
+//         )
+//         .then(async () => {
+//           const Updated = await findProjectByIdSql(id);
+//           res.status(200).json(Updated);
+//         })
+//         .catch((err) => {
+//           console.log(err);
+//         });
+//     } else {
+//       res.status(404).json({ error: "Project was not found" });
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
 //---------------------------------------------------------MongoDB
 // const getSingleProject = async (req, res) => {

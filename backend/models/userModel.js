@@ -12,11 +12,6 @@ const User = (sequelize) => {
         autoIncrement: true,
         primaryKey: true,
       },
-      user_name: {
-        type: DataTypes.STRING,
-        required: true,
-        allowNull: false,
-      },
       user_email: {
         type: DataTypes.STRING,
         isEmail: true,

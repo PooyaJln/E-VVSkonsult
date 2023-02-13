@@ -14,10 +14,19 @@ userDbServices.emailExists = async (email) => {
   return false;
 };
 userDbServices.userExists = async (id) => {
-  const user = await db.User.findOne({ where: { id } });
+  try {
+    const user = await db.user.findOne({
+      where: {
+        user_id: id,
+      },
+      raw: true,
+    });
 
-  if (user) return user;
-  return false;
+    if (user) return user;
+    return false;
+  } catch (error) {
+    throw error;
+  }
 };
 
 userDbServices.createUser = async (query) => {

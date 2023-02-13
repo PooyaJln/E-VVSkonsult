@@ -9,7 +9,7 @@
     "testCurrentFile": "cross-env NODE_ENV=development mocha ",
     "dev": "nodemon server.js",
     "db:update": "concurrently \"npx prisma db pull\" \"npx prisma generate\" ",
-    "debug": "nodemon --inspect-brk"
+    "debug": "nodemon --inspect-brk server.js"
   },
   "author": "Pooya.JLN",
   "license": "ISC",

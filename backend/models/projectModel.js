@@ -18,11 +18,15 @@ const Project = (sequelize, DataTypes) => {
       project_name: {
         type: DataTypes.STRING,
         required: true,
+        notNull: true,
+        notEmpty: true,
         allowNull: false,
       },
       owner_id: {
         type: DataTypes.INTEGER,
         required: true,
+        notNull: true,
+        notEmpty: true,
         allowNull: false,
       },
     },

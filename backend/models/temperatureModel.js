@@ -185,6 +185,8 @@ const Temperature = (sequelize, DataTypes) => {
       temperature_name: {
         type: DataTypes.STRING,
         required: true,
+        notNull: true,
+        notEmpty: true,
         allowNull: false,
         unique: true,
       },

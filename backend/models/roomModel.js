@@ -15,10 +15,21 @@ const Room = (sequelize, DataTypes) => {
       room_name: {
         type: DataTypes.STRING,
         required: true,
+        notNull: true,
+        notEmpty: true,
         allowNull: false,
+      },
+      room_temperature: {
+        type: DataTypes.INTEGER,
+        notNull: true,
+        notEmpty: true,
+        allowNull: false,
+        required: true,
       },
       apartment_id: {
         type: DataTypes.INTEGER,
+        notNull: true,
+        notEmpty: true,
         allowNull: false,
         required: true,
       },

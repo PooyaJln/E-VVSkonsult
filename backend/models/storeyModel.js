@@ -15,10 +15,14 @@ const Storey = (sequelize, DataTypes) => {
       storey_name: {
         type: DataTypes.STRING,
         required: true,
+        notNull: true,
+        notEmpty: true,
         allowNull: false,
       },
       building_id: {
         type: DataTypes.INTEGER,
+        notNull: true,
+        notEmpty: true,
         allowNull: false,
         required: true,
       },

@@ -13,12 +13,16 @@ const Building = (sequelize, DataTypes) => {
       building_name: {
         type: DataTypes.STRING,
         required: true,
+        notNull: true,
+        notEmpty: true,
         allowNull: false,
       },
       project_id: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        notNull: true,
         required: true,
+        notEmpty: true,
+        allowNull: false,
       },
     },
     {

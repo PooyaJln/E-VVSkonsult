@@ -1,13 +1,9 @@
 const Errors = require("../utils/errors");
-const validator = require("validator");
-const Project = require("../models/projectModel");
-const { poolPromise, pool, prisma } = require("../connections/dbConnection");
 const db = require("../models");
-const { query } = require("express");
 
-const projectServices = {};
+const projectDbServices = {};
 
-projectServices.findItemByID = async (id) => {
+projectDbServices.findItemByID = async (id) => {
   try {
     const item = await db.project.findOne({
       where: {
@@ -23,7 +19,7 @@ projectServices.findItemByID = async (id) => {
   }
 };
 
-projectServices.itemsPublicInfo = async (id) => {
+projectDbServices.itemsPublicInfo = async (id) => {
   try {
     const item = await db.project.findOne({
       where: {
@@ -38,7 +34,7 @@ projectServices.itemsPublicInfo = async (id) => {
   }
 };
 
-projectServices.itemNameExists = async (_name, id) => {
+projectDbServices.itemNameExists = async (_name, id) => {
   try {
     const item = await db.project.findOne({
       where: {
@@ -53,7 +49,7 @@ projectServices.itemNameExists = async (_name, id) => {
   }
 };
 
-projectServices.getAllItems = async (id) => {
+projectDbServices.getAllItems = async (id) => {
   try {
     let itemsArray = [];
     let items = await db.user.findAll({
@@ -83,48 +79,77 @@ projectServices.getAllItems = async (id) => {
   }
 };
 
-projectServices.createItem = async (p_name, id) => {
+projectDbServices.createItem = async (_name, id) => {
   try {
     const newProject = await db.project.create({
-      project_name: p_name,
+      project_name: _name,
       owner_id: id,
     });
     const newId = newProject.project_id;
-    const project = await projectServices.itemsPublicInfo(newId);
+    const project = await projectDbServices.itemsPublicInfo(newId);
     return project;
   } catch (error) {
     throw error;
   }
 };
-
-projectServices.updateItem = async (id, query) => {
+projectDbServices.preUpdateCheck = async (id, query) => {
   try {
-    let foundItem = await projectServices.findItemByID(id);
+    if (query.newProject_name?.length == 0) {
+      throw new Errors.badRequestError(
+        "the new name cannot be an empty string"
+      );
+    }
+    let foundItem = await projectDbServices.findItemByID(id);
     if (!foundItem) {
       throw new Errors.badRequestError("no project was found");
     }
-
-    const { project_name, owner_id } = query;
-    await db.project.update(
-      { project_name, owner_id },
-      {
-        where: {
-          project_id: id,
-        },
-      }
+    if (
+      foundItem.project_name == query.newProject_name &&
+      foundItem.owner_id == query.newOwner_id
+    ) {
+      throw new Errors.badRequestError("nothing to change");
+    }
+    const nameAlreadyExists = await projectDbServices.itemNameExists(
+      query.newProject_name,
+      query.newOwner_id
     );
 
-    const project = await projectServices.itemsPublicInfo(id);
-
-    return project;
+    if (nameAlreadyExists) {
+      throw new Errors.badRequestError(
+        "this name is already used for another project"
+      );
+    }
+    return true;
   } catch (error) {
     throw error;
   }
 };
 
-projectServices.getItemAndchildren = async (id) => {
+projectDbServices.updateItem = async (id, query) => {
   try {
-    let foundItem = await projectServices.findItemByID(id);
+    const preUpdateCheck = await projectDbServices.preUpdateCheck(id, query);
+    if (preUpdateCheck) {
+      await db.project.update(
+        { project_name: query.newProject_name, owner_id: query.newOwner_id },
+        {
+          where: {
+            project_id: id,
+          },
+        }
+      );
+
+      const project = await projectDbServices.itemsPublicInfo(id);
+
+      return project;
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+projectDbServices.getItemAndchildren = async (id) => {
+  try {
+    let foundItem = await projectDbServices.findItemByID(id);
     if (!foundItem) {
       throw new Errors.badRequestError("no project was found");
     }
@@ -158,9 +183,9 @@ projectServices.getItemAndchildren = async (id) => {
   }
 };
 
-projectServices.deleteItem = async (id) => {
+projectDbServices.deleteItem = async (id) => {
   try {
-    let foundItem = await projectServices.findItemByID(id);
+    let foundItem = await projectDbServices.findItemByID(id);
     if (!foundItem) {
       throw new Errors.badRequestError("no project was found");
     }
@@ -178,4 +203,4 @@ projectServices.deleteItem = async (id) => {
     throw error;
   }
 };
-module.exports = projectServices;
+module.exports = projectDbServices;

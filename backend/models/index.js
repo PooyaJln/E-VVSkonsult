@@ -31,7 +31,7 @@ const sequelize = new Sequelize(
   {
     host: config.host,
     dialect: "mysql",
-    logging: false,
+    logging: console.log,
   }
 );
 
@@ -99,6 +99,14 @@ db.apartment.hasMany(db.room, {
 });
 db.room.belongsTo(db.apartment, {
   foreignKey: "apartment_id",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
+});
+db.temperature.hasMany(db.room, {
+  foreignKey: "room_temperature",
+});
+db.room.belongsTo(db.temperature, {
+  foreignKey: "room_temperature",
   onDelete: "RESTRICT",
   onUpdate: "CASCADE",
 });

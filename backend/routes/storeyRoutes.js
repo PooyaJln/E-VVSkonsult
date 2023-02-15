@@ -1,36 +1,19 @@
-const express = require('express');
-
+const express = require("express");
 const router = express.Router();
+const storeyControllers = require("../controllers/storeyController");
 
-const {
-    createStoreySql,
-    getSingleStoreyByIdSql,
-    updateStoreyNameSql,
-    deleteStoreyByIdSql
-} = require('../controllers/storeyController')
-
-
-
-//////////////////////////////////////////////////////
+//-----------------------------------------------------------------------
 
 // create new storey
-router.post('/create-storey', createStoreySql)
+router.post("/create-storey", storeyControllers.createItem);
 
-
-// get a single storey
-router.get('/:storey_id(\\d+$)', getSingleStoreyByIdSql)
-
-
-// get all stories in a building
-// router.get('/:buildig_id',)
-
+// get a single storey with all its apartments
+router.get("/:storey_id(\\d+$)", storeyControllers.getItemInfo);
 
 // update a storey
-router.patch('/:storey_id', updateStoreyNameSql)
-
+router.patch("/:storey_id", storeyControllers.updateItem);
 
 // delete a storey
-router.delete('/:storey_id(\\d+$)', deleteStoreyByIdSql)
+router.delete("/:storey_id(\\d+$)", storeyControllers.deleteItem);
 
-
-module.exports = router
+module.exports = router;

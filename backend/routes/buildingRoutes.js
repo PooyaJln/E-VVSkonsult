@@ -1,40 +1,23 @@
-const express = require('express');
+const express = require("express");
 
 const router = express.Router();
 
-const {
-    getSingleBuildingByIdSql,
-    // getSingleBuildingByNameSql,
-    createBuildingSql,
-    deleteBuildingSql,
-    buildingUpdateSql
-} = require('../controllers/buildingController')
+const buildingControllers = require("../controllers/buildingController");
 
 // const { getProjectsBuildingsSql } = require('../controllers/projectController')
-
 
 //////////////////////////////////////////////////////
 
 // create new bulding
-router.post('/create-building', createBuildingSql)
-
+router.post("/create-building", buildingControllers.createItem);
 
 // get a single building
-router.get('/:project_name/:building_id(\\d+$)', getSingleBuildingByIdSql)
-
-// get a building by name 
-// router.get('/:project_name/:building_name', getSingleBuildingByNameSql)
-
-// get a single project's buildings
-// router.get('/:project_name', getProjectsBuildingsSql)
-
+router.get("/:building_id(\\d+$)", buildingControllers.getItemInfo);
 
 // update a building
-router.patch('/:project_name/:building_id(\\d+$)', buildingUpdateSql)
-
+router.patch("/:building_id(\\d+$)", buildingControllers.updateItem);
 
 // delete a building
-router.delete('/:project_name/:building_id(\\d+$)', deleteBuildingSql)
+router.delete("/:building_id(\\d+$)", buildingControllers.deleteItem);
 
-
-module.exports = router
+module.exports = router;

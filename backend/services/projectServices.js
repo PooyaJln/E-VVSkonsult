@@ -1,8 +1,36 @@
 const Errors = require("../utils/errors");
 const db = require("../models");
 const projectDbServices = require("./projectDbServices");
+const userDbServices = require("./userServices/userDbServices");
 
 const projectServices = {};
+
+projectServices.preCreateCheck = async (query) => {
+  try {
+    if (query.project_name?.length == 0) {
+      throw new Errors.badRequestError(
+        "the new name cannot be an empty string"
+      );
+    }
+    if (!query.project_name || !query.owner_id) {
+      throw new Errors.badRequestError("incomplete input data");
+    }
+    const user = await userDbServices.findItemByID(query.owner_id);
+    if (!user) {
+      throw new Errors.badRequestError("no user was found!");
+    }
+    const projectNameExists = await projectDbServices.itemNameExists(
+      query.project_name,
+      query.owner_id
+    );
+    if (projectNameExists) {
+      throw new Errors.badRequestError("this name is already used.");
+    }
+    return true;
+  } catch (error) {
+    throw error;
+  }
+};
 
 projectServices.preUpdateCheck = async (id, query) => {
   try {

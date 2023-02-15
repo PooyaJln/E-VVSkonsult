@@ -2,6 +2,7 @@ const Errors = require("../utils/errors");
 const Project = require("../models/projectModel");
 const projectDbServices = require("../services/projectDbServices");
 const userDbServices = require("../services/userServices/userDbServices");
+const projectServices = require("../services/projectServices");
 
 //----------------------------------------
 const projectControllers = {};
@@ -9,22 +10,9 @@ const projectControllers = {};
 // create new projects
 projectControllers.createItem = async (req, res, next) => {
   try {
-    const { project_name, owner_id } = req.body;
-    if (!project_name || !owner_id) {
-      throw new Errors.badRequestError("incomplete input data");
-    }
-    const projectNameExists = await projectDbServices.itemNameExists(
-      project_name,
-      owner_id
-    );
-    if (projectNameExists) {
-      throw new Errors.badRequestError("this name is already used.");
-    }
-    if (!projectNameExists) {
-      const newProject = await projectDbServices.createItem(
-        project_name,
-        owner_id
-      );
+    const preCreateCheck = await projectServices.preCreateCheck(req.body);
+    if (preCreateCheck) {
+      const newProject = await projectDbServices.createItem(req.body);
       res.status(201).json(newProject);
     }
   } catch (error) {
@@ -49,11 +37,14 @@ projectControllers.getAllItems = async (req, res, next) => {
 // update an project
 projectControllers.updateItem = async (req, res, next) => {
   try {
-    let updatedProject = await projectDbServices.updateItem(
-      req.params.project_id,
-      req.body
-    );
-    return res.status(200).json(updatedProject);
+    const preUpdateCheck = await projectServices.preUpdateCheck(req.body);
+    if (preUpdateCheck) {
+      let updatedProject = await projectDbServices.updateItem(
+        req.params.project_id,
+        req.body
+      );
+      return res.status(200).json(updatedProject);
+    }
   } catch (error) {
     next(error);
   }

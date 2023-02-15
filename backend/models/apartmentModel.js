@@ -1,6 +1,5 @@
 "use strict";
-const { poolPromise, pool } = require("../connections/dbConnection");
-const Errors = require("../utils/errors");
+
 const { Sequelize, DataTypes } = require("sequelize");
 
 const Apartment = (sequelize, DataTypes) => {
@@ -15,10 +14,14 @@ const Apartment = (sequelize, DataTypes) => {
       apartment_name: {
         type: DataTypes.STRING,
         required: true,
+        notNull: true,
+        notEmpty: true,
         allowNull: false,
       },
       storey_id: {
         type: DataTypes.INTEGER,
+        notNull: true,
+        notEmpty: true,
         allowNull: false,
         required: true,
       },
@@ -95,28 +98,3 @@ module.exports = Apartment;
 
 //     }
 // }
-// --------------------------------------------MongoDb
-// const mongoose = require('mongoose');
-// const Schema = mongoose.Schema;
-// // const connection = require('../connections/dbConnection');
-// // const connection = require('../connections/dbConnections');
-
-// const apartmentSchema = new Schema({
-//     Name: {
-//         type: String,
-//         required: true
-//     },
-//     floorNr: {
-//         type: String,
-//         required: true
-//     },
-//     temperatureIn: {
-//         type: Schema.Types.ObjectId,
-//         ref: 'temperature',
-//         required: true
-//     }
-// })
-
-// const apartmentModel = mongoose.model('Apartment', apartmentSchema)
-// const apartmentModel = connection.model('Apartment', apartmentSchema)
-// module.exports = apartmentModel;

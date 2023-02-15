@@ -1,6 +1,5 @@
 "use strict";
-const { poolPromise, pool } = require("../connections/dbConnection");
-const Errors = require("../utils/errors");
+
 const { Sequelize, DataTypes } = require("sequelize");
 
 const Storey = (sequelize, DataTypes) => {

@@ -1,87 +1,60 @@
-const mongoose = require('mongoose')
+const Errors = require("../utils/errors");
+const apartmentDbServices = require("../services/apartmentDbServices");
+const apartmentServices = require("../services/apartmentServices");
 
-const apartmentModel = require('../models/apartmentModel');
+//----------------------------------------------------------------
+const apartmentControllers = {};
 
-const { poolPromise, pool } = require('../connections/dbConnection')
-const { findProjectIdByNameSql } = require('./projectController')
-const { findBuildingByIdSql, findBuildingIdByNameSql } = require('./buildingController')
-
-//----------------------------------------MySql
-//------------------------ logic functions
-
-
-
-//---------------------------------- MySQL CRUD functions---------------------------
-// create a new building
-
-
-//---------------------------------------------------------MongoDB CRUD functions
-// get all apartments
-const getAllApartment = async (req, res) => {
-    const allApartment = await apartmentModel.find({}).sort('Name asc')
-    res.status(200).json(allApartment)
-}
-// create a new apartment
-const createApartment = async (req, res) => {
-    const { Name, floorNr } = req.body;
-    try {
-        const newApartment = await apartmentModel.create({ Name, floorNr })
-        res.status(200).json(newApartment)
-    } catch (error) {
-        res.status(404).json({ error: error.message })
+// create new projects
+apartmentControllers.createItem = async (req, res, next) => {
+  try {
+    const preCreateCheck = await apartmentServices.preCreateCheck(req.body);
+    if (preCreateCheck) {
+      const newApartment = await apartmentDbServices.createItem(req.body);
+      res.status(201).json(newApartment);
     }
-    //res.json({ mssg: "add new input data page" })
-}
+  } catch (error) {
+    next(error);
+  }
+};
 
-//show a single apartment
-const getSingleapartment = async (req, res) => {
-    // const id = req.param.id;
-    const { id } = req.params;
-    console.log(id)
-    // we need to validate type of the id
-    if (!mongoose.isValidObjectId(id)) {
-        // if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: 'No such apartment' })
-    }
-    const apartment = await apartmentModel.findById(id)
-    if (!apartment) {
-        return res.status(404).json({ error: 'No such apartment' })
-    }
-    res.status(200).json(apartment)
-}
+//get a single project
+apartmentControllers.getItemInfo = async (req, res, next) => {
+  try {
+    let apartment = await apartmentDbServices.getItemAndchildren(
+      req.params.apartment_id
+    );
+    res.status(200).json(apartment);
+  } catch (error) {
+    next(error);
+  }
+};
 
-//update a single apartment
-const apartmentUpdate = async (req, res) => {
-    const { id } = req.params;
-    if (!mongoose.isValidObjectId(id)) {
-        res.status(404).json({ error: "This apartment doesn't exist" })
+// update an project
+apartmentControllers.updateItem = async (req, res, next) => {
+  try {
+    const id = req.params.apartment_id;
+    const preUpdateCheck = await apartmentServices.preUpdateCheck(id, req.body);
+    if (preUpdateCheck) {
+      let updatedApartment = await apartmentDbServices.updateItem(
+        req.params.apartment_id,
+        req.body
+      );
+      return res.status(200).json(updatedApartment);
     }
-    const apartment = await apartmentModel.findByIdAndUpdate(id, req.body, { new: true }) // check for error
-    if (!apartment) {
-        return res.status(404).json({ error: 'No such apartment' })
-    }
-    res.status(200).json(apartment)
-}
+  } catch (error) {
+    next(error);
+  }
+};
 
+//delete a single project
+apartmentControllers.deleteItem = async (req, res, next) => {
+  try {
+    let message = await apartmentDbServices.deleteItem(req.params.apartment_id);
+    res.status(200).json({ message });
+  } catch (error) {
+    next(error);
+  }
+};
 
-//delete a single apartment
-const deleteApartment = async (req, res) => {
-    const { id } = req.params;
-    if (!mongoose.isValidObjectId(id)) {
-        res.status(404).json({ error: "Apartment was not found" })
-    }
-    const apartment = await apartmentModel.findByIdAndDelete(id)
-    if (!apartment) {
-        return res.status(404).json({ error: 'No such apartment' })
-    }
-    res.status(200).json(apartment)
-
-}
-
-module.exports = {
-    getAllApartment,
-    createApartment,
-    getSingleapartment,
-    apartmentUpdate,
-    deleteApartment
-}
+module.exports = apartmentControllers;

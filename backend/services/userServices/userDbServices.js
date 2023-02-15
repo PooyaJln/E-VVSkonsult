@@ -3,6 +3,22 @@ const Errors = require("../../utils/errors");
 
 const userDbServices = {};
 
+userDbServices.findItemByID = async (id) => {
+  try {
+    const item = await db.user.findOne({
+      where: {
+        user_id: id,
+      },
+    });
+    if (item) {
+      return item;
+    }
+    return false;
+  } catch (error) {
+    throw error;
+  }
+};
+
 /* function checks if user Email already exists
 return true if it's already taken, false otherwise*/
 userDbServices.emailExists = async (email) => {

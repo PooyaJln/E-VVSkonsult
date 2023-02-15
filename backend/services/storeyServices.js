@@ -4,6 +4,34 @@ const storeyDbServices = require("./storeyDbServices");
 const buildingDbServices = require("./buildingDbServices");
 
 const storeyServices = {};
+
+storeyServices.preCreateCheck = async (query) => {
+  try {
+    if (query.storey_name?.length == 0) {
+      throw new Errors.badRequestError(
+        "the new name cannot be an empty string"
+      );
+    }
+    if (!query.storey_name || !query.building_id) {
+      throw new Errors.badRequestError("incomplete input data");
+    }
+    const building = await buildingDbServices.findItemByID(query.building_id);
+    if (!building) {
+      throw new Errors.badRequestError("no building was found!");
+    }
+    const storeyNameExists = await storeyDbServices.itemNameExists(
+      query.storey_name,
+      query.building_id
+    );
+    if (storeyNameExists) {
+      throw new Errors.badRequestError("this name is already used.");
+    }
+    return true;
+  } catch (error) {
+    throw error;
+  }
+};
+
 storeyServices.preUpdateCheck = async (id, query) => {
   try {
     if (query.storey_name?.length == 0) {
@@ -82,30 +110,4 @@ storeyServices.preUpdateCheck = async (id, query) => {
   }
 };
 
-storeyServices.preCreateCheck = async (query) => {
-  try {
-    if (query.storey_name?.length == 0) {
-      throw new Errors.badRequestError(
-        "the new name cannot be an empty string"
-      );
-    }
-    if (!query.storey_name || !query.building_id) {
-      throw new Errors.badRequestError("incomplete input data");
-    }
-    const building = await buildingDbServices.findItemByID(query.building_id);
-    if (!building) {
-      throw new Errors.badRequestError("no building was found!");
-    }
-    const storeyNameExists = await storeyDbServices.itemNameExists(
-      query.storey_name,
-      query.building_id
-    );
-    if (storeyNameExists) {
-      throw new Errors.badRequestError("this name is already used.");
-    }
-    return true;
-  } catch (error) {
-    throw error;
-  }
-};
 module.exports = storeyServices;

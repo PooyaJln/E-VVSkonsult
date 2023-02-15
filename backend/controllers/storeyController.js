@@ -1,7 +1,6 @@
 const Errors = require("../utils/errors");
 const storeyDbServices = require("../services/storeyDbServices");
 const storeyServices = require("../services/storeyServices");
-const buildingDbServices = require("../services/buildingDbServices");
 
 //----------------------------------------------------------------
 const storeyControllers = {};
@@ -22,10 +21,10 @@ storeyControllers.createItem = async (req, res, next) => {
 //get a single project
 storeyControllers.getItemInfo = async (req, res, next) => {
   try {
-    let building = await storeyDbServices.getItemAndchildren(
+    let storey = await storeyDbServices.getItemAndchildren(
       req.params.storey_id
     );
-    res.status(200).json(building);
+    res.status(200).json(storey);
   } catch (error) {
     next(error);
   }

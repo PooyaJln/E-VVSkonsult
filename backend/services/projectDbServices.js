@@ -79,47 +79,12 @@ projectDbServices.getAllItems = async (id) => {
   }
 };
 
-projectDbServices.createItem = async (_name, id) => {
+projectDbServices.createItem = async (query) => {
   try {
-    const newProject = await db.project.create({
-      project_name: _name,
-      owner_id: id,
-    });
+    const newProject = await db.project.create(query);
     const newId = newProject.project_id;
     const project = await projectDbServices.itemsPublicInfo(newId);
     return project;
-  } catch (error) {
-    throw error;
-  }
-};
-projectDbServices.preUpdateCheck = async (id, query) => {
-  try {
-    if (query.newProject_name?.length == 0) {
-      throw new Errors.badRequestError(
-        "the new name cannot be an empty string"
-      );
-    }
-    let foundItem = await projectDbServices.findItemByID(id);
-    if (!foundItem) {
-      throw new Errors.badRequestError("no project was found");
-    }
-    if (
-      foundItem.project_name == query.newProject_name &&
-      foundItem.owner_id == query.newOwner_id
-    ) {
-      throw new Errors.badRequestError("nothing to change");
-    }
-    const nameAlreadyExists = await projectDbServices.itemNameExists(
-      query.newProject_name,
-      query.newOwner_id
-    );
-
-    if (nameAlreadyExists) {
-      throw new Errors.badRequestError(
-        "this name is already used for another project"
-      );
-    }
-    return true;
   } catch (error) {
     throw error;
   }
@@ -191,7 +156,7 @@ projectDbServices.deleteItem = async (id) => {
     }
     const project_name = foundItem.project_name;
 
-    const deletedItem = await db.project.destroy({
+    await db.project.destroy({
       where: {
         project_id: id,
       },

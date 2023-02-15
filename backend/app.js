@@ -8,7 +8,7 @@ const { logger } = require("./middlewares/logEvents");
 const errorHandler = require("./middlewares/errorHandler");
 
 // import routes
-// const apartmentRoutes = require('./routes/apartmentRoutes');
+const apartmentRoutes = require("./routes/apartmentRoutes");
 const materialRoutes = require("./routes/materialRoutes");
 const temperatureRoutes = require("./routes/temperatureRoutes");
 // const spaceDataRoutes = require("./routes/spaceDataRoutes");
@@ -110,7 +110,7 @@ const appFnDb = (database) => {
 
   // app.use("/heat-loss/spaces(.html)?", spaceDataRoutes);
 
-  // app.use("/heat-loss/apartments(.html)?", apartmentRoutes);
+  app.use("/heat-loss/apartments(.html)?", apartmentRoutes);
 
   app.use("/heat-loss/stories(.html)?", storeyRoutes);
 

@@ -5,7 +5,7 @@ const apartmentControllers = require("../controllers/apartmentController");
 //-----------------------------------------------------------------------
 
 // create new apartment
-router.post("/create-apartment", apartmentControllers.createItem);
+router.post("/create", apartmentControllers.createItem);
 
 // get a single apartment with all its rooms
 router.get("/:apartment_id(\\d+$)", apartmentControllers.getItemInfo);

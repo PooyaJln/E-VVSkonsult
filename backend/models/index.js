@@ -6,10 +6,8 @@ const Sequelize = require("sequelize");
 const process = require("process");
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
-// console.log("env: ", env);
 const config = require("../config/config")[env];
 // const config = require(__dirname + "/../config/config.js")[env];
-// console.log("config: ", config);
 
 const db = {};
 
@@ -102,6 +100,7 @@ db.room.belongsTo(db.apartment, {
   onDelete: "RESTRICT",
   onUpdate: "CASCADE",
 });
+
 db.temperature.hasMany(db.room, {
   foreignKey: "room_temperature",
 });
@@ -110,12 +109,59 @@ db.room.belongsTo(db.temperature, {
   onDelete: "RESTRICT",
   onUpdate: "CASCADE",
 });
-
-db.roomBoundary.hasMany(db.room, {
-  foreignKey: "room_id",
+//---------------------------------------
+db.room.hasMany(db.roomBoundary, {
+  foreignKey: "room1_id",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
 });
-db.room.belongsTo(db.roomBoundary, {
-  foreignKey: "room_id",
+
+db.roomBoundary.belongsTo(db.room, {
+  foreignKey: "room1_id",
+});
+
+db.component.hasMany(db.roomBoundary, {
+  foreignKey: "uvalue_id",
+});
+db.roomBoundary.belongsTo(db.component, {
+  foreignKey: "uvalue_id",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
+});
+
+db.temperature.hasMany(db.roomBoundary, {
+  foreignKey: "in_temp_id",
+});
+db.roomBoundary.belongsTo(db.temperature, {
+  foreignKey: "in_temp_id",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
+});
+
+db.temperature.hasMany(db.roomBoundary, {
+  foreignKey: "out_temp_id",
+});
+db.roomBoundary.belongsTo(db.temperature, {
+  foreignKey: "out_temp_id",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
+});
+
+db.roomBoundary.hasMany(db.roomBoundary, {
+  foreignKey: "boundary_parent_id",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
+});
+
+db.roomBoundary.belongsTo(db.roomBoundary, {
+  foreignKey: "boundary_parent_id",
+});
+//----------------------------------------
+db.thermalParameter.hasMany(db.component, {
+  foreignKey: "component_qinf",
+});
+db.component.belongsTo(db.thermalParameter, {
+  foreignKey: "component_qinf",
   onDelete: "RESTRICT",
   onUpdate: "CASCADE",
 });

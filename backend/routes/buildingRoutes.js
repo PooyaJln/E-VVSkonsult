@@ -9,7 +9,7 @@ const buildingControllers = require("../controllers/buildingController");
 //////////////////////////////////////////////////////
 
 // create new bulding
-router.post("/create-building", buildingControllers.createItem);
+router.post("/create", buildingControllers.createItem);
 
 // get a single building
 router.get("/:building_id(\\d+$)", buildingControllers.getItemInfo);

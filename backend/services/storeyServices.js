@@ -1,5 +1,4 @@
 const Errors = require("../utils/errors");
-const db = require("../models");
 const storeyDbServices = require("./storeyDbServices");
 const buildingDbServices = require("./buildingDbServices");
 
@@ -44,13 +43,13 @@ storeyServices.preUpdateCheck = async (id, query) => {
       throw new Errors.badRequestError("no storey was found");
     }
 
-    if (query.storey_name == foundItem.storey_name && !query.building_id) {
+    if (!query.building_id && query.storey_name == foundItem.storey_name) {
       throw new Errors.badRequestError(
         "same as current name,nothing to change"
       );
     }
 
-    if (query.storey_name && !query.building_id) {
+    if (!query.building_id && query.storey_name) {
       const building_id = foundItem.building_id;
       const nameAlreadyExists = await storeyDbServices.itemNameExists(
         query.storey_name,
@@ -63,11 +62,13 @@ storeyServices.preUpdateCheck = async (id, query) => {
         );
       }
     }
+
     if (!query.storey_name && query.building_id == foundItem.building_id) {
       throw new Errors.badRequestError(
         "same as current building, nothing to change"
       );
     }
+
     if (!query.storey_name && query.building_id) {
       const storey_name = foundItem.storey_name;
       const nameAlreadyExists = await storeyDbServices.itemNameExists(
@@ -80,8 +81,6 @@ storeyServices.preUpdateCheck = async (id, query) => {
           "there is already a storey with this name in the requested building"
         );
       }
-
-      throw new Errors.badRequestError("2. nothing to change");
     }
 
     if (query.storey_name && query.building_id) {
@@ -103,7 +102,6 @@ storeyServices.preUpdateCheck = async (id, query) => {
         );
       }
     }
-
     return true;
   } catch (error) {
     throw error;

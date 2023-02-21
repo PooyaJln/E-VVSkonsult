@@ -1,115 +1,119 @@
-// @ts-check
-const Temperature = require("../models/temperatureModel");
 const Errors = require("../utils/errors");
+const temperatureDbServices = require("./temperatureDbServices");
 
 const temperatureServices = {};
 
-temperatureServices.createTemperature = async (query) => {
+temperatureServices.preCreateCheck = async (query) => {
   try {
-    const temperature = new Temperature(
-      query.temperature_name,
-      query.temp_value
-    );
-    const newtemperature = temperature.create();
-    return newtemperature;
-  } catch (error) {
-    throw error;
-  }
-};
+    if (query.temperature_name?.length == 0) {
+      throw new Errors.badRequestError(
+        "the new name cannot be an empty string"
+      );
+    }
+    if (!query.temperature_name || !query.temperature_value) {
+      throw new Errors.badRequestError("incomplete input data");
+    }
 
-temperatureServices.getAlltemperatures = async () => {
-  try {
-    const allTemperatures = await Temperature.Alltemperatures();
-    return allTemperatures;
-  } catch (error) {
-    throw error;
-  }
-};
-
-temperatureServices.updateTemperature = async (query) => {
-  try {
-    const { id, newTempName, newTempValue } = query;
-    const foundTemp = await Temperature.findTemperatureById(id);
-
-    if (newTempName && !newTempValue) {
-      if (newTempName === foundTemp.temperature_name) {
-        throw new Errors.badRequestError(
-          "the name is the same, enter a different name to update"
-        );
+    if (query.temperature_name) {
+      const temperatureNameExists = await temperatureDbServices.itemNameExists(
+        query.temperature_name
+      );
+      if (temperatureNameExists) {
+        throw new Errors.badRequestError("this name is already used.");
       }
-      let updatedTemperature = await Temperature.updateNameById(
-        id,
-        newTempName
+    }
+    return true;
+  } catch (error) {
+    throw error;
+  }
+};
+
+temperatureServices.preUpdateCheck = async (id, query) => {
+  try {
+    if (query.temperature_name?.length == 0) {
+      throw new Errors.badRequestError(
+        "the new name cannot be an empty string"
+      );
+    }
+    let foundItem = await temperatureDbServices.findItemByID(id);
+    if (!foundItem) {
+      throw new Errors.badRequestError("no temperature was found");
+    }
+
+    if (
+      !query.temperature_value &&
+      query.temperature_name == foundItem.temperature_name
+    ) {
+      throw new Errors.badRequestError(
+        "same as current name,nothing to change"
+      );
+    }
+
+    if (
+      query.temperature_name == foundItem.temperature_name &&
+      query.temperature_value == foundItem.temperature_value
+    ) {
+      throw new Errors.badRequestError("nothing to change");
+    }
+
+    if (
+      (!query.temperature_value && query.temperature_name) ||
+      (query.temperature_value == foundItem.temperature_value &&
+        query.temperature_name)
+    ) {
+      const temperature_value = foundItem.temperature_value;
+      const nameAlreadyExists = await temperatureDbServices.itemNameExists(
+        query.temperature_name,
+        temperature_value
       );
 
-      return updatedTemperature;
-    }
-    if (!newTempName && newTempValue) {
-      if (newTempValue == foundTemp.temp_value) {
+      if (nameAlreadyExists) {
         throw new Errors.badRequestError(
-          "the value is the same, enter a different value to update"
+          "warning for duplicate temperature names! this name already exists."
         );
       }
-      let updatedTemperature = await Temperature.updateValueById(
-        id,
-        newTempValue
-      );
-
-      return updatedTemperature;
     }
-    if (newTempName && newTempValue) {
-      if (
-        newTempName == foundTemp.temperature_name &&
-        newTempValue == foundTemp.temp_value
-      ) {
-        throw new Errors.badRequestError(
-          "the name and values are the same, enter new name or new value to update"
-        );
-      }
-      let updatedTemperature = await Temperature.updateNameValueById(
-        id,
-        newTempName,
-        newTempValue
+
+    if (
+      !query.temperature_name &&
+      query.temperature_value == foundItem.temperature_value
+    ) {
+      throw new Errors.badRequestError(
+        "same as current temperature, nothing to change"
       );
-
-      return updatedTemperature;
     }
+
+    // if (
+    //   !query.temperature_name &&
+    //   query.temperature_value == foundItem.temperature_value
+    // ) {
+    //   const temperature_name = foundItem.temperature_name;
+    //   const nameAlreadyExists = await temperatureDbServices.itemNameExists(
+    //     temperature_name,
+    //     query.temperature_value
+    //   );
+
+    //   if (nameAlreadyExists) {
+    //     throw new Errors.badRequestError("no change in temperature happened");
+    //   }
+    // }
+
+    // if (query.temperature_name && query.temperature_value) {
+    //   const nameAlreadyExists = await temperatureDbServices.itemNameExists(
+    //     query.temperature_name,
+    //     query.temperature_value
+    //   );
+
+    //   if (nameAlreadyExists) {
+    //     throw new Errors.badRequestError(
+    //       "this name is already used for another temperature !2"
+    //     );
+    //   }
+    // }
+    return true;
   } catch (error) {
     throw error;
   }
 };
 
-temperatureServices.deleteTemperature = async (query) => {
-  try {
-    let message = await Temperature.findTemperatureById(query)
-      .then(async () => {
-        return await Temperature.delete(query);
-      })
-      .catch((error) => {
-        throw error;
-      });
-    return message;
-  } catch (error) {
-    throw error;
-  }
-};
-
-temperatureServices.getSingleTemperature = async (query) => {
-  try {
-    let temperature = await Temperature.findTemperatureById(query)
-      .then(async () => {
-        return await Temperature.publicTemperatureInfoById(query);
-      })
-      .catch((error) => {
-        throw error;
-      });
-
-    return temperature;
-  } catch (error) {
-    throw error;
-  }
-};
-
-// module.exports = {
-//   temperatureServices,
-// };
+module.exports = temperatureServices;

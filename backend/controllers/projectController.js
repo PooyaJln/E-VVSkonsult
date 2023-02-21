@@ -37,7 +37,10 @@ projectControllers.getAllItems = async (req, res, next) => {
 // update an project
 projectControllers.updateItem = async (req, res, next) => {
   try {
-    const preUpdateCheck = await projectServices.preUpdateCheck(req.body);
+    const preUpdateCheck = await projectServices.preUpdateCheck(
+      req.params.project_id,
+      req.body
+    );
     if (preUpdateCheck) {
       let updatedProject = await projectDbServices.updateItem(
         req.params.project_id,

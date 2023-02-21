@@ -1,57 +1,75 @@
-"use strict";
+// const { poolPromise, pool } = require("../connections/dbConnection");
+// const Errors = require("../utils/errors");
 
-// ----------------------------------------- Sequelize
-const Project = (sequelize, DataTypes) => {
+// ----------------------------------------------Sequelize model definition
+const Component = (sequelize, DataTypes) => {
   return sequelize.define(
-    "project",
+    "component",
     {
-      project_id: {
+      component_id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
       },
-      project_name: {
+      component_name: {
+        type: DataTypes.STRING,
+        required: true,
+        unique: true,
+        notNull: true,
+        notEmpty: true,
+        allowNull: false,
+      },
+      component_categ: {
         type: DataTypes.STRING,
         required: true,
         notNull: true,
         notEmpty: true,
         allowNull: false,
+        validate: {
+          isIn: {
+            args: [["window", "door", "wall", "roof/floor slab"]],
+            msg: `for the category, you can only choose among 'window', 'door', 'wall' or 'roof/floor slab'`,
+          },
+        },
       },
-      owner_id: {
-        type: DataTypes.INTEGER,
+      component_uvalue: {
+        type: DataTypes.DECIMAL(4, 3),
         required: true,
         notNull: true,
         notEmpty: true,
         allowNull: false,
       },
+      component_area: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: true,
+      },
+      component_qinf: {
+        type: DataTypes.INTEGER,
+        required: false,
+        allowNull: true,
+      },
     },
     {
-      tableName: "projects",
+      tableName: "components",
       underscored: true,
       timestamps: false,
       paranoid: true,
     }
   );
 };
+module.exports = Component;
 
-module.exports = Project;
-
-// ------------------------------------- Mysql
-
-// const {
-//   poolPromise,
-//   pool,
-//   prisma: db,
-// } = require("../connections/dbConnection");
-// class project {
-//   constructor(_name, id) {
-//     this.project_name = _name;
-//     this.owner_id = id;
+//------ Mysql Model definition
+// class Component_ {
+//   constructor(_name, categ, value) {
+//     this.component_name = _name;
+//     this.component_uValue = value;
+//     this.component_categ = categ;
 //   }
 
 //   static async publicInfoById(id) {
 //     const sqlQuery = `
-//                     SELECT ${this.name.toLowerCase()}_name
+//                     SELECT ${this.name.toLowerCase()}_name, component_uValue, component_categ
 //                     FROM ${this.name.toLowerCase()}s
 //                     WHERE ${this.name.toLowerCase()}_id = ? ;`;
 //     const sqlArgum = [id];
@@ -62,13 +80,12 @@ module.exports = Project;
 //       throw error;
 //     }
 //   }
-//   static async findById(id, owner_id) {
+//   static async findById(id) {
 //     const sqlQuery = `
 //                     SELECT *
 //                     FROM ${this.name.toLowerCase()}s
-//                     WHERE owner_id = ?
 //                     WHERE ${this.name.toLowerCase()}_id = ?;`;
-//     const sqlArgum = [id, owner_id];
+//     const sqlArgum = [id];
 //     try {
 //       const [foundRow] = await poolPromise.query(sqlQuery, sqlArgum);
 //       if (!foundRow.length) {
@@ -82,12 +99,12 @@ module.exports = Project;
 //     }
 //   }
 
-//   static async findByName(_name, owner_id) {
+//   static async findByName(_name) {
 //     const sqlQuery = `
 //                     SELECT *
 //                     FROM ${this.name.toLowerCase()}s
 //                     WHERE ${this.name.toLowerCase()}_name = ?;`;
-//     const sqlArgum = [_name, owner_id];
+//     const sqlArgum = [_name];
 //     try {
 //       const [foundRow] = await poolPromise.query(sqlQuery, sqlArgum);
 //       return foundRow[0];
@@ -96,41 +113,21 @@ module.exports = Project;
 //     }
 //   }
 
-//   static async getAll(id) {
+//   static async getAll() {
+//     const sqlQuery = `SELECT * FROM ${this.name.toLowerCase()}s;`;
 //     try {
-//       // const sqlQuery = `SELECT ${this.name.toLowerCase()}_name
-//       //                   FROM ${this.name.toLowerCase()}s
-//       //                   WHERE owner_id =?;`;
-//       // const sqlArgum = [id];
-//       // const [foundRow] = await poolPromise.query(sqlQuery, sqlArgum);
-//       const [foundRow] = await db.projects.findMany({
-//         where: {
-//           owner_id: id,
-//         },
-//       });
+//       const [foundRow] = await poolPromise.query(sqlQuery);
 //       return foundRow;
 //     } catch (error) {
 //       throw error;
 //     }
 //   }
 
-//   static async publicGetAll(id) {
+//   static async publicGetAll() {
+//     const sqlQuery = `SELECT ${this.name.toLowerCase()}_name, ${this.name.toLowerCase()}_uValue, ${this.name.toLowerCase()}_categ
+//                     FROM ${this.name.toLowerCase()}s;`;
 //     try {
-//       // const sqlQuery = `SELECT
-//       //                 ${this.name.toLowerCase()}_name,
-//       //                 owner_id
-//       //                 JOIN
-//       //                 FROM ${this.name.toLowerCase()}s;`;
-//       // const [foundRow] = await poolPromise.query(sqlQuery);
-//       const foundRow = await db.projects.findMany({
-//         where: {
-//           owner_id: id,
-//         },
-//         select: {
-//           project_name: true,
-//           owner_id: true,
-//         },
-//       });
+//       const [foundRow] = await poolPromise.query(sqlQuery);
 //       return foundRow;
 //     } catch (error) {
 //       throw error;
@@ -139,21 +136,21 @@ module.exports = Project;
 
 //   static async create(query) {
 //     try {
-//       const { project_name } = query;
-//       let foundRow = await project.findByName(project_name);
+//       const { component_name, component_uValue, component_categ } = query;
+//       let foundRow = await Component.findByName(component_name);
 //       if (foundRow) {
 //         throw new Errors.badRequestError(
-//           `${this.name.toLowerCase()} with name ${project_name} already exists.`
+//           `${this.name.toLowerCase()} with name ${component_name} already exists.`
 //         );
 //       }
 //       let sqlQuery = `
 //                     INSERT INTO ${this.name.toLowerCase()}s
-//                     (${this.name.toLowerCase()}_name)
+//                     (${this.name.toLowerCase()}_name, component_uValue, component_categ)
 //                     VALUES (?,?,?)`;
-//       let sqlArgum = [component_name];
+//       let sqlArgum = [component_name, component_uValue, component_categ];
 //       const [newRow] = await poolPromise.query(sqlQuery, sqlArgum);
 //       const id = newRow.insertId;
-//       const createdRow = await project.publicInfoById(id);
+//       const createdRow = await Component.publicInfoById(id);
 //       return createdRow;
 //     } catch (error) {
 //       throw error;
@@ -162,12 +159,21 @@ module.exports = Project;
 
 //   static async update(id, query) {
 //     try {
-//       const foundRow = await project.findById(id);
-//       if (query.project_name === foundRow.project_name) {
-//         throw new Errors.badRequestError(
-//           "this name is already used for another project. Enter another name"
+//       if (query.component_name) {
+//         const alreadyExistingRowWithRequestedName = await Component.findByName(
+//           query.component_name
 //         );
+//         if (
+//           alreadyExistingRowWithRequestedName &&
+//           id != alreadyExistingRowWithRequestedName.component_id
+//         ) {
+//           throw new Errors.badRequestError(
+//             "this name is already used for another component. Enter another name "
+//           );
+//         }
 //       }
+
+//       const foundRow = await Component.findById(id);
 //       let filteredQueryKeysArray = [];
 //       let sqlArgum = [];
 //       Object.keys(query).map((key) => {
@@ -194,7 +200,7 @@ module.exports = Project;
 //       const updatedRow = await poolPromise
 //         .query(sqlQuery, sqlArgum)
 //         .then(async () => {
-//           return await project.publicInfoById(id);
+//           return await Component.publicInfoById(id);
 //         })
 //         .catch((error) => {
 //           throw error;
@@ -207,16 +213,16 @@ module.exports = Project;
 
 //   static async delete(id) {
 //     try {
-//       const foundRow = await project.findById(id);
+//       const foundRow = await Component.findById(id);
 //       let sqlQuery = `
 //                     DELETE FROM ${this.name.toLowerCase()}s
-//                     WHERE project_id = ?`;
+//                     WHERE ${this.name.toLowerCase()}_id = ?`;
 //       let sqlArgum = [id];
 //       const message = await poolPromise
 //         .query(sqlQuery, sqlArgum)
 //         .then(() => {
 //           return `the ${this.name.toLowerCase()} with name ${
-//             foundRow.project_name
+//             foundRow.component_name
 //           } is deleted`;
 //         })
 //         .catch((error) => {

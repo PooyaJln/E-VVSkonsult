@@ -1,5 +1,4 @@
 const Errors = require("../utils/errors");
-const db = require("../models");
 const projectDbServices = require("./projectDbServices");
 const userDbServices = require("./userServices/userDbServices");
 
@@ -34,7 +33,7 @@ projectServices.preCreateCheck = async (query) => {
 
 projectServices.preUpdateCheck = async (id, query) => {
   try {
-    if (query.newProject_name?.length == 0) {
+    if (query.project_name?.length == 0) {
       throw new Errors.badRequestError(
         "the new name cannot be an empty string"
       );
@@ -43,21 +42,65 @@ projectServices.preUpdateCheck = async (id, query) => {
     if (!foundItem) {
       throw new Errors.badRequestError("no project was found");
     }
-    if (
-      foundItem.project_name == query.newProject_name &&
-      foundItem.owner_id == query.newOwner_id
-    ) {
-      throw new Errors.badRequestError("nothing to change");
-    }
-    const nameAlreadyExists = await projectDbServices.itemNameExists(
-      query.newProject_name,
-      query.newOwner_id
-    );
 
-    if (nameAlreadyExists) {
+    if (!query.owner_id && query.project_name == foundItem.project_name) {
       throw new Errors.badRequestError(
-        "this name is already used for another project"
+        "same as current name,nothing to change"
       );
+    }
+
+    if (!query.owner_id && query.project_name) {
+      const owner_id = foundItem.owner_id;
+      const nameAlreadyExists = await projectDbServices.itemNameExists(
+        query.project_name,
+        owner_id
+      );
+
+      if (nameAlreadyExists) {
+        throw new Errors.badRequestError(
+          "this name is already used for another project"
+        );
+      }
+    }
+
+    if (!query.project_name && query.owner_id == foundItem.owner_id) {
+      throw new Errors.badRequestError(
+        "same as current owner, nothing to change"
+      );
+    }
+
+    if (!query.project_name && query.owner_id) {
+      const project_name = foundItem.project_name;
+      const nameAlreadyExists = await projectDbServices.itemNameExists(
+        project_name,
+        query.owner_id
+      );
+
+      if (nameAlreadyExists) {
+        throw new Errors.badRequestError(
+          "this user already has a project with this name"
+        );
+      }
+    }
+
+    if (query.project_name && query.owner_id) {
+      if (
+        query.project_name == foundItem.project_name &&
+        query.owner_id == foundItem.owner_id
+      ) {
+        throw new Errors.badRequestError("nothing to change");
+      }
+
+      const nameAlreadyExists = await projectDbServices.itemNameExists(
+        query.project_name,
+        query.owner_id
+      );
+
+      if (nameAlreadyExists) {
+        throw new Errors.badRequestError(
+          "this name is already used for another project owned by this user"
+        );
+      }
     }
     return true;
   } catch (error) {

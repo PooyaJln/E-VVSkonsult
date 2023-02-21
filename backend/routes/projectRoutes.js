@@ -6,7 +6,7 @@ const projectControllers = require("../controllers/projectController");
 
 //////////////////////////////////////////////////////
 // create new project
-router.post("/create-project", projectControllers.createItem);
+router.post("/create", projectControllers.createItem);
 
 // show all projects
 router.get("/all$", projectControllers.getAllItems);

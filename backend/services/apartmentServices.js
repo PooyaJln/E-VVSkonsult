@@ -1,5 +1,4 @@
 const Errors = require("../utils/errors");
-const db = require("../models");
 const apartmentDbServices = require("./apartmentDbServices");
 const storeyDbServices = require("./storeyDbServices");
 
@@ -17,7 +16,7 @@ apartmentServices.preCreateCheck = async (query) => {
     }
     const storey = await storeyDbServices.findItemByID(query.storey_id);
     if (!storey) {
-      throw new Errors.badRequestError("no apartment was found!");
+      throw new Errors.badRequestError("no storey was found!");
     }
     const apartmentNameExists = await apartmentDbServices.itemNameExists(
       query.apartment_name,
@@ -44,13 +43,13 @@ apartmentServices.preUpdateCheck = async (id, query) => {
       throw new Errors.badRequestError("no apartment was found");
     }
 
-    if (query.apartment_name == foundItem.apartment_name && !query.storey_id) {
+    if (!query.storey_id && query.apartment_name == foundItem.apartment_name) {
       throw new Errors.badRequestError(
         "same as current name,nothing to change"
       );
     }
 
-    if (query.apartment_name && !query.storey_id) {
+    if (!query.storey_id && query.apartment_name) {
       const storey_id = foundItem.storey_id;
       const nameAlreadyExists = await apartmentDbServices.itemNameExists(
         query.apartment_name,

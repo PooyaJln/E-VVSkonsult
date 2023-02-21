@@ -77,12 +77,9 @@ buildingDbServices.getAllItems = async (id) => {
   }
 };
 
-buildingDbServices.createItem = async (_name, id) => {
+buildingDbServices.createItem = async (query) => {
   try {
-    const newItem = await db.building.create({
-      building_name: _name,
-      project_id: id,
-    });
+    const newItem = await db.building.create(query);
     const newId = newItem.building_id;
     const item = await buildingDbServices.itemsPublicInfo(newId);
     return item;

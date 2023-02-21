@@ -5,7 +5,7 @@ const storeyControllers = require("../controllers/storeyController");
 //-----------------------------------------------------------------------
 
 // create new storey
-router.post("/create-storey", storeyControllers.createItem);
+router.post("/create", storeyControllers.createItem);
 
 // get a single storey with all its apartments
 router.get("/:storey_id(\\d+$)", storeyControllers.getItemInfo);

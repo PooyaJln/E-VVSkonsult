@@ -92,21 +92,15 @@ projectDbServices.createItem = async (query) => {
 
 projectDbServices.updateItem = async (id, query) => {
   try {
-    const preUpdateCheck = await projectDbServices.preUpdateCheck(id, query);
-    if (preUpdateCheck) {
-      await db.project.update(
-        { project_name: query.newProject_name, owner_id: query.newOwner_id },
-        {
-          where: {
-            project_id: id,
-          },
-        }
-      );
+    await db.project.update(query, {
+      where: {
+        project_id: id,
+      },
+    });
 
-      const project = await projectDbServices.itemsPublicInfo(id);
+    const updatedItem = await projectDbServices.itemsPublicInfo(id);
 
-      return project;
-    }
+    return updatedItem;
   } catch (error) {
     throw error;
   }

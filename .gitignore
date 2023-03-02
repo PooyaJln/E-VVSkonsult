@@ -8,3 +8,5 @@ mysql
 .gitignore
 docker-compose.yml
 .vscode
+E-VVSkonsult.code-workspace
+heatLossApp.odb

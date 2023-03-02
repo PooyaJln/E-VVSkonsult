@@ -15,7 +15,6 @@ const Room = (sequelize, DataTypes) => {
       room_name: {
         type: DataTypes.STRING,
         required: true,
-        unique: true,
         notNull: true,
         notEmpty: true,
         allowNull: false,

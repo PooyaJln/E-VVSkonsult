@@ -79,6 +79,7 @@ apartmentDbServices.getItemAndchildren = async (id) => {
         raw: true,
       },
     });
+    console.log(items);
     if (items.length == 1 && items[0]["rooms.room_name"] === null) {
       return { apartment: apartment_name, rooms: [] };
     }

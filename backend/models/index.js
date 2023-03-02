@@ -29,7 +29,7 @@ const sequelize = new Sequelize(
   {
     host: config.host,
     dialect: "mysql",
-    logging: console.log,
+    logging: false,
   }
 );
 
@@ -112,12 +112,12 @@ db.room.belongsTo(db.temperature, {
 //---------------------------------------
 db.room.hasMany(db.roomBoundary, {
   foreignKey: "room1_id",
-  onDelete: "RESTRICT",
-  onUpdate: "CASCADE",
 });
 
 db.roomBoundary.belongsTo(db.room, {
   foreignKey: "room1_id",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
 });
 
 db.component.hasMany(db.roomBoundary, {
@@ -130,18 +130,10 @@ db.roomBoundary.belongsTo(db.component, {
 });
 
 db.temperature.hasMany(db.roomBoundary, {
-  foreignKey: "in_temp_id",
-});
-db.roomBoundary.belongsTo(db.temperature, {
-  foreignKey: "in_temp_id",
-  onDelete: "RESTRICT",
-  onUpdate: "CASCADE",
-});
-
-db.temperature.hasMany(db.roomBoundary, {
   foreignKey: "out_temp_id",
 });
 db.roomBoundary.belongsTo(db.temperature, {
+  as: "outside_temperature",
   foreignKey: "out_temp_id",
   onDelete: "RESTRICT",
   onUpdate: "CASCADE",

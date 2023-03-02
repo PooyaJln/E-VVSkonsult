@@ -67,9 +67,8 @@ const thermalParameter = (sequelize, DataTypes) => {
         allowNull: false,
       },
       parameter_value: {
-        type: DataTypes.DECIMAL(5, 2),
+        type: DataTypes.DECIMAL(5, 3),
         required: true,
-        unique: true,
         notNull: true,
         notEmpty: true,
         allowNull: false,

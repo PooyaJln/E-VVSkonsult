@@ -1,5 +1,6 @@
 const Errors = require("../utils/errors");
 const db = require("../models");
+const roomBoundaryDbServices = require("./roomBoundaryDbServices");
 
 const roomDbServices = {};
 
@@ -70,38 +71,55 @@ roomDbServices.createItem = async (query) => {
 
 roomDbServices.getItemAndchildren = async (id) => {
   try {
-    let foundItem = await roomDbServices.findItemByID(id);
+    let foundItem = await db.room.findByPk(id);
     if (!foundItem) {
       throw new Errors.badRequestError("no room was found");
     }
     const room_name = foundItem.room_name;
 
     let itemsArray = [];
-    const items = await db.room.findAll({
+    const items = await db.roomBoundary.findAll({
       where: {
-        room_id: id,
+        room1_id: id,
       },
-      attributes: ["room_name"],
-      raw: true,
-      include: {
-        model: db.roomBoundary,
-        attributes: ["boundary_name"],
-        raw: true,
-      },
+      // attributes: ["boundary_id", "boundary_name"],
     });
-    if (
-      items.length == 1 &&
-      items[0]["roomBooundarys.boundary_name"] === null
-    ) {
-      return { room: room_name, boundaries: [] };
+
+    if (items.length == 0) {
+      return { room: room_name, boundaries: [], roomHeatLoss: 0 };
     }
     items.map((item) => {
-      itemsArray.push(item["roomBooundarys.boundary_name"]);
+      itemsArray.push(item["boundary_name"]);
     });
+    const totalHeatLoss = await roomDbServices.calculateRoomsHeatLoss(items);
 
-    if (itemsArray) return { room: room_name, boundaries: itemsArray };
+    if (itemsArray)
+      return {
+        room: room_name,
+        boundaries: itemsArray,
+        roomHeatLoss: totalHeatLoss,
+      };
 
     return false;
+  } catch (error) {
+    throw error;
+  }
+};
+
+roomDbServices.calculateRoomsHeatLoss = async (arr) => {
+  try {
+    const roomBoundaryItems = arr;
+
+    const totalHeatLoss = await (async () => {
+      let roomHeatLoss = 0;
+      for (let item of roomBoundaryItems) {
+        roomHeatLoss += await roomBoundaryDbServices.getItemsHeatLoss(item);
+      }
+      return roomHeatLoss;
+    })();
+
+    if (roomBoundaryItems) return totalHeatLoss;
+    return 0;
   } catch (error) {
     throw error;
   }
@@ -149,4 +167,5 @@ roomDbServices.deleteItem = async (id) => {
     throw error;
   }
 };
+
 module.exports = roomDbServices;

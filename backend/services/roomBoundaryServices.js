@@ -1,4 +1,5 @@
 const Errors = require("../utils/errors");
+const db = require("../models");
 const roomDbServices = require("./roomDbServices");
 const roomBoundaryDbServices = require("./roomBoundaryDbServices");
 
@@ -10,18 +11,40 @@ roomBoundaryServices.preCreateCheck = async (query) => {
       "room1_id",
       "boundary_type",
       "uvalue_id",
-      "in_temp_id",
       "out_temp_id",
+      "has_openings",
+      "groundConnected",
+      "isBetween0_1",
+      "isBetween1_6",
+      "area",
     ];
-    // const recievedEntries = Object.keys(query);
-    requiredEntries.forEach((item) => {
-      // if (!recievedEntries.includes(key)) {
-      if (!query[item] || query[item] == "") {
-        throw new Errors.badRequestError(
-          `incomplete input data! '${item}' is missing`
-        );
-      }
-    });
+    const requiredEntriesForOpening = [
+      "room1_id",
+      "boundary_type",
+      "uvalue_id",
+      "out_temp_id",
+      "area",
+      "boundary_parent_id",
+    ];
+
+    if (query.boundary_type == "window" || query.boundary_type == "door") {
+      requiredEntriesForOpening.forEach((item) => {
+        if (query[item] == undefined) {
+          throw new Errors.badRequestError(
+            `incomplete input data! '${item}' is missing`
+          );
+        }
+      });
+    } else {
+      requiredEntries.forEach((item) => {
+        // if (!recievedEntries.includes(key)) {
+        if (query[item] == undefined) {
+          throw new Errors.badRequestError(
+            `incomplete input data! '${item}' is missing`
+          );
+        }
+      });
+    }
 
     if (
       (query.boundary_type == "window" || query.boundary_type == "door") &&
@@ -31,34 +54,40 @@ roomBoundaryServices.preCreateCheck = async (query) => {
         "the Id for the wall or roof that holds this door/window should be filled in."
       );
     }
+    if (
+      (query.boundary_type == "window" || query.boundary_type == "door") &&
+      query.boundary_parent_id != ""
+    ) {
+      const parent = await db.roomBoundary.findByPk(query.boundary_parent_id);
+      if (!parent) {
+        throw new Errors.badRequestError(
+          `this wall/roof to place this ${query.boundary_type} in is not created yet. you have to create it first or add this ${query.boundary_type} to an already existing wall/roof!`
+        );
+      }
+    }
 
     if (
+      (query?.area == undefined || query?.area == "") &&
       (query?.length == undefined || query?.length == "") &&
       (query?.width == undefined || query?.width == "")
     ) {
-      if (query?.area == undefined || query?.area == "") {
-        throw new Errors.badRequestError(
-          "enter either only the area or both dimensions!"
-        );
-      }
+      throw new Errors.badRequestError(
+        "both dimensions and area are empty. either enter the area or both dimensions!"
+      );
     }
     if (
-      query?.length == undefined ||
-      query?.length == "" ||
-      query?.width == undefined ||
-      query?.width == ""
+      query.groundConnected == true &&
+      (query?.isBetween0_1 == undefined || query?.isBetween0_1 == "") &&
+      (query?.isBetween1_6 == undefined || query?.isBetween1_6 == "")
     ) {
-      if (query?.area != undefined || query?.area != "") {
+      if (query.boundary_type == "wall") {
         throw new Errors.badRequestError(
-          "enter either only the area or only both dimensions!!"
+          "if this wall is partly or totally under ground you have to choose if it is from 0 to 1 meter or from 1 meter to 6 meter and enter the area for that part!"
         );
       }
-    }
-
-    if (query.area && query.length && query.width) {
-      if (query.area !== query.length * query.width) {
+      if (query.boundary_type == "floor") {
         throw new Errors.badRequestError(
-          "area ≠ lenght x width. enter either only the area or only the both dimensions"
+          "if this floor is above ground you have to define if it is from 0 to 1 meter or from 1 meter to 6 meter and enter the area for that part!!"
         );
       }
     }

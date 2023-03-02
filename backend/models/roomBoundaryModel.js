@@ -42,6 +42,9 @@ const roomBoundary = (sequelize, DataTypes) => {
         notEmpty: true,
         allowNull: false,
       },
+      uvalue: {
+        type: DataTypes.VIRTUAL,
+      },
       length: {
         type: DataTypes.INTEGER,
         allowNull: true,
@@ -53,50 +56,31 @@ const roomBoundary = (sequelize, DataTypes) => {
         defaultValue: null,
       },
       area: {
-        type: DataTypes.DECIMAL(10, 2),
+        type: DataTypes.DECIMAL(10, 3),
         required: true,
         notNull: true,
         notEmpty: true,
         allowNull: false,
-        set(value) {
-          if (value && !this.length && !this.width) {
-            this.setDataValue("area", value);
-          }
-          if (value && this.length && this.width) {
-            if (value == this.length * this.width) {
-              this.setDataValue("area", value);
-            }
-          }
-          if (!value && this.length && this.width) {
-            this.setDataValue("area", this.length * this.width);
-          }
-        },
       },
+
       net_area: {
         type: DataTypes.VIRTUAL,
         notNull: false,
         allowNull: true,
-        set() {
-          if (this.boundary_type == "door" || this.boundary_type == "window") {
-            this.setDataValue("net_area", this.area);
-          } else {
-            this.setDataValue("net_area", this.area - this.opening_area);
-          }
-        },
       },
-      in_temp_id: {
-        type: DataTypes.INTEGER,
-        required: true,
-        notNull: true,
-        notEmpty: true,
-        allowNull: false,
-      },
+
       out_temp_id: {
         type: DataTypes.INTEGER,
         required: true,
         notNull: true,
         notEmpty: true,
         allowNull: false,
+      },
+      outside_temp: {
+        type: DataTypes.VIRTUAL,
+      },
+      inside_temp: {
+        type: DataTypes.VIRTUAL,
       },
       trans_heat_loss: {
         type: DataTypes.VIRTUAL,
@@ -109,18 +93,6 @@ const roomBoundary = (sequelize, DataTypes) => {
         notNull: false,
         allowNull: true,
         defaultValue: 0,
-        set(value) {
-          if (this.boundary_type == "door" || this.boundary_type == "window") {
-            this.setDataValue("infilt_heat_loss", value);
-          }
-          if (
-            this.boundary_type == "wall" ||
-            this.boundary_type == "roof" ||
-            this.boundary_type == "floor"
-          ) {
-            this.setDataValue("infilt_heat_loss", 0);
-          }
-        },
       },
       total_heat_loss: {
         type: DataTypes.VIRTUAL,
@@ -128,6 +100,7 @@ const roomBoundary = (sequelize, DataTypes) => {
         allowNull: true,
         defaultValue: 0,
       },
+
       has_openings: {
         // a door or a window is considered an opening.
         // a wall or roof can contain window or door.
@@ -137,18 +110,18 @@ const roomBoundary = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         allowNull: true,
         defaultValue: false,
-        set(value) {
-          if (this.boundary_type == "door" || this.boundary_type == "window") {
-            this.setDataValue("has_opening", false);
-          }
-          if (
-            this.boundary_type == "wall" ||
-            this.boundary_type == "roof" ||
-            this.boundary_type == "floor"
-          ) {
-            this.setDataValue("has_opening", value);
-          }
-        },
+        // set(value) {
+        //   if (this.boundary_type == "door" || this.boundary_type == "window") {
+        //     this.setDataValue("has_opening", false);
+        //   }
+        //   if (
+        //     this.boundary_type == "wall" ||
+        //     this.boundary_type == "roof" ||
+        //     this.boundary_type == "floor"
+        //   ) {
+        //     this.setDataValue("has_opening", value);
+        //   }
+        // },
       },
       opening_area: {
         // if this is a window or door the opening area is 0.
@@ -157,31 +130,12 @@ const roomBoundary = (sequelize, DataTypes) => {
         notNull: false,
         allowNull: true,
         defaultValue: 0,
-        set(value) {
-          if (this.boundary_type == "door" || this.boundary_type == "window") {
-            this.setDataValue("opening_area", 0);
-          } else {
-            this.setDataValue("opening_area", value);
-          }
-        },
       },
       boundary_parent_id: {
         // if type = window/door then UI should ask for
         type: DataTypes.INTEGER,
-        notNull: false,
         allowNull: true,
-        set(value) {
-          if (this.boundary_type == "door" || this.boundary_type == "window") {
-            this.setDataValue("boundary_parent_id", value);
-          }
-          if (
-            this.boundary_type == "wall" ||
-            this.boundary_type == "roof" ||
-            this.boundary_type == "floor"
-          ) {
-            this.setDataValue("boundary_parent_id", null);
-          }
-        },
+        defaultValue: null,
       },
       is_shared: {
         // UI should ask if this boundary, i.e wall is shared with another room.
@@ -196,6 +150,21 @@ const roomBoundary = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: true,
         required: false,
+      },
+      groundConnected: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false,
+      },
+      isBetween0_1: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false,
+      },
+      isBetween1_6: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false,
       },
     },
     {

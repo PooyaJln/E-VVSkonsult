@@ -2,27 +2,7 @@
 "use strict";
 require("dotenv").config();
 
-//---------------------- Prisma connection
-const { PrismaClient, Prisma } = require("@prisma/client");
 
-const prisma =
-  global.prisma ||
-  new PrismaClient({
-    log: ["query"],
-  });
-
-async function connectDB() {
-  try {
-    await prisma.$connect();
-    console.log(`Database connected successfully`);
-  } catch (error) {
-    console.log(error);
-    await prisma.$disconnect();
-    process.exit(1);
-  } finally {
-    await prisma.$disconnect();
-  }
-}
 //---------------------- MySQL connection
 const mysql = require("mysql2");
 
@@ -43,7 +23,7 @@ pool.on("connection", function (connection, err) {
   console.log("Connection %d acquired", connection.threadId);
 });
 
-module.exports = { pool, poolPromise, prisma, connectDB };
+module.exports = { pool, poolPromise };
 
 //----------------------MongoDB connection
 // const mongoose = require("mongoose");

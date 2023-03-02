@@ -33,14 +33,14 @@ const Component = (sequelize, DataTypes) => {
         },
       },
       component_uvalue: {
-        type: DataTypes.DECIMAL(4, 3),
+        type: DataTypes.DECIMAL(5, 3),
         required: true,
         notNull: true,
         notEmpty: true,
         allowNull: false,
       },
       component_area: {
-        type: DataTypes.DECIMAL(10, 2),
+        type: DataTypes.DECIMAL(10, 3),
         allowNull: true,
       },
       component_qinf: {

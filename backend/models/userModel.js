@@ -22,7 +22,7 @@ const User = (sequelize) => {
         unique: true,
       },
       user_role: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: true,
       },
     },

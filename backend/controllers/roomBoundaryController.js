@@ -21,7 +21,7 @@ roomBoundaryControllers.createItem = async (req, res, next) => {
 //get a single room
 roomBoundaryControllers.getItemInfo = async (req, res, next) => {
   try {
-    let roomBoundary = await roomBoundaryDbServices.getItemAndchildren(
+    let roomBoundary = await roomBoundaryDbServices.itemsPublicInfo(
       req.params.id
     );
     res.status(200).json(roomBoundary);

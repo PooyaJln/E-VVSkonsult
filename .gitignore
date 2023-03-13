@@ -1,4 +1,4 @@
-frontend
+
 backupData
 tests
 trash
@@ -10,3 +10,4 @@ docker-compose.yml
 .vscode
 E-VVSkonsult.code-workspace
 heatLossApp.odb
+.dockerignore

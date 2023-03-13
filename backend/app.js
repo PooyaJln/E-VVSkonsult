@@ -17,6 +17,7 @@ const projectRoutes = require("./routes/projectRoutes");
 const buildingRoutes = require("./routes/buildingRoutes");
 const storeyRoutes = require("./routes/storeyRoutes");
 const userRoutes = require("./routes/userRoutes");
+const thermalParameterRoutes = require("./routes/thermalParameterRoutes");
 
 // //express app
 // const app = express();
@@ -104,7 +105,7 @@ const appFnDb = (database) => {
   app.get("/about(.html)?", (req, res) => {
     res.render("about", { title: "About me" });
   });
-
+  app.use("/heat-loss/thermal-parameters(.html)?", thermalParameterRoutes);
   app.use("/heat-loss/roomBoundaries(.html)?", roomBoundaryRoutes);
 
   app.use("/heat-loss/components(.html)?", componentRoutes);

@@ -25,7 +25,7 @@ projectDbServices.itemsPublicInfo = async (id) => {
       where: {
         project_id: id,
       },
-      attributes: ["project_name", "owner_id"],
+      attributes: ["project_id", "project_name"],
     });
     if (item) return item;
     return false;
@@ -52,27 +52,40 @@ projectDbServices.itemNameExists = async (_name, id) => {
 projectDbServices.getAllItems = async (id) => {
   try {
     let itemsArray = [];
-    let items = await db.user.findAll({
-      where: {
-        user_id: id,
-      },
-      attributes: ["user_email"],
-      raw: true,
-      include: {
-        model: db.project,
-        attributes: ["project_name"],
-        raw: true,
-      },
+    // let items = await db.user.findAll({
+    //   where: {
+    //     user_id: id,
+    //   },
+    //   attributes: ["user_email"],
+    //   raw: true,
+    //   include: {
+    //     model: db.project,
+    //     attributes: ["project_name"],
+    //     raw: true,
+    //   },
+    // });
+    items = await db.project.findAll({
+      // where: {
+      //   user_id: id,
+      // },
+      attributes: ["project_id", "project_name"],
+
+      // include: {
+      //   model: db.project,
+      //   attributes: ["project_name"],
+      //   raw: true,
+      // },
     });
 
     if (items.length == 1 && items[0]["projects.project_name"] === null) {
       throw new Errors.notFoundError("no project was found");
     }
     items.map((item) => {
-      itemsArray.push(item["projects.project_name"]);
+      itemsArray.push(item["project_name"]);
     });
 
-    if (itemsArray) return itemsArray;
+    // if (itemsArray) return itemsArray;
+    if (items) return items;
     return false;
   } catch (error) {
     throw error;

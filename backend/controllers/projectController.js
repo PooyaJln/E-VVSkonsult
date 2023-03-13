@@ -23,11 +23,12 @@ projectControllers.createItem = async (req, res, next) => {
 // get all projects
 projectControllers.getAllItems = async (req, res, next) => {
   try {
-    const { owner_id } = req.body;
-    const user = await userDbServices.userExists(owner_id);
-    if (!user) throw new Errors.notFoundError("user was not found");
+    // const { owner_id } = req.body;
+    // const user = await userDbServices.userExists(owner_id);
+    // if (!user) throw new Errors.notFoundError("user was not found");
 
-    const allItems = await projectDbServices.getAllItems(owner_id);
+    // const allItems = await projectDbServices.getAllItems(owner_id);
+    const allItems = await projectDbServices.getAllItems();
     res.status(200).json(allItems);
   } catch (error) {
     next(error);

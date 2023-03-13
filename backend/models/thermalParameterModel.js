@@ -73,7 +73,7 @@ const thermalParameter = (sequelize, DataTypes) => {
         notEmpty: true,
         allowNull: false,
       },
-      parmater_unit: DataTypes.STRING,
+      parameter_unit: DataTypes.STRING,
     },
     {
       tableName: "thermalParameters",

@@ -1,10 +1,9 @@
-import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useRef, useState } from "react";
+import { useProjectsContext } from "../../hooks/useProjectsContext";
 
-const CreateProject = (props) => {
+const CreateProject = ({ setParentToggle, setParentError }) => {
+  const { dispatch } = useProjectsContext();
   const [projectName, setProjectName] = useState("");
-  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,35 +24,68 @@ const CreateProject = (props) => {
 
     const responseToJson = await response.json();
     if (!response.ok) {
-      setError(responseToJson.error);
-      console.log(error);
+      setParentError(responseToJson.error);
     }
     if (response.ok) {
-      setError(null);
+      setParentToggle(false);
       setProjectName("");
       console.log("new project added");
-      props.projectList();
+      dispatch({ type: "CREATE_PROJECT", payload: responseToJson });
     }
   };
 
   return (
-    <tr className="project-table-create-row">
-      <td className="create-project-cell-input">
-        <form className="create-project">
+    // <tr className="items-table-create-row">
+    //   <td className="create-item-cell-input">
+    //     <Form
+    //       method="post"
+    //       action="/heat-loss/projects"
+    //       id="projectCreateForm"
+    //       className="create-item"
+    //       ref={formRef}
+    //     >
+    //       <input
+    //         type="text"
+    //         placeholder="type in for a new project"
+    //         name="project_name"
+    //         ref={inputRef}
+    //         onClick={inputClick}
+    //       />
+    //       {/* <button>
+    //         <FontAwesomeIcon
+    //           icon={faFloppyDisk}
+    //           type="submit"
+    //           from="projectCreateForm"
+    //         />
+    //       </button> */}
+    //       {error && <span className="create-item-error"> {error} </span>}
+    //     </Form>
+    //   </td>
+    //   <td className="create-item-cell-icon">
+    //     <button form="projectCreateForm">
+    //       <FontAwesomeIcon icon={faFloppyDisk} />
+    //     </button>
+    //   </td>
+    // </tr>
+    <tr className="items-table-save-row">
+      <td className="items-table-cell-save">
+        <form className="create-form-in-table-row " onSubmit={handleSubmit}>
           <input
-            // ref={createProjectRef}
-            placeholder="type in for new project"
-            create-project-cell-icon
             type="text"
+            placeholder="type in for a new project"
+            name="project_name"
             onChange={(e) => setProjectName(e.target.value)}
-            onFocus={() => setError(undefined)}
+            onFocus={() => setParentError(undefined)}
             value={projectName}
+            autoFocus
           />
-          {error && <span className="create-project-error"> {error} </span>}
+          <button onClick={(e) => handleSubmit(e)}>
+            <span class="material-symbols-outlined">save</span>
+          </button>
+          <button onClick={() => setParentToggle(false)}>
+            <span class="material-symbols-outlined">cancel</span>
+          </button>
         </form>
-      </td>
-      <td className="create-project-cell-icon">
-        <FontAwesomeIcon onClick={(e) => handleSubmit(e)} icon={faFloppyDisk} />
       </td>
     </tr>
   );

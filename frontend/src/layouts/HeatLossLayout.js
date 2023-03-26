@@ -6,7 +6,7 @@ function HeatLossLayout() {
     <>
       <HeatLossNav />
       <div className="heat-loss-layout">
-        <Outlet />
+        <Outlet></Outlet>
       </div>
     </>
   );

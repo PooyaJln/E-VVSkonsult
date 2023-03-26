@@ -1,9 +1,9 @@
+import { useOutletContext } from "react-router-dom";
+import ItemsList from "./ItemsList";
+
 const Buildings = () => {
-  return (
-    <div className="building">
-      <p>Buildings main page.</p>
-    </div>
-  );
+  const project = useOutletContext();
+  return <ItemsList project={project} />;
 };
 
 export default Buildings;

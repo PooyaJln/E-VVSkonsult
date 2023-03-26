@@ -25,6 +25,9 @@ const Temperature = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      project_id: {
+        type: DataTypes.INTEGER,
+      },
     },
     {
       tableName: "temperatures",

@@ -31,7 +31,8 @@ componentControllers.getItemInfo = async (req, res, next) => {
 //get all componenta
 componentControllers.getAllItems = async (req, res, next) => {
   try {
-    let components = await componentDbServices.getAllItems();
+    const { project_id } = req.body;
+    let components = await componentDbServices.getAllItems(project_id);
     res.status(200).json(components);
   } catch (error) {
     next(error);
@@ -58,8 +59,10 @@ componentControllers.updateItem = async (req, res, next) => {
 //delete a single component
 componentControllers.deleteItem = async (req, res, next) => {
   try {
-    let message = await componentDbServices.deleteItem(req.params.component_id);
-    res.status(200).json({ message });
+    let deletedItem = await componentDbServices.deleteItem(
+      req.params.component_id
+    );
+    res.status(200).json(deletedItem);
   } catch (error) {
     next(error);
   }

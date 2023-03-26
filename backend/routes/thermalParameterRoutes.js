@@ -7,9 +7,9 @@ const thermalParameterControllers = require("../controllers/thermalParameterCont
 //////////////////////////////////////////////////////
 
 // show all
-router.get("/", thermalParameterControllers.getAllItems);
+router.get("/:project_id/all", thermalParameterControllers.getAllItems);
 
 // update
-router.patch("/:_name", thermalParameterControllers.updateItem);
+router.patch("/:id", thermalParameterControllers.updateItem);
 
 module.exports = router;

@@ -91,6 +91,55 @@ projectDbServices.getAllItems = async (id) => {
     throw error;
   }
 };
+projectDbServices.getAllData = async (id) => {
+  try {
+    let _project = await db.project.findOne({
+      where: {
+        project_id: id,
+      },
+      attributes: ["project_id", "project_name"],
+      include: [
+        {
+          model: db.building,
+          attributes: ["building_id", "building_name"],
+        },
+        {
+          model: db.thermalParameter,
+          attributes: ["parameter_id", "parameter_name", "parameter_value"],
+        },
+        {
+          model: db.component,
+          attributes: [
+            "component_id",
+            "component_name",
+            "component_categ",
+            "component_uvalue",
+          ],
+          include: {
+            model: db.thermalParameter,
+            attributes: ["parameter_id", "parameter_value"],
+          },
+        },
+      ],
+    });
+
+    if (
+      _project.length == 1 &&
+      _project[0]["buildings.building_name"] === null
+    ) {
+      throw new Errors.notFoundError("no building was found");
+    }
+    // _project.map((item) => {
+    //   itemsArray.push(item["building_name"]);
+    // });
+    if (!_project) throw Errors.badRequestError("this project was not found");
+
+    if (_project) return _project;
+    return false;
+  } catch (error) {
+    throw error;
+  }
+};
 
 projectDbServices.createItem = async (query) => {
   try {
@@ -128,26 +177,34 @@ projectDbServices.getItemAndchildren = async (id) => {
     const project_name = foundItem.project_name;
 
     let itemsArray = [];
-    const items = await db.project.findAll({
+    // const items = await db.project.findAll({
+    //   where: {
+    //     project_id: id,
+    //   },
+    //   attributes: ["project_name"],
+    //   raw: true,
+    //   include: {
+    //     model: db.building,
+    //     attributes: ["building_name"],
+    //     raw: true,
+    //   },
+    // });
+    const items = await db.building.findAll({
       where: {
         project_id: id,
       },
-      attributes: ["project_name"],
+      attributes: ["building_id", "building_name"],
       raw: true,
-      include: {
-        model: db.building,
-        attributes: ["building_name"],
-        raw: true,
-      },
     });
     if (items.length == 1 && items[0]["buildings.building_name"] === null) {
       throw new Errors.notFoundError("no building was found");
     }
-    items.map((item) => {
-      itemsArray.push(item["buildings.building_name"]);
-    });
+    // items.map((item) => {
+    //   itemsArray.push(item["buildings.building_name"]);
+    // });
 
-    if (itemsArray) return { project: project_name, buildings: itemsArray };
+    // if (itemsArray) return { project: project_name, buildings: itemsArray };
+    if (items) return { project: project_name, buildings: items };
 
     return false;
   } catch (error) {
@@ -157,7 +214,11 @@ projectDbServices.getItemAndchildren = async (id) => {
 
 projectDbServices.deleteItem = async (id) => {
   try {
-    let foundItem = await projectDbServices.findItemByID(id);
+    let foundItem = await db.project.findOne({
+      where: {
+        project_id: id,
+      },
+    });
     if (!foundItem) {
       throw new Errors.badRequestError("no project was found");
     }
@@ -169,8 +230,8 @@ projectDbServices.deleteItem = async (id) => {
       },
     });
 
-    const message = `the ${project_name} is deleted`;
-    return message;
+    // const message = `the ${project_name} is deleted`;
+    return foundItem;
   } catch (error) {
     throw error;
   }

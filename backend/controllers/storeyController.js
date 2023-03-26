@@ -50,8 +50,8 @@ storeyControllers.updateItem = async (req, res, next) => {
 //delete a single project
 storeyControllers.deleteItem = async (req, res, next) => {
   try {
-    let message = await storeyDbServices.deleteItem(req.params.storey_id);
-    res.status(200).json({ message });
+    let deletedStorey = await storeyDbServices.deleteItem(req.params.storey_id);
+    res.status(200).json(deletedStorey);
   } catch (error) {
     next(error);
   }

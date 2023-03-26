@@ -65,6 +65,36 @@ db.project.belongsTo(db.user, {
   onUpdate: "CASCADE",
 });
 
+//-------------------------------
+db.project.hasMany(db.thermalParameter, {
+  foreignKey: "project_id",
+});
+db.thermalParameter.belongsTo(db.project, {
+  foreignKey: "project_id",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
+});
+//-------------------------------
+
+db.project.hasMany(db.component, {
+  foreignKey: "project_id",
+});
+db.component.belongsTo(db.project, {
+  foreignKey: "project_id",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
+});
+//-------------------------------
+db.project.hasMany(db.temperature, {
+  foreignKey: "project_id",
+});
+db.temperature.belongsTo(db.project, {
+  foreignKey: "project_id",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
+});
+//-------------------------------
+
 db.project.hasMany(db.building, {
   foreignKey: "project_id",
 });

@@ -43,11 +43,11 @@ projectServices.preUpdateCheck = async (id, query) => {
       throw new Errors.badRequestError("no project was found");
     }
 
-    if (!query.owner_id && query.project_name == foundItem.project_name) {
-      throw new Errors.badRequestError(
-        "same as current name,nothing to change"
-      );
-    }
+    // if (!query.owner_id && query.project_name == foundItem.project_name) {
+    //   throw new Errors.badRequestError(
+    //     "same as current name,nothing to change"
+    //   );
+    // }
 
     if (!query.owner_id && query.project_name) {
       const owner_id = foundItem.owner_id;
@@ -56,18 +56,18 @@ projectServices.preUpdateCheck = async (id, query) => {
         owner_id
       );
 
-      if (nameAlreadyExists) {
+      if (nameAlreadyExists && query.project_name != foundItem.project_name) {
         throw new Errors.badRequestError(
           "this name is already used for another project"
         );
       }
     }
 
-    if (!query.project_name && query.owner_id == foundItem.owner_id) {
-      throw new Errors.badRequestError(
-        "same as current owner, nothing to change"
-      );
-    }
+    // if (!query.project_name && query.owner_id == foundItem.owner_id) {
+    //   throw new Errors.badRequestError(
+    //     "same as current owner, nothing to change"
+    //   );
+    // }
 
     if (!query.project_name && query.owner_id) {
       const project_name = foundItem.project_name;
@@ -84,19 +84,22 @@ projectServices.preUpdateCheck = async (id, query) => {
     }
 
     if (query.project_name && query.owner_id) {
-      if (
-        query.project_name == foundItem.project_name &&
-        query.owner_id == foundItem.owner_id
-      ) {
-        throw new Errors.badRequestError("nothing to change");
-      }
+      // if (
+      //   query.project_name == foundItem.project_name &&
+      //   query.owner_id == foundItem.owner_id
+      // ) {
+      //   throw new Errors.badRequestError("nothing to change");
+      // }
 
       const nameAlreadyExists = await projectDbServices.itemNameExists(
         query.project_name,
         query.owner_id
       );
 
-      if (nameAlreadyExists) {
+      if (
+        nameAlreadyExists &&
+        nameAlreadyExists.project_id != foundItem.project_id
+      ) {
         throw new Errors.badRequestError(
           "this name is already used for another project owned by this user"
         );

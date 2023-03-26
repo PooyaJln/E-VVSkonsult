@@ -3,10 +3,18 @@ const db = require("../models");
 
 const thermalParameterDbServices = {};
 
-thermalParameterDbServices.getAllItems = async () => {
+thermalParameterDbServices.getAllItems = async (id) => {
   try {
     let items = await db.thermalParameter.findAll({
-      attributes: ["parameter_name", "parameter_value", "parameter_unit"],
+      where: {
+        project_id: id,
+      },
+      attributes: [
+        "project_id",
+        "parameter_name",
+        "parameter_value",
+        "parameter_unit",
+      ],
     });
 
     if (items) return items;
@@ -16,19 +24,24 @@ thermalParameterDbServices.getAllItems = async () => {
   }
 };
 
-thermalParameterDbServices.updateItem = async (_name, query) => {
+thermalParameterDbServices.updateItem = async (query, id) => {
   try {
-    await db.thermalparameter.update(query, {
+    await db.thermalParameter.update(query, {
       where: {
-        parameter_name: _name,
+        parameter_id: id,
       },
     });
 
-    const updatedItem = await db.thermalparameter.findOne({
+    const updatedItem = await db.thermalParameter.findOne({
       where: {
-        parameter_name: query.parameter_name,
+        parameter_id: id,
       },
-      attributes: ["parameter_name", "parameter_value", "parmater_unit"],
+      attributes: [
+        "parameter_id",
+        "parameter_name",
+        "parameter_value",
+        "parameter_unit",
+      ],
     });
 
     return updatedItem;

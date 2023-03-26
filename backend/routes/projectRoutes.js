@@ -11,6 +11,8 @@ router.post("/create", projectControllers.createItem);
 // show all projects
 router.get("/all$", projectControllers.getAllItems);
 
+router.get("/:project_id/data", projectControllers.getAllData);
+
 // get a single project
 // router.get('/:project_id([0-9]{1,}$)/', getSingleProjectByIdSql)
 router.get("/:project_id(\\d+$)", projectControllers.getItem);

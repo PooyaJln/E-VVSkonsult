@@ -30,18 +30,15 @@ buildingControllers.getItemInfo = async (req, res, next) => {
 };
 
 // get all projects
-// buildingControllers.getAllItems = async (req, res, next) => {
-//   try {
-//     const { project_id } = req.body;
-//     const user = await userDbServices.userExists(project_id);
-//     if (!user) throw new Errors.notFoundError("user was not found");
-
-//     const allItems = await buildingDbServices.getAllItems(project_id);
-//     res.status(200).json(allItems);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+buildingControllers.getAllItems = async (req, res, next) => {
+  try {
+    const project_id = req.params.project_id;
+    const allItems = await buildingDbServices.getAllItems(project_id);
+    res.status(200).json(allItems);
+  } catch (error) {
+    next(error);
+  }
+};
 
 // update an project
 buildingControllers.updateItem = async (req, res, next) => {
@@ -65,8 +62,10 @@ buildingControllers.updateItem = async (req, res, next) => {
 //delete a single project
 buildingControllers.deleteItem = async (req, res, next) => {
   try {
-    let message = await buildingDbServices.deleteItem(req.params.building_id);
-    res.status(200).json({ message });
+    let deletedBuilding = await buildingDbServices.deleteItem(
+      req.params.building_id
+    );
+    res.status(200).json(deletedBuilding);
   } catch (error) {
     next(error);
   }

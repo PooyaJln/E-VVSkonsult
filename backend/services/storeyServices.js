@@ -43,11 +43,11 @@ storeyServices.preUpdateCheck = async (id, query) => {
       throw new Errors.badRequestError("no storey was found");
     }
 
-    if (!query.building_id && query.storey_name == foundItem.storey_name) {
-      throw new Errors.badRequestError(
-        "same as current name,nothing to change"
-      );
-    }
+    // if (!query.building_id && query.storey_name == foundItem.storey_name) {
+    //   throw new Errors.badRequestError(
+    //     "same as current name,nothing to change"
+    //   );
+    // }
 
     if (!query.building_id && query.storey_name) {
       const building_id = foundItem.building_id;
@@ -63,11 +63,11 @@ storeyServices.preUpdateCheck = async (id, query) => {
       }
     }
 
-    if (!query.storey_name && query.building_id == foundItem.building_id) {
-      throw new Errors.badRequestError(
-        "same as current building, nothing to change"
-      );
-    }
+    // if (!query.storey_name && query.building_id == foundItem.building_id) {
+    //   throw new Errors.badRequestError(
+    //     "same as current building, nothing to change"
+    //   );
+    // }
 
     if (!query.storey_name && query.building_id) {
       const storey_name = foundItem.storey_name;
@@ -84,19 +84,22 @@ storeyServices.preUpdateCheck = async (id, query) => {
     }
 
     if (query.storey_name && query.building_id) {
-      if (
-        query.storey_name == foundItem.storey_name &&
-        query.building_id == foundItem.building_id
-      ) {
-        throw new Errors.badRequestError("nothing to change");
-      }
+      // if (
+      //   query.storey_name == foundItem.storey_name &&
+      //   query.building_id == foundItem.building_id
+      // ) {
+      //   throw new Errors.badRequestError("nothing to change");
+      // }
 
       const nameAlreadyExists = await storeyDbServices.itemNameExists(
         query.storey_name,
         query.building_id
       );
 
-      if (nameAlreadyExists) {
+      if (
+        nameAlreadyExists &&
+        nameAlreadyExists.storey_id != foundItem.storey_id
+      ) {
         throw new Errors.badRequestError(
           "this name is already used for another storey in requested building"
         );

@@ -20,6 +20,17 @@ projectControllers.createItem = async (req, res, next) => {
   }
 };
 
+//get a single project
+projectControllers.getItem = async (req, res, next) => {
+  try {
+    const project_id = req.params.project_id;
+    let project = await projectDbServices.itemsPublicInfo(project_id);
+    res.status(200).json(project);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // get all projects
 projectControllers.getAllItems = async (req, res, next) => {
   try {
@@ -29,6 +40,22 @@ projectControllers.getAllItems = async (req, res, next) => {
 
     // const allItems = await projectDbServices.getAllItems(owner_id);
     const allItems = await projectDbServices.getAllItems();
+    res.status(200).json(allItems);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get all project's data
+projectControllers.getAllData = async (req, res, next) => {
+  try {
+    // const { owner_id } = req.body;
+    // const user = await userDbServices.userExists(owner_id);
+    // if (!user) throw new Errors.notFoundError("user was not found");
+
+    // const allItems = await projectDbServices.getAllItems(owner_id);
+    const project_id = req.params.project_id;
+    const allItems = await projectDbServices.getAllData(project_id);
     res.status(200).json(allItems);
   } catch (error) {
     next(error);
@@ -54,23 +81,12 @@ projectControllers.updateItem = async (req, res, next) => {
   }
 };
 
-//get a single project
-projectControllers.getItem = async (req, res, next) => {
-  try {
-    const project_id = req.params.project_id;
-    let project = await projectDbServices.getItemAndchildren(project_id);
-    res.status(200).json(project);
-  } catch (error) {
-    next(error);
-  }
-};
-
 //delete a single project
 projectControllers.deleteItem = async (req, res, next) => {
   try {
     const project_id = req.params.project_id;
-    let message = await projectDbServices.deleteItem(project_id);
-    res.status(200).json({ message });
+    let deleted_project = await projectDbServices.deleteItem(project_id);
+    res.status(200).json(deleted_project);
   } catch (error) {
     next(error);
   }

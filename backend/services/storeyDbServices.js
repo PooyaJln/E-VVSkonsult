@@ -102,7 +102,11 @@ storeyDbServices.updateItem = async (id, query) => {
       },
     });
 
-    const updatedItem = await storeyDbServices.itemsPublicInfo(id);
+    const updatedItem = await db.storey.findOne({
+      where: {
+        storey_id: id,
+      },
+    });
 
     return updatedItem;
   } catch (error) {
@@ -112,7 +116,11 @@ storeyDbServices.updateItem = async (id, query) => {
 
 storeyDbServices.deleteItem = async (id) => {
   try {
-    let foundItem = await storeyDbServices.findItemByID(id);
+    let foundItem = await db.storey.findOne({
+      where: {
+        storey_id: id,
+      },
+    });
     if (!foundItem) {
       throw new Errors.badRequestError("no storey was found");
     }
@@ -131,7 +139,7 @@ storeyDbServices.deleteItem = async (id) => {
     });
 
     const message = `Storey ${storey_name} in building ${building_name} is deleted`;
-    return message;
+    return foundItem;
   } catch (error) {
     throw error;
   }

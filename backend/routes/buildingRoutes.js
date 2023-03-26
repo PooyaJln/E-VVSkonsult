@@ -11,6 +11,8 @@ const buildingControllers = require("../controllers/buildingController");
 // create new bulding
 router.post("/create", buildingControllers.createItem);
 
+router.get("/all", buildingControllers.getAllItems);
+
 // get a single building
 router.get("/:building_id(\\d+$)", buildingControllers.getItemInfo);
 

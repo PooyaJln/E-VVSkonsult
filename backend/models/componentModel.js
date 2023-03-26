@@ -48,6 +48,9 @@ const Component = (sequelize, DataTypes) => {
         required: false,
         allowNull: true,
       },
+      project_id: {
+        type: DataTypes.INTEGER,
+      },
     },
     {
       tableName: "components",

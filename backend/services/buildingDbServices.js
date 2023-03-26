@@ -23,7 +23,7 @@ buildingDbServices.itemsPublicInfo = async (id) => {
       where: {
         building_id: id,
       },
-      attributes: ["building_name", "project_id"],
+      attributes: ["building_id", "building_name"],
     });
     if (item) return item;
     return false;
@@ -49,28 +49,38 @@ buildingDbServices.itemNameExists = async (_name, id) => {
 
 buildingDbServices.getAllItems = async (id) => {
   try {
+    const project = await db.project.findByPk(id);
+    if (!project) throw Errors.badRequestError("this project was not found");
+    let results = { project_name: project.project_name };
     let itemsArray = [];
-    let items = await db.project.findAll({
+    // let items = await db.project.findAll({
+    //   where: {
+    //     project_id: id,
+    //   },
+    //   attributes: ["project_name"],
+    //   raw: true,
+    //   include: {
+    //     model: db.buildng,
+    //     attributes: ["building_name"],
+    //     raw: true,
+    //   },
+    // });
+
+    let items = await db.building.findAll({
       where: {
         project_id: id,
       },
-      attributes: ["project_name"],
-      raw: true,
-      include: {
-        model: db.buildng,
-        attributes: ["building_name"],
-        raw: true,
-      },
+      attributes: ["building_name"],
     });
 
     if (items.length == 1 && items[0]["buildings.building_name"] === null) {
       throw new Errors.notFoundError("no building was found");
     }
     items.map((item) => {
-      itemsArray.push(item["buildings.building_name"]);
+      itemsArray.push(item["building_name"]);
     });
 
-    if (itemsArray) return itemsArray;
+    if (itemsArray) return { ...results, buildings: itemsArray };
     return false;
   } catch (error) {
     throw error;
@@ -97,17 +107,24 @@ buildingDbServices.getItemAndchildren = async (id) => {
     const building_name = foundItem.building_name;
 
     let itemsArray = [];
-    const items = await db.building.findAll({
+    // const items = await db.building.findAll({
+    //   where: {
+    //     building_id: id,
+    //   },
+    //   attributes: ["building_name"],
+    //   raw: true,
+    //   include: {
+    //     model: db.storey,
+    //     attributes: ["storey_name"],
+    //     raw: true,
+    //   },
+    // });
+    const items = await db.storey.findAll({
       where: {
         building_id: id,
       },
-      attributes: ["building_name"],
+      attributes: ["storey_id", "storey_name"],
       raw: true,
-      include: {
-        model: db.storey,
-        attributes: ["storey_name"],
-        raw: true,
-      },
     });
     if (items.length == 1 && items[0]["storeys.storey_name"] === null) {
       return { building: building_name, stories: [] };
@@ -116,7 +133,7 @@ buildingDbServices.getItemAndchildren = async (id) => {
       itemsArray.push(item["storeys.storey_name"]);
     });
 
-    if (itemsArray) return { building: building_name, stories: itemsArray };
+    if (itemsArray) return { building_id: id, building_name, floors: items };
 
     return false;
   } catch (error) {
@@ -159,24 +176,20 @@ buildingDbServices.preUpdateCheck = async (id, query) => {
 
 buildingDbServices.updateItem = async (id, query) => {
   try {
-    const preUpdateCheck = await buildingDbServices.preUpdateCheck(id, query);
-    if (preUpdateCheck) {
-      await db.building.update(
-        {
-          building_name: query.newBuilding_name,
-          project_id: query.newProject_id,
+    await db.building.update(
+      {
+        building_name: query.building_name,
+        project_id: query.project_id,
+      },
+      {
+        where: {
+          building_id: id,
         },
-        {
-          where: {
-            building_id: id,
-          },
-        }
-      );
+      }
+    );
+    const updatedItem = await buildingDbServices.itemsPublicInfo(id);
 
-      const updatedItem = await buildingDbServices.itemsPublicInfo(id);
-
-      return updatedItem;
-    }
+    return updatedItem;
   } catch (error) {
     throw error;
   }
@@ -197,7 +210,7 @@ buildingDbServices.deleteItem = async (id) => {
     });
 
     const message = `building ${building_name} is deleted`;
-    return message;
+    return foundItem;
   } catch (error) {
     throw error;
   }

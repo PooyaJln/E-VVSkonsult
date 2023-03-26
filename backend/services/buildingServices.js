@@ -44,11 +44,11 @@ buildingServices.preUpdateCheck = async (id, query) => {
       throw new Errors.badRequestError("no building was found");
     }
 
-    if (!query.project_id && query.building_name == foundItem.building_name) {
-      throw new Errors.badRequestError(
-        "same as current name,nothing to change"
-      );
-    }
+    // if (!query.project_id && query.building_name == foundItem.building_name) {
+    //   throw new Errors.badRequestError(
+    //     "same as current name,nothing to change"
+    //   );
+    // }
 
     if (!query.project_id && query.building_name) {
       const project_id = foundItem.project_id;
@@ -57,18 +57,18 @@ buildingServices.preUpdateCheck = async (id, query) => {
         project_id
       );
 
-      if (nameAlreadyExists) {
+      if (nameAlreadyExists && query.building_name != foundItem.building_name) {
         throw new Errors.badRequestError(
           "this name is already used for another building"
         );
       }
     }
 
-    if (!query.building_name && query.project_id == foundItem.project_id) {
-      throw new Errors.badRequestError(
-        "same as current project, nothing to change"
-      );
-    }
+    // if (!query.building_name && query.project_id == foundItem.project_id) {
+    //   throw new Errors.badRequestError(
+    //     "same as current project, nothing to change"
+    //   );
+    // }
 
     if (!query.building_name && query.project_id) {
       const project_name = foundItem.building_name;
@@ -85,19 +85,22 @@ buildingServices.preUpdateCheck = async (id, query) => {
     }
 
     if (query.building_name && query.project_id) {
-      if (
-        query.building_name == foundItem.building_name &&
-        query.project_id == foundItem.project_id
-      ) {
-        throw new Errors.badRequestError("nothing to change");
-      }
+      // if (
+      //   query.building_name == foundItem.building_name &&
+      //   query.project_id == foundItem.project_id
+      // ) {
+      //   throw new Errors.badRequestError("nothing to change");
+      // }
 
       const nameAlreadyExists = await buildingDbServices.itemNameExists(
         query.building_name,
         query.project_id
       );
 
-      if (nameAlreadyExists) {
+      if (
+        nameAlreadyExists &&
+        nameAlreadyExists.building_id != foundItem.building_id
+      ) {
         throw new Errors.badRequestError(
           "this name is already used for another building in this project"
         );

@@ -33,7 +33,8 @@ temperatureControllers.getItemInfo = async (req, res, next) => {
 //get all temperaturea
 temperatureControllers.getAllItems = async (req, res, next) => {
   try {
-    let temperatures = await temperatureDbServices.getAllItems();
+    const { project_id } = req.body;
+    let temperatures = await temperatureDbServices.getAllItems(project_id);
     res.status(200).json(temperatures);
   } catch (error) {
     next(error);

@@ -24,6 +24,7 @@ componentDbServices.itemsPublicInfo = async (id) => {
         component_id: id,
       },
       attributes: [
+        "component_id",
         "component_name",
         "component_categ",
         "component_uvalue",
@@ -76,9 +77,12 @@ componentDbServices.createItem = async (query) => {
   }
 };
 
-componentDbServices.getAllItems = async () => {
+componentDbServices.getAllItems = async (id) => {
   try {
     const components = await db.component.findAll({
+      where: {
+        project_id: id,
+      },
       attributes: [
         "component_name",
         "component_categ",
@@ -126,7 +130,7 @@ componentDbServices.deleteItem = async (id) => {
     });
 
     const message = `the component with name ${component_name} is deleted`;
-    return message;
+    return foundItem;
   } catch (error) {
     throw error;
   }

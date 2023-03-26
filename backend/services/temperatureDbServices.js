@@ -68,9 +68,12 @@ temperatureDbServices.createItem = async (query) => {
   }
 };
 
-temperatureDbServices.getAllItems = async () => {
+temperatureDbServices.getAllItems = async (id) => {
   try {
     const temperatures = await db.temperature.findAll({
+      where: {
+        project_id: id,
+      },
       attributes: ["temperature_name", "temperature_value"],
     });
     return temperatures;

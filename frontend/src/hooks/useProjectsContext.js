@@ -5,7 +5,7 @@ export const useProjectsContext = () => {
   const context = useContext(ProjectsContext);
   if (!context) {
     throw Error(
-      "useProjectsDataContext must be used inside ProjectsDataContextProvider"
+      "useProjectsContext must be used inside ProjectsContextProvider"
     );
   }
   return context;

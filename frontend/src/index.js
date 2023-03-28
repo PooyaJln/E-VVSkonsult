@@ -2,6 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { ProjectsContextProvider } from "./contexts/ProjectsContext";
 
+import { store } from "./app/store";
+import { Provider } from "react-redux";
+
 // import styling
 import "./index.css";
 
@@ -12,8 +15,8 @@ import { ProjectDataContextProvider } from "./contexts/ProjectDataContext";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <ProjectsContextProvider>
+    <Provider store={store}>
       <App />
-    </ProjectsContextProvider>
+    </Provider>
   </React.StrictMode>
 );

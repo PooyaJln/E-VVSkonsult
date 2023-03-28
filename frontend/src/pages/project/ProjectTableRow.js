@@ -95,22 +95,22 @@ const ProjectTableRow = ({ project, setParentError }) => {
       <td className="items-table-cell ">
         {toggle ? (
           <button onClick={() => handleUpdate(project.project_id)}>
-            <span class="material-symbols-outlined">edit_note</span>
+            <span className="material-symbols-outlined">edit_note</span>
           </button>
         ) : (
           <>
             <button onClick={(e) => handleUpdateSave(e, project)}>
-              <span class="material-symbols-outlined">save</span>
+              <span className="material-symbols-outlined">save</span>
             </button>
             <button onClick={() => setToggle(!toggle)}>
-              <span class="material-symbols-outlined">cancel</span>
+              <span className="material-symbols-outlined">cancel</span>
             </button>
           </>
         )}
       </td>
       <td className="items-table-cell">
         <button onClick={() => handleDelete(project.project_id)}>
-          <span class="material-symbols-outlined">delete</span>
+          <span className="material-symbols-outlined">delete</span>
         </button>
       </td>
     </tr>

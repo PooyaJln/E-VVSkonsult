@@ -9,7 +9,7 @@ function Building() {
       {/* <h2>Project: {project && project.project_name}: </h2> */}
       <h2>Building: {building.building_name}</h2>
       <BuildingNavBar />
-      <Outlet context={[building, project]} />
+      <Outlet context={building} project={project} />
     </>
   );
 }

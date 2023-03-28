@@ -6,7 +6,9 @@ import FloorsTableRow from "./FloorsTableRow";
 import ErrorDialog from "../../components/ErrorDialog";
 
 const ItemsList = (props) => {
-  const building = props.building;
+  const project = props.project;
+
+  const building = useOutletContext();
 
   const building_id = useParams().building_id || building.building_id;
   const [floors, setFloors] = useState(building?.floors || []);

@@ -1,5 +1,19 @@
 import { createContext, useReducer } from "react";
 
+export const projectDataActionTypes = {
+  GET_PROJECT: "GET_PROJECT",
+};
+export const buildingsActionTypes = {
+  GET_BUILDING: "GET_BUILDING",
+  CREATE_BUILDING: "CREATE_BUILDING",
+  DELETE_BUILDING: "DELETE_BUILDING",
+  UPDATE_BUILDING: "UPDATE_BUILDING",
+};
+
+export const thermalParametersActionTypes = {
+  UPDATE_THERMALPARAMETER: "UPDATE_THERMALPARAMETER",
+};
+
 export const ProjectDataContext = createContext();
 
 export const projectDataReducer = (state, action) => {
@@ -8,9 +22,9 @@ export const projectDataReducer = (state, action) => {
       return {
         project: action.payload,
       };
-    case "CREATE_BUILDING":
+    case "GET_PROJECTS_DATA":
       return {
-        project: [action.payload.buildings, ...state.project], // since it's a new single work out and an array of pre-existing projects
+        project: action.payload,
       };
 
     default:

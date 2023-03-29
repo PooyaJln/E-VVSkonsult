@@ -47,14 +47,14 @@ const router = createBrowserRouter(
           {/* <Route index element={<Projects />} loader={allProjectsLoader} /> */}
           <Route index element={<Projects />} />
           {/* <Route path=":project_id" loader={singleProjectLoader} element={<Project />}> */}
-          <Route path=":project_id" element={<Project />}>
-            <Route path="thermalParameters" element={<ThermalParameters />} />
-            <Route path="materials" element={<Materials />} />
-            <Route path="results" element={<ProjectResults />} />
-            <Route path="buildings" element={<BuildingsLayout />}>
-              <Route index element={<Buildings />} />
-              {/* <Route path=":building_id" element={<Building />} loader={singleBuildingLoader} > */}
-              {/* <Route path=":building_id" element={<Building />}>
+          {/* <Route path=":project_id" element={<Project />}> */}
+          {/* <Route path="thermalParameters" element={<ThermalParameters />} /> */}
+          {/* <Route path="materials" element={<Materials />} /> */}
+          {/* <Route path="results" element={<ProjectResults />} /> */}
+          {/* <Route path="buildings" element={<BuildingsLayout />}> */}
+          {/* <Route index element={<Buildings />} /> */}
+          {/* <Route path=":building_id" element={<Building />} loader={singleBuildingLoader} > */}
+          {/* <Route path=":building_id" element={<Building />}>
                 <Route path="results" element={<BuildingResults />} />
                 <Route path="floors" element={<FloorsLayout />}>
                   <Route path="results" element={<FloorResults />} />
@@ -63,8 +63,8 @@ const router = createBrowserRouter(
                   </Route>
                 </Route>
               </Route> */}
-            </Route>
-          </Route>
+          {/* </Route> */}
+          {/* </Route> */}
         </Route>
       </Route>
     </Route>

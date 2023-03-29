@@ -1,9 +1,15 @@
 import React, { useState } from "react";
 import { useProjectsContext } from "../../hooks/useProjectsContext";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import {
+  deleteProject,
+  updateProject,
+} from "../../slices/projects/projectsSlice";
 
 const ProjectTableRow = ({ project, setParentError }) => {
-  let { dispatch } = useProjectsContext();
+  // let { dispatch } = useProjectsContext();
+  const dispatch = useDispatch();
   const [isDisabled, setIsDisabled] = useState(true);
   const [projectName, setProjectName] = useState(project.project_name);
 
@@ -22,7 +28,8 @@ const ProjectTableRow = ({ project, setParentError }) => {
       const responseToJson = await response.json();
 
       if (response.ok) {
-        dispatch({ type: "DELETE_PROJECT", payload: responseToJson });
+        // dispatch({ type: "DELETE_PROJECT", payload: responseToJson });
+        dispatch(deleteProject(responseToJson));
       }
     }
   };
@@ -59,8 +66,8 @@ const ProjectTableRow = ({ project, setParentError }) => {
     if (response.ok) {
       setParentError(null);
       setToggle(!toggle);
-      dispatch({ type: "UPDATE_PROJECT", payload: responseToJson });
-      // console.log("project updated");
+      // dispatch({ type: "UPDATE_PROJECT", payload: responseToJson });
+      dispatch(updateProject(responseToJson));
     }
   };
 

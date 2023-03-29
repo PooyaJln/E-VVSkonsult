@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useProjectsContext } from "../../hooks/useProjectsContext";
 
+import { createProject } from "../../slices/projects/projectsSlice";
+
 const CreateProject = ({ setParentToggle, setParentError }) => {
-  const { dispatch } = useProjectsContext();
+  // const { dispatch } = useProjectsContext();
+  const dispatch = useDispatch();
   const [projectName, setProjectName] = useState("");
 
   const handleSubmit = async (e) => {
@@ -30,7 +34,8 @@ const CreateProject = ({ setParentToggle, setParentError }) => {
       setParentToggle(false);
       setProjectName("");
       console.log("new project added");
-      dispatch({ type: "CREATE_PROJECT", payload: responseToJson });
+      // dispatch({ type: "CREATE_PROJECT", payload: responseToJson });
+      dispatch(createProject(responseToJson));
     }
   };
 

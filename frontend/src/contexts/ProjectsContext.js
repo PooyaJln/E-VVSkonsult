@@ -10,7 +10,7 @@ export const projectsReducer = (state, action) => {
       };
     case "CREATE_PROJECT":
       return {
-        projects: [...state.projects, action.payload], // since it's a new single work out and an array of pre-existing projects
+        projects: [...state.projects, action.payload],
       };
     case "DELETE_PROJECT":
       return {

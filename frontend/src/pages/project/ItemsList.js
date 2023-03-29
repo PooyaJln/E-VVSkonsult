@@ -30,55 +30,6 @@ const ItemsList = () => {
     fetchProjects();
   }, [dispatch]);
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   const newProject = {
-  //     project_name: projectName,
-  //     owner_id: 8,
-  //   };
-
-  //   const createProjectURI = "http://localhost:4001/heat-loss/projects/create";
-
-  //   const response = await fetch(createProjectURI, {
-  //     method: "POST",
-  //     body: JSON.stringify(newProject),
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //   });
-
-  //   const responseToJson = await response.json();
-  //   if (!response.ok) {
-  //     setError(responseToJson.error);
-  //     console.log(error);
-  //   }
-  //   if (response.ok) {
-  //     setError(null);
-  //     setProjectName("");
-  //     setToggle(false);
-  //     console.log("new project added");
-  //     dispatch({ type: "CREATE_PROJECT", payload: responseToJson });
-  //   }
-  // };
-
-  // const handleDelete = async (id) => {
-  //   if (
-  //     window.confirm(
-  //       "Are you sure you want to delete this project? All buildings and apartments will be deleted as well"
-  //     )
-  //   ) {
-  //     const projectDeleteURI = "http://localhost:4001/heat-loss/projects/";
-  //     const response = await fetch(projectDeleteURI + id, {
-  //       method: "DELETE",
-  //     });
-  //     const responseToJson = await response.json();
-
-  //     if (response.ok) {
-  //       dispatch({ type: "DELETE_PROJECT", payload: responseToJson });
-  //     }
-  //   }
-  // };
-
   const setParentToggle = (value) => {
     setToggle(value);
   };

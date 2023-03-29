@@ -49,19 +49,25 @@ buildingDbServices.itemNameExists = async (_name, id) => {
 
 buildingDbServices.getAllItems = async (id) => {
   try {
-    const project = await db.project.findByPk(id);
+    const project = await db.project.findOne({
+      where: {
+        project_id: id,
+      },
+      attributes: ["project_id", "project_name"],
+      raw: true,
+    });
     if (!project) throw Errors.badRequestError("this project was not found");
-    let results = { project_name: project.project_name };
+
     let itemsArray = [];
     // let items = await db.project.findAll({
     //   where: {
     //     project_id: id,
     //   },
-    //   attributes: ["project_name"],
+
     //   raw: true,
     //   include: {
-    //     model: db.buildng,
-    //     attributes: ["building_name"],
+    //     model: db.building,
+    //     attributes: ["building_id", "building_name"],
     //     raw: true,
     //   },
     // });
@@ -70,7 +76,7 @@ buildingDbServices.getAllItems = async (id) => {
       where: {
         project_id: id,
       },
-      attributes: ["building_name"],
+      attributes: ["building_id", "building_name"],
     });
 
     if (items.length == 1 && items[0]["buildings.building_name"] === null) {
@@ -80,7 +86,7 @@ buildingDbServices.getAllItems = async (id) => {
       itemsArray.push(item["building_name"]);
     });
 
-    if (itemsArray) return { ...results, buildings: itemsArray };
+    if (itemsArray) return { ...project, buildings: items };
     return false;
   } catch (error) {
     throw error;

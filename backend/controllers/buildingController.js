@@ -32,7 +32,7 @@ buildingControllers.getItemInfo = async (req, res, next) => {
 // get all projects
 buildingControllers.getAllItems = async (req, res, next) => {
   try {
-    const project_id = req.params.project_id;
+    const { project_id } = req.body;
     const allItems = await buildingDbServices.getAllItems(project_id);
     res.status(200).json(allItems);
   } catch (error) {

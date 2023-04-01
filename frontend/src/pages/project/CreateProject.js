@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useProjectsContext } from "../../hooks/useProjectsContext";
 
-const CreateProject = () => {
+const CreateProject = (props) => {
   const { apiCalls, uiCalls } = useProjectsContext();
   const [projectName, setProjectName] = useState("");
 
@@ -32,7 +32,7 @@ const CreateProject = () => {
           <button onClick={(e) => handleSubmit(e)}>
             <span className="material-symbols-outlined">save</span>
           </button>
-          <button onClick={() => uiCalls.setToggle(false)}>
+          <button onClick={() => props.setParentToggle(false)}>
             <span className="material-symbols-outlined">cancel</span>
           </button>
         </form>

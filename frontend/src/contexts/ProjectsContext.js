@@ -15,6 +15,7 @@ export const projectActionTypes = {
   DELETE_PROJECT: "DELETE_PROJECT",
   UPDATE_PROJECT: "UPDATE_PROJECT",
   SET_ERROR: "SET_ERROR",
+  SET_ERROR_UNDEFINED: "SET_ERROR_UNDEFINED",
   SET_TOGGLE: "SET_TOGGLE",
   SET_OPEN: "SET_OPEN",
   SET_UPDATE_TOGGLE: "SET_UPDATE_TOGGLE",
@@ -178,12 +179,6 @@ export const ProjectsContextProvider = ({ children }) => {
     },
     setToggle: (payload) => {
       dispatch({ type: projectActionTypes.SET_TOGGLE, payload: payload });
-    },
-    setUpdateToggle: (payload) => {
-      dispatch({
-        type: projectActionTypes.SET_UPDATE_TOGGLE,
-        payload: payload,
-      });
     },
   };
 

@@ -29,6 +29,10 @@ const ProjectTableRow = ({ project }) => {
       ...item,
       project_name: projectName,
     };
+    console.log(
+      "🚀 ~ file: ProjectTableRow.js:29 ~ handleUpdateSave ~ itemToUpdate:",
+      itemToUpdate
+    );
 
     apiCalls.updateProject(item.project_id, itemToUpdate);
     setUpdateToggle(!updateToggle);

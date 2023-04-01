@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import ErrorDialog from "../../components/ErrorDialog";
 import { useProjectsContext } from "../../hooks/useProjectsContext";
@@ -7,10 +7,15 @@ import CreateProject from "./CreateProject";
 import ProjectTableRow from "./ProjectTableRow";
 
 const ItemsList = () => {
-  let { state, apiCalls, uiCalls } = useProjectsContext();
+  let { state, apiCalls } = useProjectsContext();
   let projects = state?.projects || [];
-  let error = state?.error || "";
-  let toggle = state?.toggle || false;
+  let error = state?.error || undefined;
+  // let toggle = state?.toggle || false;
+  const [toggle, setToggle] = useState(false);
+
+  const setParentToggle = (value) => {
+    setToggle(value);
+  };
 
   useEffect(() => {
     apiCalls.getProjects();
@@ -22,7 +27,8 @@ const ItemsList = () => {
       <div className="items">
         <div>
           {/* <button onClick={handlePlusButtonClick}> */}
-          <button onClick={() => uiCalls.setToggle(true)}>
+          {/* <button onClick={() => uiCalls.setToggle(true)}> */}
+          <button onClick={() => setToggle(true)}>
             <span className="material-symbols-outlined">add</span>
           </button>
           <span>add a project</span>
@@ -33,7 +39,10 @@ const ItemsList = () => {
               <th>Project name</th>
               <th></th>
             </tr>
-            {toggle ? <CreateProject /> : null}
+            {/* {toggle ? <CreateProject /> : null} */}
+            {toggle ? (
+              <CreateProject setParentToggle={setParentToggle} />
+            ) : null}
 
             {projects &&
               projects.map((project, index) => (

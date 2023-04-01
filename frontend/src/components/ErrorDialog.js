@@ -14,7 +14,7 @@ import { useProjectsContext } from "../hooks/useProjectsContext";
 
 const ErrorDialog = () => {
   let { state, uiCalls } = useProjectsContext();
-  let error = state?.error || "";
+  let error = state?.error || undefined;
   let open = state?.open || false;
 
   const handleClose = () => {

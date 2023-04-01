@@ -44,31 +44,30 @@ export const projectsReducer = (state, action) => {
         ),
       };
     case projectActionTypes.UPDATE_PROJECT:
-      _projects = state.projects;
-      let project = _projects.find(
-        (project) => project.project_id === action.payload.project_id
-      );
-      Object.assign(project, action.payload);
+      // _projects = state.projects;
+      // let project = _projects.find(
+      //   (project) => project.project_id === action.payload.project_id
+      // );
+      // Object.assign(project, action.payload);
+      _projects = state.projects.map((project) => {
+        return project.project_id === action.payload.project_id
+          ? action.payload
+          : project;
+      });
       return {
         projects: _projects,
       };
     case projectActionTypes.SET_ERROR:
-      console.log("reducer error", action);
       return {
         ...state,
         error: action.payload,
       };
+    case projectActionTypes.SET_ERROR_UNDEFINED:
+      return {
+        ...state,
+        error: undefined,
+      };
     case projectActionTypes.SET_OPEN:
-      return {
-        ...state,
-        open: action.payload,
-      };
-    case projectActionTypes.SET_OPEN_FALSE:
-      return {
-        ...state,
-        open: action.payload,
-      };
-    case projectActionTypes.SET_OPEN_TRUE:
       return {
         ...state,
         open: action.payload,
@@ -77,11 +76,6 @@ export const projectsReducer = (state, action) => {
       return {
         ...state,
         toggle: action.payload,
-      };
-    case projectActionTypes.SET_UPDATE_TOGGLE:
-      return {
-        ...state,
-        updateToggle: action.payload,
       };
 
     default:
@@ -127,6 +121,7 @@ export const ProjectsContextProvider = ({ children }) => {
       let response = await axios.patch(projectsURI + `${id}`, data);
       if (response.statusText === "OK") {
         dispatchCalls.updateProject(response.data);
+        dispatchCalls.setErrorUndef();
       }
     } catch (err) {
       const error = err.response.data.error;
@@ -139,6 +134,7 @@ export const ProjectsContextProvider = ({ children }) => {
     try {
       response = await axios.post(projectsURI + "create", data);
       dispatchCalls.createProject(response.data);
+      dispatchCalls.setErrorUndef();
     } catch (err) {
       const error = err.response.data.error;
       dispatchCalls.setError(error);
@@ -153,8 +149,11 @@ export const ProjectsContextProvider = ({ children }) => {
     setToggle: (value) => {
       dispatchCalls.setToggle(value);
     },
-    setUpdateToggle: (value) => {
-      dispatchCalls.setUpdateToggle(value);
+    setError: (value) => {
+      dispatchCalls.setError(value);
+    },
+    setErrorUndef: () => {
+      dispatchCalls.setErrorUndef();
     },
   };
 
@@ -173,6 +172,11 @@ export const ProjectsContextProvider = ({ children }) => {
     },
     setError: (payload) => {
       dispatch({ type: projectActionTypes.SET_ERROR, payload: payload });
+    },
+    setErrorUndef: () => {
+      dispatch({
+        type: projectActionTypes.SET_ERROR_UNDEFINED,
+      });
     },
     setOpen: (payload) => {
       dispatch({ type: projectActionTypes.SET_OPEN, payload: payload });

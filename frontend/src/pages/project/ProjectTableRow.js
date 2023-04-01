@@ -4,7 +4,9 @@ import { useProjectsContext } from "../../hooks/useProjectsContext";
 import { Link } from "react-router-dom";
 
 const ProjectTableRow = ({ project }) => {
-  let { apiCalls } = useProjectsContext();
+  let { state, uiCalls, apiCalls } = useProjectsContext();
+  let projects = state?.projects || [];
+  let error = state?.error || undefined;
   const [updateToggle, setUpdateToggle] = useState(false);
   const [projectName, setProjectName] = useState(project.project_name);
 
@@ -18,24 +20,33 @@ const ProjectTableRow = ({ project }) => {
     }
   };
 
-  const handleUpdateIconClick = async (id) => {
+  const handleUpdateIconClick = async (item) => {
     setUpdateToggle(true);
-    console.log("ready to Edit item", id);
+    setProjectName(item.project_name);
+    console.log("ready to Edit item", item.project_name);
   };
 
   const handleUpdateSave = async (e, item) => {
     e.preventDefault();
+
     const itemToUpdate = {
       ...item,
       project_name: projectName,
     };
-    console.log(
-      "🚀 ~ file: ProjectTableRow.js:29 ~ handleUpdateSave ~ itemToUpdate:",
-      itemToUpdate
-    );
 
+    let projectsNamesList = [];
+    state.projects.map((project) =>
+      projectsNamesList.push(project.project_name)
+    );
+    if (projectsNamesList.includes(projectName)) {
+      uiCalls.setError("This name already exists!!!");
+      uiCalls.setOpen(true);
+      setUpdateToggle(!updateToggle);
+      return;
+    }
     apiCalls.updateProject(item.project_id, itemToUpdate);
     setUpdateToggle(!updateToggle);
+    // setProjectName(item.project_name);
   };
 
   return (
@@ -60,14 +71,14 @@ const ProjectTableRow = ({ project }) => {
               placeholder={project.project_name}
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
-              onFocus={() => {}}
+              // onFocus={() => uiCalls.setErrorUndef()}
             />
           </form>
         )}
       </td>
       <td className="items-table-cell ">
         {!updateToggle ? (
-          <button onClick={() => handleUpdateIconClick(project.project_id)}>
+          <button onClick={() => handleUpdateIconClick(project)}>
             <span className="material-symbols-outlined">edit_note</span>
           </button>
         ) : (

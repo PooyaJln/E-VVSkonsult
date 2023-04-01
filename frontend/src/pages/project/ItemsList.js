@@ -19,7 +19,7 @@ const ItemsList = () => {
 
   useEffect(() => {
     apiCalls.getProjects();
-  }, [projects]);
+  }, []);
 
   return (
     <>

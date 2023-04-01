@@ -1,26 +1,37 @@
 import { createContext, useReducer } from "react";
 
-export const ProjectDataContext = createContext();
+export const projectDataInitialState = {
+  // project: {
+  //   project_id: "",
+  //   project_name: "",
+  //   buildings: [],
+  //   thermalParameters: [],
+  //   components: [],
+  // },
+  project: {},
+};
+
+export const projectDataActions = {
+  GET_PROJECT_DATA: "GET_PROJECT_DATA",
+};
 
 export const projectDataReducer = (state, action) => {
+  // const { type, payload } = action;
   switch (action.type) {
-    case "GET_PROJECTS_DATA":
+    case projectDataActions.GET_PROJECT_DATA:
       return {
         project: action.payload,
       };
-    case "CREATE_BUILDING":
-      return {
-        project: [action.payload.buildings, ...state.project], // since it's a new single work out and an array of pre-existing projects
-      };
-
     default:
       return state;
   }
 };
 
+export const ProjectDataContext = createContext();
+
 export const ProjectDataContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(projectDataReducer, {
-    project: null,
+    project: projectDataInitialState,
   });
 
   return (

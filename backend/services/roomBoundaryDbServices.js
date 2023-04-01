@@ -308,7 +308,8 @@ setProperties.setTransAndTotalHeatLoss = async (obj) => {
     // getting thermal bridge parameter
     const thermalBridgeRow = await db.thermalParameter.findOne({
       where: {
-        parameter_name: "thermal_bridge_coeff" || "thermal bridge coeff",
+        // parameter_name: "thermal_bridge_coeff" || "thermal bridge coeff",
+        parameter_name: "thermal bridge coeff",
       },
     });
     const thermal_bridge_coeff = Number(thermalBridgeRow.parameter_value);

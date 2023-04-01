@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 
 import ErrorDialog from "../../components/ErrorDialog";
 import { useProjectsContext } from "../../hooks/useProjectsContext";
@@ -7,57 +7,22 @@ import CreateProject from "./CreateProject";
 import ProjectTableRow from "./ProjectTableRow";
 
 const ItemsList = () => {
-  // const [projects, setProjects] = useState(null);
-  let { projects, dispatch } = useProjectsContext();
-  const [toggle, setToggle] = useState(false);
-  // const [projectName, setProjectName] = useState("");
-  const [error, setError] = useState(null);
-  const [open, setOpen] = useState(false);
-
-  // const inputRef = useRef();
+  let { state, apiCalls, uiCalls } = useProjectsContext();
+  let projects = state?.projects || [];
+  let error = state?.error || "";
+  let toggle = state?.toggle || false;
 
   useEffect(() => {
-    let allProjectsURI = "http://localhost:4001/heat-loss/projects/all";
-    const fetchProjects = async () => {
-      const response = await fetch(allProjectsURI);
-      const responseJson = await response.json();
-
-      if (response.ok) {
-        dispatch({ type: "SET_PROJECTS", payload: responseJson });
-      }
-    };
-
-    fetchProjects();
-  }, [dispatch]);
-
-  const setParentToggle = (value) => {
-    setToggle(value);
-  };
-
-  const setParentError = (value) => {
-    setError(value);
-    setOpen(true);
-  };
-  const setParentOpen = () => {
-    setOpen(false);
-  };
-  // const handlePlusButtonClick = () => {
-  //   setToggle(true);
-  //   setTimeout(() => {
-  //     inputRef.current.focus();
-  //     inputRef.current.scrollIntoView();
-  //   }, 0);
-  // };
+    apiCalls.getProjects();
+  }, [projects]);
 
   return (
     <>
-      {error && (
-        <ErrorDialog error={error} open={open} setParentOpen={setParentOpen} />
-      )}
+      {error && <ErrorDialog />}
       <div className="items">
         <div>
           {/* <button onClick={handlePlusButtonClick}> */}
-          <button onClick={() => setToggle(true)}>
+          <button onClick={() => uiCalls.setToggle(true)}>
             <span className="material-symbols-outlined">add</span>
           </button>
           <span>add a project</span>
@@ -68,23 +33,11 @@ const ItemsList = () => {
               <th>Project name</th>
               <th></th>
             </tr>
-            {toggle ? (
-              <CreateProject
-                toggle={toggle}
-                setParentToggle={setParentToggle}
-                setParentError={setParentError}
-                open={open}
-                setParentOpen={setParentOpen}
-              />
-            ) : null}
+            {toggle ? <CreateProject /> : null}
 
             {projects &&
               projects.map((project, index) => (
-                <ProjectTableRow
-                  key={index + 2}
-                  project={project}
-                  setParentError={setParentError}
-                />
+                <ProjectTableRow key={index + 2} project={project} />
               ))}
           </tbody>
         </table>

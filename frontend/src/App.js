@@ -4,7 +4,6 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
-import { NextUIProvider } from "@nextui-org/react";
 
 // pages
 import Home from "./pages/Home";
@@ -13,15 +12,19 @@ import Help from "./pages/Help";
 import Projects from "./pages/project/Projects";
 import Buildings from "./pages/building/ItemsList";
 import Materials from "./pages/material/Materials";
+import Building from "./pages/building/Building";
+import ThermalParameters from "./pages/thermalParameter/thermalParameters";
+import Project from "./pages/project/Project";
+import ProjectResults from "./pages/project/ProjectResults";
+import BuildingResults from "./pages/building/BuildingResults";
+import Floors from "./pages/floors/Floors";
 
 // layouts
 import RootLayout from "./layouts/RootLayout";
 import HeatLossLayout from "./layouts/HeatLossLayout";
-import ThermalParameters from "./pages/thermalParameter/thermalParameters";
-import Project from "./pages/project/Project";
 import ProjectsLayout from "./pages/project/ProjectsLayout";
 import BuildingsLayout from "./pages/building/BuildingsLayout";
-import Building from "./pages/building/Building";
+import FloorsLayout from "./pages/floors/FloorsLayout";
 
 //Loaders
 import allProjectsLoader from "./pages/project/loaders/allProjectsLoader";
@@ -30,10 +33,6 @@ import buildingsLoader from "./pages/building/loaders/buildingsLoader";
 import materialsLoader from "./pages/material/loaders/materialsLoader";
 import singleBuildingLoader from "./pages/building/loaders/singleBuildingLoader";
 import ProjectCreateAction from "./pages/project/actions/projectCreateAction";
-import ProjectResults from "./pages/project/ProjectResults";
-import BuildingResults from "./pages/building/BuildingResults";
-import FloorsLayout from "./pages/floors/FloorsLayout";
-import Floors from "./pages/floors/Floors";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -47,10 +46,14 @@ const router = createBrowserRouter(
           element={<ProjectsLayout />}
           // action={ProjectCreateAction}
         >
-          <Route index element={<Projects />} loader={allProjectsLoader} />
+          <Route
+            index
+            element={<Projects />}
+            // loader={allProjectsLoader}
+          />
           <Route
             path=":project_id"
-            loader={singleProjectLoader}
+            // loader={singleProjectLoader}
             element={<Project />}
           >
             <Route
@@ -69,7 +72,7 @@ const router = createBrowserRouter(
               <Route
                 path=":building_id"
                 element={<Building />}
-                loader={singleBuildingLoader}
+                // loader={singleBuildingLoader}
               >
                 <Route path="floors" element={<FloorsLayout />}>
                   <Route index element={<Floors />} />

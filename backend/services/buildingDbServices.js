@@ -70,7 +70,7 @@ buildingDbServices.getAllItems = async (id) => {
       where: {
         project_id: id,
       },
-      attributes: ["building_name"],
+      attributes: ["building_id", "building_name"],
     });
 
     if (items.length == 1 && items[0]["buildings.building_name"] === null) {
@@ -80,7 +80,7 @@ buildingDbServices.getAllItems = async (id) => {
       itemsArray.push(item["building_name"]);
     });
 
-    if (itemsArray) return { ...results, buildings: itemsArray };
+    if (items) return { ...results, buildings: items };
     return false;
   } catch (error) {
     throw error;

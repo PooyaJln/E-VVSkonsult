@@ -4,29 +4,55 @@ import { useOutletContext, useParams } from "react-router-dom";
 import CreateBuilding from "./CreateBuilding";
 import BuildingsTableRow from "./BuildingsTableRow";
 import ErrorDialog from "../../components/ErrorDialog";
+import { useBuildingsContext } from "../../hooks/useBuildingsContext";
+import { buildingsActionTypes } from "../../contexts/BuildingsContext";
 
 const ItemsList = () => {
   const project = useOutletContext();
+  // const { buildings, dispatch } = useBuildingsContext();
 
-  const project_id = useParams().project_id || project.project_id;
+  // const project_id = useParams().project_id || project.project_id;
+  const project_id = useParams().project_id;
   const [buildings, setBuildings] = useState(project?.buildings || []);
+
   const [toggle, setToggle] = useState(false);
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
 
-  const buildingsList = async () => {
-    let projectsDataURI =
-      "http://localhost:4001/heat-loss/projects/" + project_id + "/data";
-    const fetchProject = async () => {
-      const response = await fetch(projectsDataURI);
-      const responseJson = await response.json();
-      if (response.ok) {
-        setBuildings(responseJson.buildings);
-      }
-    };
+  // const buildingsList = async () => {
+  //   let projectsDataURI =
+  //     "http://localhost:4001/heat-loss/projects/" + project_id + "/data";
+  //   const fetchProject = async () => {
+  //     const response = await fetch(projectsDataURI);
+  //     const responseJson = await response.json();
+  //     if (response.ok) {
+  //       setBuildings(responseJson.buildings);
+  //     }
+  //   };
 
-    fetchProject();
-  };
+  //   fetchProject();
+  // };
+  // useEffect(() => {
+  //   let allBuildingsURI =
+  //     "http://localhost:4001/heat-loss/buildings/" + project_id + "/all";
+  //   const fetchProjects = async () => {
+  //     const response = await fetch(allBuildingsURI);
+  //     const responseJson = await response.json();
+  //     console.log(
+  //       "🚀 ~ file: ItemsList.js:24 ~ fetchProjects ~ responseJson:",
+  //       responseJson
+  //     );
+
+  //     if (response.ok) {
+  //       dispatch({
+  //         type: buildingsActionTypes.GET_BUILDINGS,
+  //         payload: responseJson.buildings,
+  //       });
+  //     }
+  //   };
+
+  //   fetchProjects();
+  // }, [project_id, dispatch]);
 
   const setParentToggle = (value) => {
     setToggle(value);
@@ -40,6 +66,11 @@ const ItemsList = () => {
   const setParentOpen = () => {
     setOpen(false);
   };
+
+  useEffect(() => {
+    setBuildings(project?.buildings);
+    // }, [project?.buildings]);
+  }, [project]);
 
   // const handleSubmit = async (e) => {
   //   e.preventDefault();
@@ -96,7 +127,7 @@ const ItemsList = () => {
             // onClick={handleCreatePlusButtonClick}
             onClick={() => setToggle(true)}
           >
-            <span class="material-symbols-outlined">add</span>
+            <span className="material-symbols-outlined">add</span>
           </button>
           <span>add a building</span>
         </div>
@@ -115,8 +146,8 @@ const ItemsList = () => {
                   // open={open}
                   setParentOpen={setParentOpen}
                   buildings={buildings}
-                  setBuildings={setBuildings}
-                  buildingsList={buildingsList}
+                  // setBuildings={setBuildings}
+                  // buildingsList={buildingsList}
                   // ref={createComponentInputRef}
                 />
               </>
@@ -127,11 +158,11 @@ const ItemsList = () => {
                   key={index + 2}
                   building={building}
                   buildings={buildings}
-                  setBuildings={setBuildings}
+                  // setBuildings={setBuildings}
                   setParentError={setParentError}
                   open={open}
                   setParentOpen={setParentOpen}
-                  project={project}
+                  // project={project}
                   // buildingsList={buildingsList}
                 />
               ))}

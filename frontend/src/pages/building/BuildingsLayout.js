@@ -4,8 +4,8 @@ import { useProjectDataContext } from "../../hooks/useProjectDataContext";
 
 const BuildingsLayout = () => {
   const project = useOutletContext();
-
   return <Outlet context={project} />;
+  // return <Outlet />;
 };
 
 export default BuildingsLayout;

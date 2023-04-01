@@ -106,22 +106,22 @@ const BuildingsTableRow = ({
       <td className="items-table-cell ">
         {toggle ? (
           <button onClick={() => handleUpdate(building.building_id)}>
-            <span class="material-symbols-outlined">edit_note</span>
+            <span className="material-symbols-outlined">edit_note</span>
           </button>
         ) : (
           <>
             <button onClick={(e) => handleUpdateSave(e, building)}>
-              <span class="material-symbols-outlined">save</span>
+              <span className="material-symbols-outlined">save</span>
             </button>
             <button onClick={() => setToggle(!toggle)}>
-              <span class="material-symbols-outlined">cancel</span>
+              <span className="material-symbols-outlined">cancel</span>
             </button>
           </>
         )}
       </td>
       <td className="items-table-cell">
         <button onClick={() => handleDelete(building.building_id)}>
-          <span class="material-symbols-outlined">delete</span>
+          <span className="material-symbols-outlined">delete</span>
         </button>
       </td>
     </tr>

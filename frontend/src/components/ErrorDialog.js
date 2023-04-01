@@ -6,19 +6,25 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
+import { useProjectsContext } from "../hooks/useProjectsContext";
 
 // const Transition = forwardRef(function Transition(props, ref) {
 //   return <Slide direction="up" ref={ref} {...props} />;
 // });
 
-const ErrorDialog = (props) => {
+const ErrorDialog = () => {
+  let { state, uiCalls } = useProjectsContext();
+  let error = state?.error || "";
+  let open = state?.open || false;
+
   const handleClose = () => {
-    props.setParentOpen();
+    uiCalls.setOpen(false);
   };
+
   return (
     <div>
       <Dialog
-        open={props.open}
+        open={open}
         // TransitionComponent={Transition}
         // keepMounted
         onClose={handleClose}
@@ -28,7 +34,7 @@ const ErrorDialog = (props) => {
         <DialogTitle id="alert-dialog-title">{"Error"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {props.error}
+            {error}
           </DialogContentText>
         </DialogContent>
         <DialogActions>

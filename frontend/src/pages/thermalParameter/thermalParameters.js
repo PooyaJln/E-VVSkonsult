@@ -1,10 +1,13 @@
 import ItemsList from "./ItemsList";
+import { ParametersContextProvider } from "../../contexts/ParametersContext";
 
 const ThermalParameters = () => {
   return (
-    <div className="thermalparameter">
-      <ItemsList />
-    </div>
+    <ParametersContextProvider>
+      <div className="thermalparameter">
+        <ItemsList />
+      </div>
+    </ParametersContextProvider>
   );
 };
 

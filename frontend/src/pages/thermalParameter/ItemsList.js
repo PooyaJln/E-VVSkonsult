@@ -1,28 +1,14 @@
 import { useEffect } from "react";
 import { useLoaderData, useOutletContext, useParams } from "react-router-dom";
-import { useProjectDataContext } from "../../hooks/useProjectDataContext";
-
-import ItemComponent from "./ItemComponent";
+import { useParametersContext } from "../../hooks/useParametersContext";
+import ItemsTableRow from "./ItemsTableRow";
 
 const ItemsList = () => {
   // const project = useLoaderData();
-  const project = useOutletContext();
+  // const project = useOutletContext();
   const { project_id } = useParams();
-  let { dispatch } = useProjectDataContext();
-  // useEffect(() => {
-  //   let projectURI = `http://localhost:4001/heat-loss/projects/${project_id}/data`;
-  //   const fetchProject = async () => {
-  //     const response = await fetch(projectURI);
-  //     const responseJson = await response.json();
-  //     if (response.ok) {
-  //       dispatch({ type: "GET_PROJECTS_DATA", payload: responseJson });
-  //     }
-  //   };
-
-  //   fetchProject();
-  // }, [dispatch, project_id]);
-  const newThermalParameters = project.thermalParameters;
-
+  const { state, apiCalls, uiCalls } = useParametersContext();
+  let newThermalParameters = state?.items || [];
   const initialThermalParameters = [
     {
       parameter_name: "Specific infiltration flow",
@@ -36,7 +22,7 @@ const ItemsList = () => {
     {
       parameter_name: "thermal bridge coeff",
       parameter_value: "",
-      parameter_unit: null,
+      parameter_unit: "-",
     },
     {
       parameter_name: "air density",
@@ -54,9 +40,26 @@ const ItemsList = () => {
     },
   ];
 
+  // useEffect(() => {
+  //   let projectURI = `http://localhost:4001/heat-loss/projects/${project_id}/data`;
+  //   const fetchProject = async () => {
+  //     const response = await fetch(projectURI);
+  //     const responseJson = await response.json();
+  //     if (response.ok) {
+  //       dispatch({ type: "GET_PROJECTS_DATA", payload: responseJson });
+  //     }
+  //   };
+
+  //   fetchProject();
+  // }, [dispatch, project_id]);
+  // const newThermalParameters = project.thermalParameters;
+  useEffect(() => {
+    apiCalls.getItems(project_id);
+  }, []);
+
   initialThermalParameters.forEach((item) => {
     newThermalParameters.forEach((_item) => {
-      if (item.parameter_name == _item.parameter_name) {
+      if (item.parameter_name === _item.parameter_name) {
         item["parameter_value"] = _item.parameter_value;
         item["parameter_id"] = _item.parameter_id;
       }
@@ -74,10 +77,9 @@ const ItemsList = () => {
           </tr>
           {initialThermalParameters &&
             initialThermalParameters.map((thermalParameter, index) => (
-              <ItemComponent
+              <ItemsTableRow
                 key={index + 2}
                 thermalParameter={thermalParameter}
-                project={project}
               />
             ))}
         </tbody>

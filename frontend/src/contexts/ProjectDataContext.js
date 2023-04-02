@@ -15,14 +15,10 @@ export const projectDataInitialState = {
 
 export const projectDataActions = {
   GET_PROJECT_DATA: "GET_PROJECT_DATA",
-  SET_BUILDINGS: "SET_BUILDINGS",
-  CREATE_BUILDING: "CREATE_BUILDING",
-  DELETE_BUILDING: "DELETE_BUILDING",
-  UPDATE_BUILDING: "UPDATE_BUILDING",
+  UPDATE_PARAMETER: "UPDATE_PARAMETER",
   CREATE_COMPONENT: "CREATE_COMPONENT",
   DELETE_COMPONENT: "DELETE_COMPONENT",
   UPDATE_COMPONENT: "UPDATE_COMPONENT",
-  UPDATE_PARAMETER: "UPDATE_PARAMETER",
   SET_ERROR: "SET_ERROR",
   SET_ERROR_UNDEFINED: "SET_ERROR_UNDEFINED",
   SET_TOGGLE: "SET_TOGGLE",
@@ -38,17 +34,19 @@ export const projectDataReducer = (state, action) => {
         ...state,
         project: action.payload,
       };
-    case projectDataActions.CREATE_BUILDING:
+    case projectDataActions.UPDATE_PROJECT:
+      console.log(action.payload);
+      _project = state.project;
       console.log(
-        "🚀 ~ file: ProjectDataContext.js:44 ~ projectDataReducer ~ payload:",
-        action.payload
-      );
-      _project = { ...state.project };
-      _project.buildings.push(action.payload);
-      console.log(
-        "🚀 ~ file: ProjectDataContext.js:44 ~ projectDataReducer ~ _project:",
+        "🚀 ~ file: ProjectDataContext.js:40 ~ projectDataReducer ~ _project:",
         _project
       );
+      let thermalParameters = _project.thermalParameters.map((parameter) => {
+        return parameter.parameter_id === action.payload.parameter_id
+          ? action.payload
+          : parameter;
+      });
+      _project.thermalParameters = thermalParameters;
       return {
         ...state,
         project: _project,
@@ -85,14 +83,15 @@ export const ProjectDataContextProvider = ({ children }) => {
     state: projectDataInitialState,
   });
   let projectDataURI = "http://localhost:4001/heat-loss/projects/";
-  let buildingsURI = "http://localhost:4001/heat-loss/buildings/";
+  let thermalParametersURI =
+    "http://localhost:4001/heat-loss/thermal-parameters/";
 
   const projectDataDispatchCalls = {
     getProjectData: (payload) => {
       dispatch({ type: projectDataActions.GET_PROJECT_DATA, payload: payload });
     },
-    createBuilding: (payload) => {
-      dispatch({ type: projectDataActions.SET_BUILDINGS, payload: payload });
+    updateParameter: (payload) => {
+      dispatch({ type: projectDataActions.UPDATE_PARAMETER, payload: payload });
     },
   };
 
@@ -111,18 +110,10 @@ export const ProjectDataContextProvider = ({ children }) => {
         );
       }
     },
-    createBuilding: async (data) => {
-      try {
-        const response = await axios.post(`${buildingsURI}/create`, data);
-        if (response.statusText === "OK") {
-          projectDataDispatchCalls.createBuilding(response.data);
-        }
-      } catch (err) {
-        const error = err.response.data.error;
-        console.log(
-          "file: ProjectDataContext.js:112 ~ getProjectData: ~ error:",
-          error
-        );
+    updateParameter: async (id, data) => {
+      const response = await axios.patch(`${thermalParametersURI}${id}`, data);
+      if (response.statusText === "OK") {
+        projectDataDispatchCalls.getProjectData(response.data);
       }
     },
   };

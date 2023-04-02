@@ -5,9 +5,11 @@ import { BuildingsContextProvider } from "../../contexts/BuildingsContext";
 function ProjectsLayout() {
   return (
     <ProjectDataContextProvider>
-      <BuildingsContextProvider>
-        <Outlet />
-      </BuildingsContextProvider>
+      {/* <BuildingsContextProvider> */}
+
+      <Outlet />
+
+      {/* </BuildingsContextProvider> */}
     </ProjectDataContextProvider>
   );
 }

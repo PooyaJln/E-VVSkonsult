@@ -5,8 +5,8 @@ import { useBuildingsContext } from "../../hooks/useBuildingsContext";
 const BuildingsTableRow = ({ building }) => {
   const { state, apiCalls, uiCalls } = useBuildingsContext();
 
-  const [itemName, setItemName] = useState(building.building_name);
   const [updateToggle, setUpdateToggle] = useState(false);
+  const [itemName, setItemName] = useState(building.building_name);
 
   const handleDelete = async (id) => {
     if (

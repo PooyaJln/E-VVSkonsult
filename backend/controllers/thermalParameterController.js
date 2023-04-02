@@ -14,6 +14,15 @@ thermalParameterControllers.getAllItems = async (req, res, next) => {
     next(error);
   }
 };
+thermalParameterControllers.createItem = async (req, res, next) => {
+  try {
+    // const project_id = req.params.project_id;
+    const newParameter = await thermalParameterDbServices.createItem(req.body);
+    res.status(200).json(newParameter);
+  } catch (error) {
+    next(error);
+  }
+};
 
 // update
 thermalParameterControllers.updateItem = async (req, res, next) => {

@@ -8,6 +8,7 @@ const thermalParameterControllers = require("../controllers/thermalParameterCont
 
 // show all
 router.get("/:project_id/all", thermalParameterControllers.getAllItems);
+router.post("/:project_id/create", thermalParameterControllers.createItem);
 
 // update
 router.patch("/:id", thermalParameterControllers.updateItem);

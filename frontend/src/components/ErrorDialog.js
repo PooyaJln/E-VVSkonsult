@@ -12,19 +12,20 @@ import { useProjectsContext } from "../hooks/useProjectsContext";
 //   return <Slide direction="up" ref={ref} {...props} />;
 // });
 
-const ErrorDialog = () => {
-  let { state, uiCalls } = useProjectsContext();
-  let error = state?.error || undefined;
-  let open = state?.open || false;
+const ErrorDialog = (props) => {
+  // let { state, uiCalls } = useProjectsContext();
+  // let error = state?.error || undefined;
+  // let open = state?.open || false;
 
   const handleClose = () => {
-    uiCalls.setOpen(false);
+    props.setParentOpen(false);
+    // props.setParentToggle(true);
   };
 
   return (
     <div>
       <Dialog
-        open={open}
+        open={props.open}
         // TransitionComponent={Transition}
         // keepMounted
         onClose={handleClose}
@@ -34,7 +35,7 @@ const ErrorDialog = () => {
         <DialogTitle id="alert-dialog-title">{"Error"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {error}
+            {props.error}
           </DialogContentText>
         </DialogContent>
         <DialogActions>

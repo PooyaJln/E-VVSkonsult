@@ -15,6 +15,7 @@ const CreateProject = (props) => {
     apiCalls.createProject(newProject);
     setProjectName("");
     props.setParentToggle(false);
+    // !props.error ? props.setParentToggle(false) : props.setParentToggle(true);
   };
 
   return (
@@ -26,7 +27,6 @@ const CreateProject = (props) => {
             placeholder="type in for a new project"
             name="project_name"
             onChange={(e) => setProjectName(e.target.value)}
-            onFocus={() => uiCalls.setErrorUndef()}
             value={projectName}
             autoFocus
           />

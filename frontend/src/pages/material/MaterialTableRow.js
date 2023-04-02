@@ -135,22 +135,22 @@ const ItemTableRow = ({ component, components, setComponents }) => {
       <td className="materials-table-cell-icon ">
         {toggle ? (
           <button onClick={() => handleUpdate(component.component_id)}>
-            <span class="material-symbols-outlined">edit_note</span>
+            <span className="material-symbols-outlined">edit_note</span>
           </button>
         ) : (
           <>
             <button onClick={(e) => handleUpdateSave(e, component)}>
-              <span class="material-symbols-outlined">save</span>
+              <span className="material-symbols-outlined">save</span>
             </button>
             <button onClick={() => setToggle(!toggle)}>
-              <span class="material-symbols-outlined">cancel</span>
+              <span className="material-symbols-outlined">cancel</span>
             </button>
           </>
         )}
       </td>
       <td className="materials-table-cell-icon">
         <button onClick={() => handleDelete(component.component_id)}>
-          <span class="material-symbols-outlined">delete</span>
+          <span className="material-symbols-outlined">delete</span>
         </button>
       </td>
     </tr>

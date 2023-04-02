@@ -62,7 +62,7 @@ const ItemsList = () => {
             onClick={handlePlusButtonClick}
             // onClick={() => setToggle(true)}
           >
-            <span class="material-symbols-outlined">add</span>
+            <span className="material-symbols-outlined">add</span>
           </button>
           <span>add a Component</span>
         </div>

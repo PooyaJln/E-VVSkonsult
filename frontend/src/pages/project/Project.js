@@ -2,31 +2,17 @@
 
 import { Outlet, useParams } from "react-router-dom";
 import ProjectNavBar from "../../layouts/ProjectNavBar";
-import { projectDataActions } from "../../contexts/ProjectDataContext";
 import { useProjectDataContext } from "../../hooks/useProjectDataContext";
 import { useEffect } from "react";
 
 const Project = () => {
   const project_id = useParams().project_id;
-  const { project, dispatch } = useProjectDataContext();
+  const { state, projectDataApiCalls } = useProjectDataContext();
+  const project = state?.project || {};
 
   useEffect(() => {
-    let projectDataURI =
-      "http://localhost:4001/heat-loss/projects/" + project_id + "/data";
-    const fetchProjectData = async () => {
-      const response = await fetch(projectDataURI);
-      const responseJson = await response.json();
-
-      if (response.ok) {
-        dispatch({
-          type: projectDataActions.GET_PROJECT_DATA,
-          payload: responseJson,
-        });
-      }
-    };
-
-    fetchProjectData();
-  }, [project_id, dispatch]);
+    projectDataApiCalls.getProjectData(project_id);
+  }, []);
 
   return (
     <>

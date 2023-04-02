@@ -6,7 +6,7 @@ export const projectsInitialState = {
   error: undefined,
   open: false,
   toggle: false,
-  updateToggle: false,
+  createToggle: false,
 };
 
 export const projectActionTypes = {
@@ -18,6 +18,7 @@ export const projectActionTypes = {
   SET_ERROR_UNDEFINED: "SET_ERROR_UNDEFINED",
   SET_TOGGLE: "SET_TOGGLE",
   SET_OPEN: "SET_OPEN",
+  SET_CREATE_TOGGLE: "SET_CREATE_TOGGLE",
   SET_UPDATE_TOGGLE: "SET_UPDATE_TOGGLE",
 };
 
@@ -44,11 +45,6 @@ export const projectsReducer = (state, action) => {
         ),
       };
     case projectActionTypes.UPDATE_PROJECT:
-      // _projects = state.projects;
-      // let project = _projects.find(
-      //   (project) => project.project_id === action.payload.project_id
-      // );
-      // Object.assign(project, action.payload);
       _projects = state.projects.map((project) => {
         return project.project_id === action.payload.project_id
           ? action.payload
@@ -77,11 +73,17 @@ export const projectsReducer = (state, action) => {
         ...state,
         toggle: action.payload,
       };
+    case projectActionTypes.SET_CREATE_TOGGLE:
+      return {
+        ...state,
+        createToggle: action.payload,
+      };
 
     default:
       return state;
   }
 };
+
 export const ProjectsContext = createContext();
 
 export const ProjectsContextProvider = ({ children }) => {
@@ -90,72 +92,6 @@ export const ProjectsContextProvider = ({ children }) => {
   });
 
   let projectsURI = "http://localhost:4001/heat-loss/projects/";
-
-  const apiCalls = {};
-  apiCalls.getProjects = async () => {
-    try {
-      const response = await axios.get(projectsURI + "all");
-      if (response.statusText === "OK") {
-        dispatchCalls.getProjects(response.data);
-      }
-    } catch (err) {
-      const error = err.response.data.error;
-      dispatchCalls.setError(error);
-      dispatchCalls.setOpen(true);
-    }
-  };
-  apiCalls.deleteProject = async (id) => {
-    try {
-      const response = await axios.delete(projectsURI + `${id}`);
-      if (response.statusText === "OK") {
-        dispatchCalls.deleteProject(response.data);
-      }
-    } catch (err) {
-      const error = err.response.data.error;
-      dispatchCalls.setError(error);
-      dispatchCalls.setOpen(true);
-    }
-  };
-  apiCalls.updateProject = async (id, data) => {
-    try {
-      let response = await axios.patch(projectsURI + `${id}`, data);
-      if (response.statusText === "OK") {
-        dispatchCalls.updateProject(response.data);
-        dispatchCalls.setErrorUndef();
-      }
-    } catch (err) {
-      const error = err.response.data.error;
-      dispatchCalls.setError(error);
-      dispatchCalls.setOpen(true);
-    }
-  };
-  apiCalls.createProject = async (data) => {
-    let response;
-    try {
-      response = await axios.post(projectsURI + "create", data);
-      dispatchCalls.createProject(response.data);
-      dispatchCalls.setErrorUndef();
-    } catch (err) {
-      const error = err.response.data.error;
-      dispatchCalls.setError(error);
-      dispatchCalls.setOpen(true);
-    }
-  };
-
-  const uiCalls = {
-    setOpen: (value) => {
-      dispatchCalls.setOpen(value);
-    },
-    setToggle: (value) => {
-      dispatchCalls.setToggle(value);
-    },
-    setError: (value) => {
-      dispatchCalls.setError(value);
-    },
-    setErrorUndef: () => {
-      dispatchCalls.setErrorUndef();
-    },
-  };
 
   const dispatchCalls = {
     getProjects: (payload) => {
@@ -183,6 +119,91 @@ export const ProjectsContextProvider = ({ children }) => {
     },
     setToggle: (payload) => {
       dispatch({ type: projectActionTypes.SET_TOGGLE, payload: payload });
+    },
+    setCreateToggle: (payload) => {
+      dispatch({
+        type: projectActionTypes.SET_CREATE_TOGGLE,
+        payload: payload,
+      });
+    },
+  };
+
+  const apiCalls = {};
+  apiCalls.getProjects = async () => {
+    try {
+      const response = await axios.get(projectsURI + "all");
+      if (response.statusText === "OK") {
+        dispatchCalls.getProjects(response.data);
+      }
+    } catch (err) {
+      const error = err.response.data.error;
+      dispatchCalls.setError(error);
+    }
+  };
+  apiCalls.createProject = async (data) => {
+    let response;
+    try {
+      response = await axios.post(projectsURI + "create", data);
+      dispatchCalls.createProject(response.data);
+      dispatchCalls.setErrorUndef();
+      dispatchCalls.setCreateToggle(false);
+    } catch (err) {
+      const error = err.response.data.error;
+      dispatchCalls.setError(error);
+      dispatchCalls.setOpen(true);
+      dispatchCalls.setCreateToggle(true);
+    }
+  };
+  apiCalls.deleteProject = async (id) => {
+    try {
+      const response = await axios.delete(projectsURI + `${id}`);
+      if (response.statusText === "OK") {
+        dispatchCalls.deleteProject(response.data);
+      }
+    } catch (err) {
+      const error = err.response.data.error;
+      dispatchCalls.setError(error);
+      dispatchCalls.setOpen(true);
+    }
+  };
+  apiCalls.updateProject = async (id, data) => {
+    try {
+      let projectsNamesList = [];
+      state.projects.map((project) =>
+        projectsNamesList.push(project.project_name)
+      );
+      if (projectsNamesList.includes(data.project_name)) {
+        dispatchCalls.setError("This name already exists!!!");
+        uiCalls.setOpen(true);
+      } else {
+        let response = await axios.patch(projectsURI + `${id}`, data);
+        if (response.statusText === "OK") {
+          dispatchCalls.updateProject(response.data);
+          dispatchCalls.setErrorUndef();
+        }
+      }
+    } catch (err) {
+      const error = err.response.data.error;
+      dispatchCalls.setError(error);
+      dispatchCalls.setOpen(true);
+    }
+  };
+
+  const uiCalls = {
+    setOpen: (value) => {
+      dispatchCalls.setOpen(value);
+    },
+    setToggle: (value) => {
+      dispatchCalls.setToggle(value);
+    },
+    setError: (value) => {
+      dispatchCalls.setError(value);
+    },
+    setCreateToggle: (value) => {
+      dispatchCalls.setCreateToggle(value);
+    },
+    setErrorUndef: () => {
+      dispatchCalls.setErrorUndef();
     },
   };
 

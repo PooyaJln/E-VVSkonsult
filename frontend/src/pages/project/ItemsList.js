@@ -7,14 +7,26 @@ import CreateProject from "./CreateProject";
 import ProjectTableRow from "./ProjectTableRow";
 
 const ItemsList = () => {
-  let { state, apiCalls } = useProjectsContext();
+  let { state, apiCalls, uiCalls } = useProjectsContext();
   let projects = state?.projects || [];
-  let error = state?.error || undefined;
-  // let toggle = state?.toggle || false;
+  let error = state?.error;
+  let open = state?.open;
+  const createToggle = state?.createToggle;
   const [toggle, setToggle] = useState(false);
 
   const setParentToggle = (value) => {
     setToggle(value);
+  };
+  const setParentOpen = (value) => {
+    uiCalls.setOpen(value);
+  };
+  const setParentError = (value) => {
+    uiCalls.setError(value);
+  };
+
+  const handleCreatePlusButtonClick = () => {
+    setToggle(true);
+    uiCalls.setCreateToggle(true);
   };
 
   useEffect(() => {
@@ -23,12 +35,19 @@ const ItemsList = () => {
 
   return (
     <>
-      {error && <ErrorDialog />}
+      {error && (
+        <ErrorDialog
+          error={error}
+          open={open}
+          setParentOpen={setParentOpen}
+          setParentToggle={setParentToggle}
+        />
+      )}
       <div className="items">
         <div>
-          {/* <button onClick={handlePlusButtonClick}> */}
-          {/* <button onClick={() => uiCalls.setToggle(true)}> */}
-          <button onClick={() => setToggle(true)}>
+          <button onClick={handleCreatePlusButtonClick}>
+            {/* <button onClick={() => uiCalls.setCreateToggle(true)}> */}
+            {/* <button onClick={() => setToggle(true)}> */}
             <span className="material-symbols-outlined">add</span>
           </button>
           <span>add a project</span>
@@ -40,9 +59,14 @@ const ItemsList = () => {
               <th></th>
             </tr>
             {/* {toggle ? <CreateProject /> : null} */}
-            {toggle ? (
-              <CreateProject setParentToggle={setParentToggle} />
-            ) : null}
+            {toggle && (
+              <CreateProject
+                error={error}
+                setParentError={setParentError}
+                setParentToggle={setParentToggle}
+              />
+            )}
+            {/* ) : null} */}
 
             {projects &&
               projects.map((project, index) => (

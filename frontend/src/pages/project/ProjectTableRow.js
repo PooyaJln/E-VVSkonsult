@@ -7,8 +7,8 @@ const ProjectTableRow = ({ project }) => {
   let { state, uiCalls, apiCalls } = useProjectsContext();
   let projects = state?.projects || [];
   let error = state?.error || undefined;
-  const [updateToggle, setUpdateToggle] = useState(false);
   const [projectName, setProjectName] = useState(project.project_name);
+  const [updateToggle, setUpdateToggle] = useState(false);
 
   const handleDelete = async (id) => {
     if (
@@ -28,24 +28,23 @@ const ProjectTableRow = ({ project }) => {
 
   const handleUpdateSave = async (e, item) => {
     e.preventDefault();
-
     const itemToUpdate = {
       ...item,
       project_name: projectName,
     };
 
-    let projectsNamesList = [];
-    state.projects.map((project) =>
-      projectsNamesList.push(project.project_name)
-    );
-    if (projectsNamesList.includes(projectName)) {
-      uiCalls.setError("This name already exists!!!");
-      uiCalls.setOpen(true);
-      setUpdateToggle(!updateToggle);
-      return;
-    }
     apiCalls.updateProject(item.project_id, itemToUpdate);
     setUpdateToggle(!updateToggle);
+    // let projectsNamesList = [];
+    // state.projects.map((project) =>
+    //   projectsNamesList.push(project.project_name)
+    // );
+    // if (projectsNamesList.includes(projectName)) {
+    //   uiCalls.setError("This name already exists!!!");
+    //   uiCalls.setOpen(true);
+    //   setUpdateToggle(!updateToggle);
+    //   return;
+    // }
     // setProjectName(item.project_name);
   };
 
@@ -71,6 +70,7 @@ const ProjectTableRow = ({ project }) => {
               placeholder={project.project_name}
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
+              autoFocus
               // onFocus={() => uiCalls.setErrorUndef()}
             />
           </form>
@@ -86,7 +86,7 @@ const ProjectTableRow = ({ project }) => {
             <button onClick={(e) => handleUpdateSave(e, project)}>
               <span className="material-symbols-outlined">save</span>
             </button>
-            <button onClick={() => setUpdateToggle(false)}>
+            <button onClick={() => setUpdateToggle(!updateToggle)}>
               <span className="material-symbols-outlined">cancel</span>
             </button>
           </>

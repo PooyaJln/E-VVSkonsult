@@ -1,16 +1,12 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useBuildingsContext } from "../../hooks/useBuildingsContext";
 
-const BuildingsTableRow = ({
-  building,
-  buildings,
-  setBuildings,
-  setParentError,
-}) => {
-  const [isDisabled, setIsDisabled] = useState(true);
+const BuildingsTableRow = ({ building }) => {
+  const { state, apiCalls, uiCalls } = useBuildingsContext();
 
   const [itemName, setItemName] = useState(building.building_name);
-  const [toggle, setToggle] = useState(true);
+  const [updateToggle, setUpdateToggle] = useState(false);
 
   const handleDelete = async (id) => {
     if (
@@ -18,25 +14,14 @@ const BuildingsTableRow = ({
         "Are you sure you want to delete this building? All floors and apartments will be deleted as well"
       )
     ) {
-      const itemDeleteURI = "http://localhost:4001/heat-loss/buildings/";
-      const response = await fetch(itemDeleteURI + id, {
-        method: "DELETE",
-      });
-      const responseToJson = await response.json();
-
-      console.log(responseToJson.message);
-      let _buildings = buildings.filter(
-        (_building) => _building.building_id !== responseToJson.building_id
-      );
-      setBuildings(_buildings);
+      apiCalls.deleteBuilding(id);
     }
   };
 
-  const handleUpdate = async (id) => {
-    setToggle(!toggle);
-    setIsDisabled(false);
-    console.log("ready to update");
-    console.log("Edit item", id);
+  const handleUpdateIconClick = async (item) => {
+    setUpdateToggle(!updateToggle);
+    setItemName(item.building_name);
+    console.log("Edit item", item.building_name);
   };
 
   const handleUpdateSave = async (e, item) => {
@@ -45,38 +30,14 @@ const BuildingsTableRow = ({
       ...item,
       building_name: itemName,
     };
-    const projectUpdateURI = "http://localhost:4001/heat-loss/buildings/";
-    const response = await fetch(projectUpdateURI + item.building_id, {
-      method: "PATCH",
-      body: JSON.stringify(itemToUpdate),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const responseToJson = await response.json();
-    if (!response.ok) {
-      console.log(responseToJson.error);
-      setParentError(responseToJson.error);
-      // setError(responseToJson.error);
-      // console.log(error);
-    }
-    if (response.ok) {
-      setParentError(null);
-      setToggle(!toggle);
-      let _buildings = buildings;
-      let updatedBuilding = _buildings.find(
-        (_building) => _building.building_id === responseToJson.building_id
-      );
-      Object.assign(updatedBuilding, responseToJson);
-      setBuildings(_buildings);
-      // console.log("building updated");
-    }
+    apiCalls.updateBuilding(item.building_id, itemToUpdate);
+    setUpdateToggle(!updateToggle);
   };
 
   return (
     <tr className="items-table-data-row">
       <td className="items-table-cell-name">
-        {toggle ? (
+        {!updateToggle ? (
           <Link
             to={`${building.building_id}`}
             className="items-table-cell-name-a"
@@ -84,28 +45,24 @@ const BuildingsTableRow = ({
             {building.building_name}
           </Link>
         ) : (
-          <>
-            <form
-              className="item-update-form"
-              onSubmit={(e) => handleUpdateSave(e, building)}
-            >
-              <input
-                type="text"
-                className="items-table-cell-name-input"
-                value={itemName}
-                placeholder={building.building_name}
-                disabled={isDisabled}
-                onChange={(e) => setItemName(e.target.value)}
-                onSubmit={handleUpdateSave}
-                autoFocus
-              />
-            </form>
-          </>
+          <form
+            className="item-update-form"
+            onSubmit={(e) => handleUpdateSave(e, building)}
+          >
+            <input
+              type="text"
+              className="items-table-cell-name-input"
+              placeholder={building.building_name}
+              value={itemName}
+              onChange={(e) => setItemName(e.target.value)}
+              autoFocus
+            />
+          </form>
         )}
       </td>
       <td className="items-table-cell ">
-        {toggle ? (
-          <button onClick={() => handleUpdate(building.building_id)}>
+        {!updateToggle ? (
+          <button onClick={() => handleUpdateIconClick(building)}>
             <span className="material-symbols-outlined">edit_note</span>
           </button>
         ) : (
@@ -113,7 +70,7 @@ const BuildingsTableRow = ({
             <button onClick={(e) => handleUpdateSave(e, building)}>
               <span className="material-symbols-outlined">save</span>
             </button>
-            <button onClick={() => setToggle(!toggle)}>
+            <button onClick={() => setUpdateToggle(!updateToggle)}>
               <span className="material-symbols-outlined">cancel</span>
             </button>
           </>

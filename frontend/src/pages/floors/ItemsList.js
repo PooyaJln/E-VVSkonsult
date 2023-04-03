@@ -1,79 +1,57 @@
-import { useEffect, useRef, useState } from "react";
-import { useOutletContext, useParams } from "react-router-dom";
-
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useFloorsContext } from "../../hooks/useFloorsContext";
 import CreateFloor from "./CreateFloor";
 import FloorsTableRow from "./FloorsTableRow";
 import ErrorDialog from "../../components/ErrorDialog";
 
-const ItemsList = (props) => {
-  const building = props.building;
-
-  const building_id = useParams().building_id || building.building_id;
-  const [floors, setFloors] = useState(building?.floors || []);
+const ItemsList = () => {
+  const { state, apiCalls, uiCalls } = useFloorsContext();
+  const building_id = useParams().building_id;
+  let floors = state?.items || [];
+  let error = state?.error || undefined;
+  let open = state?.open || false;
+  const createToggle = state?.createToggle;
   const [toggle, setToggle] = useState(false);
-  const [error, setError] = useState(null);
-  const [open, setOpen] = useState(false);
-
-  const floorsList = async () => {
-    let BuildingDataURI =
-      "http://localhost:4001/heat-loss/buildings/" + building_id;
-    const fetchBuildingData = async () => {
-      const response = await fetch(BuildingDataURI);
-      const responseJson = await response.json();
-      if (response.ok) {
-        setFloors(responseJson.floors);
-      }
-    };
-
-    fetchBuildingData();
-  };
 
   const setParentToggle = (value) => {
     setToggle(value);
   };
-
   const setParentError = (value) => {
-    setError(value);
-    setOpen(true);
+    uiCalls.setError(value);
+  };
+  const setParentOpen = (value) => {
+    uiCalls.setOpen(value);
+  };
+  const handleCreatePlusButtonClick = () => {
+    setToggle(true);
+    uiCalls.setCreateToggle(true);
   };
 
-  const setParentOpen = () => {
-    setOpen(false);
-  };
+  useEffect(() => {
+    apiCalls.getItems(building_id);
+  }, []);
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   const newItem = {
-  //     building_name: itemName,
-  //     project_id: project_id,
-  //   };
+  // const project = useOutletContext();
+  // const [buildings, setBuildings] = useState(project?.buildings || []);
+  // const [error, setError] = useState(null);
+  // const [open, setOpen] = useState(false);
+  // const setParentError = (value) => {
+  //   setError(value);
+  //   setOpen(true);
+  // };
 
-  //   const createItemURI = "http://localhost:4001/heat-loss/buildings/create";
-
-  //   const response = await fetch(createItemURI, {
-  //     method: "POST",
-  //     body: JSON.stringify(newItem),
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //   });
-
-  //   const responseToJson = await response.json();
-  //   if (!response.ok) {
-  //     setError(responseToJson.error);
-  //     console.log(error);
-  //   }
-  //   if (response.ok) {
-  //     setBuildings([...buildings, responseToJson]);
-  //     setError(null);
-  //     setItemName("");
-  //     setToggle(false);
-  //   }
+  // const setParentOpen = () => {
+  //   setOpen(false);
   // };
 
   // useEffect(() => {
   //   buildingsList();
   // }, []);
+
+  // useEffect(() => {
+  //   setBuildings(project?.buildings);
+  // }, [project]);
 
   // const handleCreatePlusButtonClick = () => {
   //   setToggle(true);
@@ -81,22 +59,25 @@ const ItemsList = (props) => {
   //     createComponentInputRef.current.focus();
   //     createComponentInputRef.current.scrollIntoView();
   //   }, 0);
-  // };
-
+  // }
   return (
     <>
-      {/* {error && <ErrorDialog error={error} setError={setError} />} */}
       {error && (
-        <ErrorDialog error={error} open={open} setParentOpen={setParentOpen} />
+        <ErrorDialog
+          error={error}
+          open={open}
+          setParentOpen={setParentOpen}
+          setParentToggle={setParentToggle}
+        />
       )}
 
       <div className="items">
         <div>
           <button
-            // onClick={handleCreatePlusButtonClick}
-            onClick={() => setToggle(true)}
+            onClick={handleCreatePlusButtonClick}
+            // onClick={() => setToggle(true)}
           >
-            <span class="material-symbols-outlined">add</span>
+            <span className="material-symbols-outlined">add</span>
           </button>
           <span>add a floor</span>
         </div>
@@ -106,32 +87,13 @@ const ItemsList = (props) => {
               <th>Floor name</th>
               <th></th>
             </tr>
-            {toggle ? (
-              <>
-                <CreateFloor
-                  // toggle={toggle}
-                  setParentToggle={setParentToggle}
-                  setParentError={setParentError}
-                  // open={open}
-                  setParentOpen={setParentOpen}
-                  buildings={floors}
-                  setFloors={setFloors}
-                  floorsList={floorsList}
-                  // ref={createComponentInputRef}
-                />
-              </>
-            ) : null}
+            {toggle && createToggle && (
+              <CreateFloor setParentToggle={setParentToggle} />
+            )}
+            {/* ) : null} */}
             {floors &&
               floors.map((floor, index) => (
-                <FloorsTableRow
-                  key={index + 2}
-                  floor={floor}
-                  floors={floors}
-                  setFloors={setFloors}
-                  setParentError={setParentError}
-                  open={open}
-                  setParentOpen={setParentOpen}
-                />
+                <FloorsTableRow key={index + 2} building={floor} />
               ))}
           </tbody>
         </table>

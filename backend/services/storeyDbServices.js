@@ -58,6 +58,46 @@ storeyDbServices.createItem = async (query) => {
   }
 };
 
+storeyDbServices.getAllItems = async (id) => {
+  try {
+    const building = await db.building.findByPk(id);
+    if (!building) throw Errors.badRequestError("this building was not found");
+    let results = { building_name: building.building_name };
+    let itemsArray = [];
+    // let items = await db.project.findAll({
+    //   where: {
+    //     project_id: id,
+    //   },
+    //   attributes: ["project_name"],
+    //   raw: true,
+    //   include: {
+    //     model: db.buildng,
+    //     attributes: ["building_name"],
+    //     raw: true,
+    //   },
+    // });
+
+    let items = await db.storey.findAll({
+      where: {
+        building_id: id,
+      },
+      attributes: ["storey_id", "storey_name"],
+    });
+
+    if (items.length == 1 && items[0]["storeys.storey_name"] === null) {
+      throw new Errors.notFoundError("no storey was found");
+    }
+    items.map((item) => {
+      itemsArray.push(item["storey_name"]);
+    });
+
+    if (items) return { ...results, stories: items };
+    return false;
+  } catch (error) {
+    throw error;
+  }
+};
+
 storeyDbServices.getItemAndchildren = async (id) => {
   try {
     let foundItem = await storeyDbServices.findItemByID(id);

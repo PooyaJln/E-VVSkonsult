@@ -3,6 +3,7 @@ import { createContext, useReducer } from "react";
 
 export const buildingsInitialState = {
   buildings: [],
+  building: {},
   error: undefined,
   open: false,
   toggle: false,
@@ -10,6 +11,7 @@ export const buildingsInitialState = {
 
 export const buildingsActionTypes = {
   GET_BUILDINGS: "GET_BUILDINGS",
+  GET_BUILDING: "GET_BUILDING",
   CREATE_BUILDING: "CREATE_BUILDING",
   DELETE_BUILDING: "DELETE_BUILDING",
   UPDATE_BUILDING: "UPDATE_BUILDING",
@@ -25,10 +27,14 @@ export const buildingsReducer = (state, action) => {
   let _buildings = [];
   switch (action.type) {
     case buildingsActionTypes.GET_BUILDINGS:
-      console.log(action.payload);
       return {
         ...state,
         buildings: action.payload,
+      };
+    case buildingsActionTypes.GET_BUILDING:
+      return {
+        ...state,
+        building: action.payload,
       };
     case buildingsActionTypes.CREATE_BUILDING:
       return {
@@ -94,6 +100,9 @@ export const BuildingsContextProvider = ({ children }) => {
     getBuildings: (payload) => {
       dispatch({ type: buildingsActionTypes.GET_BUILDINGS, payload: payload });
     },
+    getBuilding: (payload) => {
+      dispatch({ type: buildingsActionTypes.GET_BUILDING, payload: payload });
+    },
     createBuilding: (payload) => {
       dispatch({
         type: buildingsActionTypes.CREATE_BUILDING,
@@ -144,12 +153,24 @@ export const BuildingsContextProvider = ({ children }) => {
       }
     } catch (err) {
       const error = err.response.data.error;
-      console.log(
-        "file: ProjectsContext.js:133 ~ apiCalls.getProjects= ~ error:",
-        error
-      );
+      dispatchCalls.setError(error);
+      dispatchCalls.setOpen(true);
     }
   };
+  apiCalls.getBuilding = async (id) => {
+    try {
+      const building_id = id;
+      const response = await axios.get(`${buildingsURI}${building_id}`);
+      if (response.statusText === "OK") {
+        dispatchCalls.getBuilding(response.data);
+      }
+    } catch (err) {
+      const error = err.response.data.error;
+      dispatchCalls.setError(error);
+      dispatchCalls.setOpen(true);
+    }
+  };
+
   apiCalls.createBuilding = async (data) => {
     let response;
     try {

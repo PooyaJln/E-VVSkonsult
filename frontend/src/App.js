@@ -41,39 +41,15 @@ const router = createBrowserRouter(
       <Route path="about" element={<About />} />
       <Route path="heat-loss" element={<HeatLossLayout />}>
         <Route path="help" element={<Help />} />
-        <Route
-          path="projects"
-          element={<ProjectsLayout />}
-          // action={ProjectCreateAction}
-        >
-          <Route
-            index
-            element={<Projects />}
-            // loader={allProjectsLoader}
-          />
-          <Route
-            path=":project_id"
-            // loader={singleProjectLoader}
-            element={<Project />}
-          >
-            <Route
-              path="thermalParameters"
-              element={<ThermalParameters />}
-              // loader={singleProjectLoader}
-            />
-            <Route
-              path="materials"
-              element={<Materials />}
-              // loader={materialsLoader}
-            />
+        <Route path="projects" element={<ProjectsLayout />}>
+          <Route index element={<Projects />} />
+          <Route path=":project_id" element={<Project />}>
+            <Route path="thermalParameters" element={<ThermalParameters />} />
+            <Route path="materials" element={<Materials />} />
             <Route path="results" element={<ProjectResults />} />
             <Route path="buildings" element={<BuildingsLayout />}>
-              <Route path="" element={<Buildings />} />
-              <Route
-                path=":building_id"
-                element={<Building />}
-                // loader={singleBuildingLoader}
-              >
+              <Route index element={<Buildings />} />
+              <Route path=":building_id" element={<Building />}>
                 <Route path="floors" element={<FloorsLayout />}>
                   <Route index element={<Floors />} />
                 </Route>

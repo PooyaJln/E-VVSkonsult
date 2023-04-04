@@ -28,9 +28,10 @@ export const itemsReducer = (state, action) => {
   switch (action.type) {
     case itemsActionTypes.GET_ITEMS:
       console.log(action.payload);
+      console.log(action.payload.sort((a, b) => a.storey_name - b.storey_name));
       return {
         ...state,
-        items: action.payload,
+        items: action.payload.sort((a, b) => a.storey_name - b.storey_name),
       };
     case itemsActionTypes.GET_ITEM:
       return {

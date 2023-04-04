@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useBuildingsContext } from "../../hooks/useBuildingsContext";
 
 const BuildingsTableRow = ({ building }) => {
-  const { state, apiCalls, uiCalls } = useBuildingsContext();
+  const { apiCalls } = useBuildingsContext();
 
   const [updateToggle, setUpdateToggle] = useState(false);
   const [itemName, setItemName] = useState(building.building_name);

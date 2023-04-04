@@ -11,10 +11,9 @@ const CreateFloor = (props) => {
     e.preventDefault();
     const newItem = {
       storey_name: itemName,
-      building_id: building_id,
     };
 
-    apiCalls.createItem(newItem);
+    apiCalls.createItem(building_id, newItem);
     setItemName("");
     !props.error ? props.setParentToggle(false) : props.setParentToggle(true);
   };
@@ -38,7 +37,7 @@ const CreateFloor = (props) => {
             name="building_name"
             onChange={(e) => setItemName(e.target.value)}
             value={itemName}
-            autofocus
+            autoFocus
             // ref={createComponentInputRef}
           />
           <button onClick={(e) => handleSubmit(e)}>

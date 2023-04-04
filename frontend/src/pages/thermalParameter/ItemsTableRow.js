@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useProjectDataContext } from "../../hooks/useProjectDataContext";
+
 import { useParametersContext } from "../../hooks/useParametersContext";
 import { useParams } from "react-router-dom";
 
 const ItemsTableRow = ({ thermalParameter }) => {
   const { project_id } = useParams();
-  const { state, apiCalls, uiCalls } = useParametersContext();
+  const { apiCalls } = useParametersContext();
 
   const [updateToggle, setUpdateToggle] = useState(false);
   const [itemValue, setItemValue] = useState(
@@ -79,9 +79,6 @@ const ItemsTableRow = ({ thermalParameter }) => {
                 onChange={(e) => setItemValue(e.target.value)}
               />
             </form>
-            {!updateToggle && error && (
-              <span className="create-thermalpara-error"> {error} </span>
-            )}
           </>
         )}
       </td>

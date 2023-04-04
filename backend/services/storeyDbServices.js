@@ -23,7 +23,7 @@ storeyDbServices.itemsPublicInfo = async (id) => {
       where: {
         storey_id: id,
       },
-      attributes: ["storey_name", "building_id"],
+      attributes: ["storey_id", "storey_name"],
     });
     if (item) return item;
     return false;

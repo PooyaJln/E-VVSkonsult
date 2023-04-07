@@ -56,7 +56,7 @@ const roomBoundary = (sequelize, DataTypes) => {
         defaultValue: null,
       },
       area: {
-        type: DataTypes.DECIMAL(10, 3),
+        type: DataTypes.FLOAT,
         required: true,
         notNull: true,
         notEmpty: true,

@@ -29,9 +29,7 @@ storeyControllers.createItem = async (req, res, next) => {
 //get a single project
 storeyControllers.getItemInfo = async (req, res, next) => {
   try {
-    let storey = await storeyDbServices.getItemAndchildren(
-      req.params.storey_id
-    );
+    let storey = await storeyDbServices.itemsPublicInfo(req.params.storey_id);
     res.status(200).json(storey);
   } catch (error) {
     next(error);

@@ -16,7 +16,7 @@ temperatureServices.preCreateCheck = async (query) => {
 
     if (query.temperature_name) {
       const temperatureNameExists = await temperatureDbServices.itemNameExists(
-        query.temperature_name
+        query
       );
       if (temperatureNameExists) {
         throw new Errors.badRequestError("this name is already used.");
@@ -40,48 +40,48 @@ temperatureServices.preUpdateCheck = async (id, query) => {
       throw new Errors.badRequestError("no temperature was found");
     }
 
-    if (
-      !query.temperature_value &&
-      query.temperature_name == foundItem.temperature_name
-    ) {
-      throw new Errors.badRequestError(
-        "same as current name,nothing to change"
-      );
-    }
+    // if (
+    //   !query.temperature_value &&
+    //   query.temperature_name == foundItem.temperature_name
+    // ) {
+    //   throw new Errors.badRequestError(
+    //     "same as current name,nothing to change"
+    //   );
+    // }
 
-    if (
-      query.temperature_name == foundItem.temperature_name &&
-      query.temperature_value == foundItem.temperature_value
-    ) {
-      throw new Errors.badRequestError("nothing to change");
-    }
+    // if (
+    //   query.temperature_name == foundItem.temperature_name &&
+    //   query.temperature_value == foundItem.temperature_value
+    // ) {
+    //   throw new Errors.badRequestError("nothing to change");
+    // }
 
-    if (
-      (!query.temperature_value && query.temperature_name) ||
-      (query.temperature_value == foundItem.temperature_value &&
-        query.temperature_name)
-    ) {
-      const temperature_value = foundItem.temperature_value;
-      const nameAlreadyExists = await temperatureDbServices.itemNameExists(
-        query.temperature_name,
-        temperature_value
-      );
+    // if (
+    //   (!query.temperature_value && query.temperature_name) ||
+    //   (query.temperature_value == foundItem.temperature_value &&
+    //     query.temperature_name)
+    // ) {
+    //   const temperature_value = foundItem.temperature_value;
+    //   const nameAlreadyExists = await temperatureDbServices.itemNameExists(
+    //     query.temperature_name,
+    //     temperature_value
+    //   );
 
-      if (nameAlreadyExists) {
-        throw new Errors.badRequestError(
-          "warning for duplicate temperature names! this name already exists."
-        );
-      }
-    }
+    //   if (nameAlreadyExists) {
+    //     throw new Errors.badRequestError(
+    //       "warning for duplicate temperature names! this name already exists."
+    //     );
+    //   }
+    // }
 
-    if (
-      !query.temperature_name &&
-      query.temperature_value == foundItem.temperature_value
-    ) {
-      throw new Errors.badRequestError(
-        "same as current temperature, nothing to change"
-      );
-    }
+    // if (
+    //   !query.temperature_name &&
+    //   query.temperature_value == foundItem.temperature_value
+    // ) {
+    //   throw new Errors.badRequestError(
+    //     "same as current temperature, nothing to change"
+    //   );
+    // }
 
     // if (
     //   !query.temperature_name &&
@@ -98,18 +98,21 @@ temperatureServices.preUpdateCheck = async (id, query) => {
     //   }
     // }
 
-    // if (query.temperature_name && query.temperature_value) {
-    //   const nameAlreadyExists = await temperatureDbServices.itemNameExists(
-    //     query.temperature_name,
-    //     query.temperature_value
-    //   );
+    if (query.temperature_name && query.temperature_value) {
+      const nameAlreadyExists = await temperatureDbServices.itemNameExists({
+        ...query,
+        project_id: foundItem.project_id,
+      });
 
-    //   if (nameAlreadyExists) {
-    //     throw new Errors.badRequestError(
-    //       "this name is already used for another temperature !2"
-    //     );
-    //   }
-    // }
+      if (
+        nameAlreadyExists &&
+        nameAlreadyExists.temperature_name !== foundItem.temperature_name
+      ) {
+        throw new Errors.badRequestError(
+          "this name is already used for another temperature !2"
+        );
+      }
+    }
     return true;
   } catch (error) {
     throw error;

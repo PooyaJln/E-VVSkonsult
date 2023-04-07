@@ -1,9 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const roomBoundaryControllers = require("../controllers/roomBoundaryController");
+const roomControllers = require("../controllers/roomController");
 
 // create new roomBoundary
-router.post("/create", roomBoundaryControllers.createItem);
+router.post("/:room1_id/create", roomBoundaryControllers.createItem);
+
+router.get("/:room_id/all", roomControllers.getItemInfo);
 
 // get a single roomBoundary with all its walls, roof, floor
 router.get("/:id(\\d+$)", roomBoundaryControllers.getItemInfo);

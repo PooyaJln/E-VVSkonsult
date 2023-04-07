@@ -27,11 +27,11 @@ export const itemsReducer = (state, action) => {
   let _items = [];
   switch (action.type) {
     case itemsActionTypes.GET_ITEMS:
-      console.log(action.payload);
-      console.log(action.payload.sort((a, b) => a.storey_name - b.storey_name));
       return {
         ...state,
-        items: action.payload.sort((a, b) => a.storey_name - b.storey_name),
+        items: action.payload.stories.sort(
+          (a, b) => a.storey_name - b.storey_name
+        ),
       };
     case itemsActionTypes.GET_ITEM:
       return {
@@ -151,7 +151,7 @@ export const FloorsContextProvider = ({ children }) => {
       const building_id = id;
       const response = await axios.get(`${URI}${id}/all`);
       if (response.statusText === "OK") {
-        dispatchCalls.getItems(response.data.stories);
+        dispatchCalls.getItems(response.data);
       }
     } catch (err) {
       const error = err.response.data.error;
@@ -164,7 +164,7 @@ export const FloorsContextProvider = ({ children }) => {
       const storey_id = id;
       const response = await axios.get(`${URI}${id}`);
       if (response.statusText === "OK") {
-        dispatchCalls.getBuilding(response.data);
+        dispatchCalls.getItem(response.data);
       }
     } catch (err) {
       const error = err.response.data.error;

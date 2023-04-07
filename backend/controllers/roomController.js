@@ -28,6 +28,16 @@ roomControllers.getItemInfo = async (req, res, next) => {
   }
 };
 
+roomControllers.getAllItems = async (req, res, next) => {
+  try {
+    const apartment_id = req.params.apartment_id;
+    const allItems = await roomDbServices.getAllItems(apartment_id);
+    res.status(200).json(allItems);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // update an room
 roomControllers.updateItem = async (req, res, next) => {
   try {
@@ -48,8 +58,8 @@ roomControllers.updateItem = async (req, res, next) => {
 //delete a single room
 roomControllers.deleteItem = async (req, res, next) => {
   try {
-    let message = await roomDbServices.deleteItem(req.params.room_id);
-    res.status(200).json({ message });
+    let deletedItem = await roomDbServices.deleteItem(req.params.room_id);
+    res.status(200).json(deletedItem);
   } catch (error) {
     next(error);
   }

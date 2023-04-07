@@ -20,7 +20,7 @@ componentServices.preCreateCheck = async (query) => {
 
     if (query.component_name) {
       const componentNameExists = await componentDbServices.itemNameExists(
-        query.component_name
+        query
       );
       if (componentNameExists) {
         throw new Errors.badRequestError("this name already exists.");

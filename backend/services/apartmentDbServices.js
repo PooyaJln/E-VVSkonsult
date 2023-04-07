@@ -23,7 +23,7 @@ apartmentDbServices.itemsPublicInfo = async (id) => {
       where: {
         apartment_id: id,
       },
-      attributes: ["apartment_name", "storey_id"],
+      attributes: ["apartment_id", "apartment_name", "storey_id"],
     });
     if (item) return item;
     return false;
@@ -58,9 +58,54 @@ apartmentDbServices.createItem = async (query) => {
   }
 };
 
+apartmentDbServices.getAllItems = async (id) => {
+  try {
+    const storey = await db.storey.findByPk(id);
+    if (!storey) throw Errors.badRequestError("this storey was not found");
+    let results = { storey_name: storey.storey_name };
+    let itemsArray = [];
+    // let items = await db.project.findAll({
+    //   where: {
+    //     project_id: id,
+    //   },
+    //   attributes: ["project_name"],
+    //   raw: true,
+    //   include: {
+    //     model: db.buildng,
+    //     attributes: ["storey_name"],
+    //     raw: true,
+    //   },
+    // });
+
+    let items = await db.apartment.findAll({
+      where: {
+        storey_id: id,
+      },
+      attributes: ["apartment_id", "apartment_name"],
+    });
+
+    if (items.length == 1 && items[0]["apartment.apartment_name"] === null) {
+      throw new Errors.notFoundError("no apartment was found");
+    }
+    items.map((item) => {
+      itemsArray.push(item["apartment_name"]);
+    });
+
+    if (items) return { ...results, apartments: items };
+    return false;
+  } catch (error) {
+    throw error;
+  }
+};
 apartmentDbServices.getItemAndchildren = async (id) => {
   try {
-    let foundItem = await apartmentDbServices.findItemByID(id);
+    let foundItem = await db.apartment.findOne({
+      where: {
+        apartment_id: id,
+      },
+      attributes: ["apartment_id", "apartment_name"],
+      raw: true,
+    });
     if (!foundItem) {
       throw new Errors.badRequestError("no apartment was found");
     }
@@ -87,7 +132,7 @@ apartmentDbServices.getItemAndchildren = async (id) => {
       itemsArray.push(item["rooms.room_name"]);
     });
 
-    if (itemsArray) return { apartment: apartment_name, rooms: itemsArray };
+    if (itemsArray) return { ...foundItem, rooms: itemsArray };
 
     return false;
   } catch (error) {
@@ -132,7 +177,7 @@ apartmentDbServices.deleteItem = async (id) => {
     });
 
     const message = `apartment ${apartment_name} in storey ${storey_name} is deleted`;
-    return message;
+    return foundItem;
   } catch (error) {
     throw error;
   }

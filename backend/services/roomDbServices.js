@@ -69,9 +69,56 @@ roomDbServices.createItem = async (query) => {
   }
 };
 
+roomDbServices.getAllItems = async (id) => {
+  try {
+    const apartment = await db.apartment.findByPk(id);
+    if (!apartment)
+      throw Errors.badRequestError("this apartment was not found");
+    let results = { apartment_name: apartment.apartment_name };
+    let itemsArray = [];
+    // let items = await db.project.findAll({
+    //   where: {
+    //     project_id: id,
+    //   },
+    //   attributes: ["project_name"],
+    //   raw: true,
+    //   include: {
+    //     model: db.buildng,
+    //     attributes: ["storey_name"],
+    //     raw: true,
+    //   },
+    // });
+
+    let items = await db.room.findAll({
+      where: {
+        apartment_id: id,
+      },
+      attributes: ["room_id", "room_name"],
+    });
+
+    if (items.length == 1 && items[0]["room.room_name"] === null) {
+      throw new Errors.notFoundError("no room was found");
+    }
+    items.map((item) => {
+      itemsArray.push(item["room_name"]);
+    });
+
+    if (items) return { ...results, rooms: items };
+    return false;
+  } catch (error) {
+    throw error;
+  }
+};
+
 roomDbServices.getItemAndchildren = async (id) => {
   try {
-    let foundItem = await db.room.findByPk(id);
+    let foundItem = await db.room.findOne({
+      where: {
+        room_id: id,
+      },
+      attributes: ["room_id", "room_name"],
+      raw: true,
+    });
     if (!foundItem) {
       throw new Errors.badRequestError("no room was found");
     }
@@ -83,20 +130,21 @@ roomDbServices.getItemAndchildren = async (id) => {
         room1_id: id,
       },
       // attributes: ["boundary_id", "boundary_name"],
+      // raw: true,
     });
 
     if (items.length == 0) {
       return { room: room_name, boundaries: [], roomHeatLoss: 0 };
     }
-    items.map((item) => {
-      itemsArray.push(item["boundary_name"]);
-    });
+    // items.map((item) => {
+    //   itemsArray.push(item["boundary_name"]);
+    // });
     const totalHeatLoss = await roomDbServices.calculateRoomsHeatLoss(items);
 
-    if (itemsArray)
+    if (items)
       return {
-        room: room_name,
-        boundaries: itemsArray,
+        ...foundItem,
+        boundaries: items,
         roomHeatLoss: totalHeatLoss,
       };
 

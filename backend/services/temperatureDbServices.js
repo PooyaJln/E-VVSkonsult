@@ -23,7 +23,7 @@ temperatureDbServices.itemsPublicInfo = async (id) => {
       where: {
         temperature_id: id,
       },
-      attributes: ["temperature_name", "temperature_value"],
+      attributes: ["temperature_id", "temperature_name", "temperature_value"],
     });
     if (item) return item;
     return false;
@@ -43,11 +43,12 @@ temperatureDbServices.getItem = async (id) => {
   }
 };
 
-temperatureDbServices.itemNameExists = async (_name) => {
+temperatureDbServices.itemNameExists = async (query) => {
   try {
     const item = await db.temperature.findOne({
       where: {
-        temperature_name: _name,
+        project_id: query.project_id,
+        temperature_name: query.temperature_name,
       },
     });
     if (item) return item;
@@ -74,7 +75,7 @@ temperatureDbServices.getAllItems = async (id) => {
       where: {
         project_id: id,
       },
-      attributes: ["temperature_name", "temperature_value"],
+      attributes: ["temperature_id", "temperature_name", "temperature_value"],
     });
     return temperatures;
   } catch (error) {
@@ -111,7 +112,7 @@ temperatureDbServices.deleteItem = async (id) => {
     });
 
     const message = `the temperature with name ${temperature_name} is deleted`;
-    return message;
+    return foundItem;
   } catch (error) {
     throw error;
   }

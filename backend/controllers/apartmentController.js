@@ -8,9 +8,16 @@ const apartmentControllers = {};
 // create new projects
 apartmentControllers.createItem = async (req, res, next) => {
   try {
-    const preCreateCheck = await apartmentServices.preCreateCheck(req.body);
+    const storey_id = req.params.storey_id;
+    const preCreateCheck = await apartmentServices.preCreateCheck({
+      ...req.body,
+      storey_id,
+    });
     if (preCreateCheck) {
-      const newApartment = await apartmentDbServices.createItem(req.body);
+      const newApartment = await apartmentDbServices.createItem({
+        ...req.body,
+        storey_id,
+      });
       res.status(201).json(newApartment);
     }
   } catch (error) {
@@ -21,7 +28,7 @@ apartmentControllers.createItem = async (req, res, next) => {
 //get a single project
 apartmentControllers.getItemInfo = async (req, res, next) => {
   try {
-    let apartment = await apartmentDbServices.getItemAndchildren(
+    let apartment = await apartmentDbServices.itemsPublicInfo(
       req.params.apartment_id
     );
     res.status(200).json(apartment);
@@ -30,6 +37,15 @@ apartmentControllers.getItemInfo = async (req, res, next) => {
   }
 };
 
+apartmentControllers.getAllItems = async (req, res, next) => {
+  try {
+    const storey_id = req.params.storey_id;
+    const allItems = await apartmentDbServices.getAllItems(storey_id);
+    res.status(200).json(allItems);
+  } catch (error) {
+    next(error);
+  }
+};
 // update an project
 apartmentControllers.updateItem = async (req, res, next) => {
   try {
@@ -50,8 +66,10 @@ apartmentControllers.updateItem = async (req, res, next) => {
 //delete a single project
 apartmentControllers.deleteItem = async (req, res, next) => {
   try {
-    let message = await apartmentDbServices.deleteItem(req.params.apartment_id);
-    res.status(200).json({ message });
+    let deletedItem = await apartmentDbServices.deleteItem(
+      req.params.apartment_id
+    );
+    res.status(200).json(deletedItem);
   } catch (error) {
     next(error);
   }

@@ -8,9 +8,16 @@ const roomBoundaryControllers = {};
 // create new room
 roomBoundaryControllers.createItem = async (req, res, next) => {
   try {
-    const preCreateCheck = await roomBoundaryServices.preCreateCheck(req.body);
+    const room1_id = req.params.room1_id;
+    const preCreateCheck = await roomBoundaryServices.preCreateCheck({
+      ...req.body,
+      room1_id,
+    });
     if (preCreateCheck) {
-      const newRoomBoundary = await roomBoundaryDbServices.createItem(req.body);
+      const newRoomBoundary = await roomBoundaryDbServices.createItem({
+        ...req.body,
+        room1_id,
+      });
       res.status(201).json(newRoomBoundary);
     }
   } catch (error) {

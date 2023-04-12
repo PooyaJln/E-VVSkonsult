@@ -56,7 +56,7 @@ const router = createBrowserRouter(
           <Route index element={<Projects />} />
           <Route path=":project_id" element={<Project />}>
             <Route path="thermalParameters" element={<ThermalParameters />} />
-            <Route path="materials" element={<Materials />} />
+            <Route path="components" element={<Materials />} />
             <Route path="temperatures" element={<Temperatures />} />
             <Route path="results" element={<ProjectResults />} />
             <Route path="buildings" element={<BuildingsLayout />}>

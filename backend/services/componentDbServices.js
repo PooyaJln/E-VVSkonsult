@@ -68,8 +68,25 @@ componentDbServices.itemNameExists = async (query) => {
 };
 
 componentDbServices.createItem = async (query) => {
+  let newItem = {};
   try {
-    const newItem = await db.component.create(query);
+    if (
+      query.component_categ === "window" ||
+      query.component_categ === "door"
+    ) {
+      const parameter = await db.thermalParameter.findOne({
+        where: {
+          parameter_name: "Specific infiltration flow",
+          project_id: query.project_id,
+        },
+      });
+      newItem = await db.component.create({
+        ...query,
+        component_qinf: parameter.parameter_id,
+      });
+    } else {
+      newItem = await db.component.create(query);
+    }
     const newId = newItem.component_id;
     const item = await componentDbServices.itemsPublicInfo(newId);
     return item;

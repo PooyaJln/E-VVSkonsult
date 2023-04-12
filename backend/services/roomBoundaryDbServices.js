@@ -56,7 +56,7 @@ roomBoundaryDbServices.deleteItem = async (id) => {
     });
 
     const message = `the room ${roomBoundary_name} in apartment ${room_name} is deleted`;
-    return message;
+    return foundItem;
   } catch (error) {
     throw error;
   }
@@ -72,35 +72,51 @@ roomBoundaryDbServices.itemsPublicInfo = async (id) => {
     item = await roomBoundaryDbServices.setProperties(item);
 
     let userReadableData = {};
-    let userReadablePropertyArray = [];
+    let userReadablePropertyArray = [
+      "boundary_id",
+      "boundary_name",
+      "boundary_type",
+      "parent_name",
+      "area",
+      "net_area",
+      "uvalue",
+      "inside_temp",
+      "outside_temp",
+      "infilt_heat_loss",
+      "trans_heat_loss",
+      "total_heat_loss",
+    ];
 
-    if (item.boundary_type == "window" || item.boundary_type == "window") {
-      userReadablePropertyArray = [
-        "boundary_name",
-        "boundary_type",
-        "area",
-        "net_area",
-        "uvalue",
-        "inside_temp",
-        "outside_temp",
-        "infilt_heat_loss",
-        "trans_heat_loss",
-        "total_heat_loss",
-      ];
-    } else {
-      userReadablePropertyArray = [
-        "boundary_name",
-        "boundary_type",
-        "area",
-        "opening_area",
-        "net_area",
-        "uvalue",
-        "inside_temp",
-        "outside_temp",
-        "trans_heat_loss",
-        "total_heat_loss",
-      ];
-    }
+    // if (item.boundary_type == "window" || item.boundary_type == "door") {
+    //   userReadablePropertyArray = [
+    //     "boundary_id",
+    //     "boundary_name",
+    //     "boundary_type",
+    //     "area",
+    //     "net_area",
+    //     "uvalue",
+    //     "inside_temp",
+    //     "outside_temp",
+    //     "infilt_heat_loss",
+    //     "trans_heat_loss",
+    //     "total_heat_loss",
+    //     "parent_name",
+    //   ];
+    // } else {
+    //   userReadablePropertyArray = [
+    //     "boundary_id",
+    //     "boundary_name",
+    //     "boundary_type",
+    //     "area",
+    //     "opening_area",
+    //     "net_area",
+    //     "uvalue",
+    //     "inside_temp",
+    //     "outside_temp",
+    //     "trans_heat_loss",
+    //     "total_heat_loss",
+    //   ];
+    // }
     userReadablePropertyArray.forEach((key) => {
       userReadableData[key] = item.dataValues[key];
     });
@@ -116,7 +132,9 @@ roomBoundaryDbServices.itemsPublicInfo = async (id) => {
 roomBoundaryDbServices.setProperties = async (obj) => {
   try {
     // let item = await db.roomBoundary.findByPk(id);
-    let item = await setProperties.setNetArea(obj);
+
+    let item = await setProperties.setParentName(obj);
+    item = await setProperties.setNetArea(item);
     item = await setProperties.setInfiltHeatLosses(item);
     item = await setProperties.setTransAndTotalHeatLoss(item);
     return item;
@@ -161,6 +179,22 @@ roomBoundaryDbServices.getItemsHeatLoss = async (obj) => {
 //------------------- setting virtual fields
 
 const setProperties = {};
+setProperties.setParentName = async (obj) => {
+  try {
+    const roomBoundary = obj;
+    if (
+      roomBoundary.boundary_type == "window" ||
+      roomBoundary.boundary_type == "door"
+    ) {
+      const parent = await db.roomBoundary.findByPk(obj.boundary_parent_id);
+      await roomBoundary.setDataValue("parent_name", parent.boundary_name);
+      await roomBoundary.save();
+    }
+    return roomBoundary;
+  } catch (error) {
+    throw error;
+  }
+};
 
 setProperties.setBoundaryParentOpeningProp = async (obj) => {
   try {
@@ -204,7 +238,7 @@ setProperties.setNetAreaAfterCreate = async (obj) => {
     const roomBoundary = obj;
     if (!roomBoundary.has_openings) {
       await roomBoundary.setDataValue("opening_area", 0);
-      await roomBoundary.setDataValue("net_area", roomBoundary.area);
+      await roomBoundary.setDataValue("net_area", Number(roomBoundary.area));
     }
 
     await roomBoundary.save();
@@ -219,7 +253,7 @@ setProperties.setNetArea = async (obj) => {
     const roomBoundary = obj;
     if (!roomBoundary.has_openings) {
       roomBoundary.opening_area = 0;
-      roomBoundary.net_area = obj.area;
+      roomBoundary.net_area = Number(obj.area);
     }
     if (roomBoundary.has_openings) {
       const openings = await db.roomBoundary.findAll({
@@ -231,8 +265,10 @@ setProperties.setNetArea = async (obj) => {
       openings.map((opening) => {
         totalOpeningsArea += Number(opening.area);
       });
-      roomBoundary.opening_area = totalOpeningsArea;
-      roomBoundary.net_area = roomBoundary.area - totalOpeningsArea;
+      roomBoundary.opening_area = Number(totalOpeningsArea.toFixed(1));
+      roomBoundary.net_area = Number(
+        (roomBoundary.area - totalOpeningsArea).toFixed(1)
+      );
     }
 
     return roomBoundary;
@@ -291,7 +327,7 @@ setProperties.setInfiltHeatLosses = async (obj) => {
         specificHeatCapacity *
         netArea *
         (inside_temperature - outside_temperature);
-      roomBoundary.infilt_heat_loss = infHeatLoss;
+      roomBoundary.infilt_heat_loss = Number(infHeatLoss.toFixed(1));
       // await roomBoundary.setDataValue("infilt_heat_loss", infHeatLoss);
     }
     await roomBoundary.save();
@@ -333,9 +369,10 @@ setProperties.setTransAndTotalHeatLoss = async (obj) => {
     if (trans_heat_loss < 0) {
       roomBoundary.trans_heat_loss = 0;
     }
-    roomBoundary.trans_heat_loss = trans_heat_loss;
-    roomBoundary.total_heat_loss =
-      trans_heat_loss + roomBoundary.infilt_heat_loss;
+    roomBoundary.trans_heat_loss = Number(trans_heat_loss.toFixed(1));
+    roomBoundary.total_heat_loss = Number(
+      (trans_heat_loss + roomBoundary.infilt_heat_loss).toFixed(1)
+    );
     await roomBoundary.save();
     return roomBoundary;
   } catch (error) {

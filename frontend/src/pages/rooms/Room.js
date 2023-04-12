@@ -8,14 +8,15 @@ import ItemsList from "../roomsboundaries/ItemsList";
 function Room() {
   const room_id = useParams().room_id;
   const project_id = useParams().project_id;
-  const { state, apiCalls } = useRoomsContext();
-  const room = state?.item || {};
+  const roomState = useRoomsContext().state;
+  const roomApiCalls = useRoomsContext().apiCalls;
+  const room = roomState?.item || {};
   const temperatureApiCalls = useTemperaturesContext().apiCalls;
   const temperatureState = useTemperaturesContext().state;
   let temperatures = temperatureState?.items || [];
 
   useEffect(() => {
-    apiCalls.getItem(room_id);
+    roomApiCalls.getItem(room_id);
     temperatureApiCalls.getItems(project_id);
   }, [room_id, project_id]);
 

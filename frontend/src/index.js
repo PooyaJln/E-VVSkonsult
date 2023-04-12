@@ -7,9 +7,9 @@ import "./index.css";
 
 // importing components
 import App from "./App";
-import { ProjectDataContextProvider } from "./contexts/ProjectDataContext";
 import { TemperaturesContextProvider } from "./contexts/TemperaturesContext";
 import { ParametersContextProvider } from "./contexts/ParametersContext";
+import { ComponentsContextProvider } from "./contexts/ComponentsContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -17,7 +17,9 @@ root.render(
     <ProjectsContextProvider>
       <TemperaturesContextProvider>
         <ParametersContextProvider>
-          <App />
+          <ComponentsContextProvider>
+            <App />
+          </ComponentsContextProvider>
         </ParametersContextProvider>
       </TemperaturesContextProvider>
     </ProjectsContextProvider>

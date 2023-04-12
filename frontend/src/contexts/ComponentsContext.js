@@ -3,7 +3,6 @@ import { createContext, useReducer } from "react";
 
 export const itemsInitialState = {
   items: [],
-  item: {},
   error: undefined,
   open: false,
   toggle: false,
@@ -11,7 +10,6 @@ export const itemsInitialState = {
 
 export const itemsActionTypes = {
   GET_ITEMS: "GET_ITEMS",
-  GET_ITEM: "GET_ITEM",
   CREATE_ITEM: "CREATE_ITEM",
   DELETE_ITEM: "DELETE_ITEM",
   UPDATE_ITEM: "UPDATE_ITEM",
@@ -29,12 +27,7 @@ export const itemsReducer = (state, action) => {
     case itemsActionTypes.GET_ITEMS:
       return {
         ...state,
-        items: action.payload.apartments,
-      };
-    case itemsActionTypes.GET_ITEM:
-      return {
-        ...state,
-        item: action.payload,
+        items: action.payload,
       };
     case itemsActionTypes.CREATE_ITEM:
       return {
@@ -46,12 +39,12 @@ export const itemsReducer = (state, action) => {
       return {
         ...state,
         items: _items.filter(
-          (item) => item.apartment_id !== action.payload.apartment_id
+          (item) => item.component_id !== action.payload.component_id
         ),
       };
     case itemsActionTypes.UPDATE_ITEM:
       _items = state.items.map((item) => {
-        return item.apartment_id === action.payload.apartment_id
+        return item.component_id === action.payload.component_id
           ? action.payload
           : item;
       });
@@ -87,21 +80,16 @@ export const itemsReducer = (state, action) => {
       return state;
   }
 };
-export const ApartmentsContext = createContext();
+export const ComponentsContext = createContext();
 
-export const ApartmentsContextProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(itemsReducer, {
-    items: itemsInitialState.items,
-  });
+export const ComponentsContextProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(itemsReducer, itemsInitialState);
 
-  let URI = "http://localhost:4001/heat-loss/apartments/";
+  let URI = "http://localhost:4001/heat-loss/components/";
 
   const dispatchCalls = {
     getItems: (payload) => {
       dispatch({ type: itemsActionTypes.GET_ITEMS, payload: payload });
-    },
-    getItem: (payload) => {
-      dispatch({ type: itemsActionTypes.GET_ITEM, payload: payload });
     },
     createItem: (payload) => {
       dispatch({
@@ -146,33 +134,17 @@ export const ApartmentsContextProvider = ({ children }) => {
   const apiCalls = {};
   apiCalls.getItems = async (id) => {
     try {
-      const storey_id = id;
-      const response = await axios.get(`${URI}${id}/all`);
+      const project_id = id;
+      const response = await axios.get(`${URI}${project_id}/all`);
       if (response.statusText === "OK") {
         dispatchCalls.getItems(response.data);
       }
     } catch (err) {
       const error = err.response.data.error;
-      dispatchCalls.setError(error);
-      dispatchCalls.setOpen(true);
-    }
-  };
-  apiCalls.getItem = async (id) => {
-    try {
-      const apartment_id = id;
-      const response = await axios.get(`${URI}${id}`);
-      if (response.statusText === "OK") {
-        dispatchCalls.getItem(response.data);
-      }
-    } catch (err) {
-      const error = err.response.data.error;
-      dispatchCalls.setError(error);
-      dispatchCalls.setOpen(true);
     }
   };
   apiCalls.createItem = async (id, data) => {
     let response;
-    const storey_id = id;
     try {
       response = await axios.post(URI + id + "/create", data);
       dispatchCalls.createItem(response.data);
@@ -199,17 +171,10 @@ export const ApartmentsContextProvider = ({ children }) => {
   };
   apiCalls.updateItem = async (id, data) => {
     try {
-      let itemsNamesList = [];
-      state.items.map((item) => itemsNamesList.push(item.apartment_name));
-      if (itemsNamesList.includes(data.apartment_name)) {
-        dispatchCalls.setError("This name already exists!!!");
-        uiCalls.setOpen(true);
-      } else {
-        let response = await axios.patch(URI + `${id}`, data);
-        if (response.statusText === "OK") {
-          dispatchCalls.updateItem(response.data);
-          dispatchCalls.setErrorUndef();
-        }
+      let response = await axios.patch(URI + `${id}`, data);
+      if (response.statusText === "OK") {
+        dispatchCalls.updateItem(response.data);
+        dispatchCalls.setErrorUndef();
       }
     } catch (err) {
       const error = err.response.data.error;
@@ -237,8 +202,8 @@ export const ApartmentsContextProvider = ({ children }) => {
   };
 
   return (
-    <ApartmentsContext.Provider value={{ state, dispatch, uiCalls, apiCalls }}>
+    <ComponentsContext.Provider value={{ state, dispatch, uiCalls, apiCalls }}>
       {children}
-    </ApartmentsContext.Provider>
+    </ComponentsContext.Provider>
   );
 };

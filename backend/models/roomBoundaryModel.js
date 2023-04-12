@@ -137,6 +137,9 @@ const roomBoundary = (sequelize, DataTypes) => {
         allowNull: true,
         defaultValue: null,
       },
+      parent_name: {
+        type: DataTypes.VIRTUAL,
+      },
       is_shared: {
         // UI should ask if this boundary, i.e wall is shared with another room.
         type: DataTypes.BOOLEAN,

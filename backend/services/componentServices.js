@@ -57,19 +57,26 @@ componentServices.preUpdateCheck = async (id, query) => {
     }
     let columnsToUpdate = [];
     const queryKeys = Object.keys(query);
-    if (Object.keys(query)?.includes("component_name")) {
-      const nameAlreadyExists = await componentDbServices.itemNameExists(
-        query.component_name
-      );
+    // if (Object.keys(query)?.includes("component_name")) {
+    //   const nameAlreadyExists = await componentDbServices.itemNameExists(
+    //     query.component_name
+    //   );
 
-      if (
-        nameAlreadyExists.component_id &&
-        nameAlreadyExists.component_id != id
-      ) {
-        throw new Errors.badRequestError(
-          "this name is already used for another component."
-        );
-      }
+    //   if (nameAlreadyExists?.component_id != id) {
+    //     throw new Errors.badRequestError(
+    //       "this name is already used for another component."
+    //     );
+    //   }
+    // }
+    const nameAlreadyExists = await componentDbServices.itemNameExists({
+      ...query,
+      project_id: foundItem.project_id,
+    });
+
+    if (nameAlreadyExists?.component_id != id) {
+      throw new Errors.badRequestError(
+        "this name is already used for another component."
+      );
     }
 
     // if (

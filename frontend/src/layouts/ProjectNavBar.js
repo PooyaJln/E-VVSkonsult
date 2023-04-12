@@ -5,7 +5,7 @@ const ProjectNavBar = () => {
     <nav className="project-nav-bar">
       <NavLink to="temperatures">Temperatures</NavLink>
       <NavLink to="thermalParameters">Thermal Parameters</NavLink>
-      <NavLink to="materials">Materials</NavLink>
+      <NavLink to="components">Components</NavLink>
       <NavLink to="buildings">Buildings</NavLink>
       <NavLink to="results">Results</NavLink>
     </nav>

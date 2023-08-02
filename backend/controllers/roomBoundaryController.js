@@ -8,6 +8,7 @@ const roomBoundaryControllers = {};
 // create new room
 roomBoundaryControllers.createItem = async (req, res, next) => {
   try {
+    const room1_id = req.params.room1_id;
     const preCreateCheck = await roomBoundaryServices.preCreateCheck(req.body);
     if (preCreateCheck) {
       const newRoomBoundary = await roomBoundaryDbServices.createItem(req.body);
@@ -53,8 +54,17 @@ roomBoundaryControllers.updateItem = async (req, res, next) => {
 //delete a single room
 roomBoundaryControllers.deleteItem = async (req, res, next) => {
   try {
-    let message = await roomBoundaryDbServices.deleteItem(req.params.id);
-    res.status(200).json({ message });
+    let deletedItem = await roomBoundaryDbServices.deleteItem(req.params.id);
+    res.status(200).json(deletedItem);
+  } catch (error) {
+    next(error);
+  }
+};
+
+roomBoundaryControllers.getAllItems = async (req, res, next) => {
+  try {
+    let room = await roomBoundaryDbServices.getAllItems(req.params.room_id);
+    res.status(200).json(room);
   } catch (error) {
     next(error);
   }

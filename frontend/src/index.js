@@ -7,13 +7,21 @@ import "./index.css";
 
 // importing components
 import App from "./App";
-import { ProjectDataContextProvider } from "./contexts/ProjectDataContext";
+import { TemperaturesContextProvider } from "./contexts/TemperaturesContext";
+import { ParametersContextProvider } from "./contexts/ParametersContext";
+import { ComponentsContextProvider } from "./contexts/ComponentsContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <ProjectsContextProvider>
-      <App />
+      <TemperaturesContextProvider>
+        <ParametersContextProvider>
+          <ComponentsContextProvider>
+            <App />
+          </ComponentsContextProvider>
+        </ParametersContextProvider>
+      </TemperaturesContextProvider>
     </ProjectsContextProvider>
   </React.StrictMode>
 );

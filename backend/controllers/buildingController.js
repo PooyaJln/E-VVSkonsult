@@ -22,7 +22,7 @@ buildingControllers.createItem = async (req, res, next) => {
 buildingControllers.getItemInfo = async (req, res, next) => {
   try {
     const building_id = req.params.building_id;
-    let building = await buildingDbServices.getItemAndchildren(building_id);
+    let building = await buildingDbServices.itemsPublicInfo(building_id);
     res.status(200).json(building);
   } catch (error) {
     next(error);

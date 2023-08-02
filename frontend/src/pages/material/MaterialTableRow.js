@@ -6,75 +6,46 @@ import {
   faTrash,
   faFloppyDisk,
 } from "@fortawesome/free-solid-svg-icons";
+import { useComponentsContext } from "../../hooks/useComponentsContext";
 
-const ItemTableRow = ({ component, components, setComponents }) => {
-  const [isDisabled, setIsDisabled] = useState(true);
+const ItemTableRow = ({ component }) => {
+  const { apiCalls } = useComponentsContext();
   const [error, setError] = useState(null);
   const [itemName, setItemName] = useState(component.component_name);
   const [itemCateg, setItemCateg] = useState(component.component_categ);
   const [itemUvalue, setItemUvalue] = useState(component.component_uvalue);
-  const [toggle, setToggle] = useState(true);
+  const [updateToggle, setUpdateToggle] = useState(false);
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this component?")) {
-      const itemDeleteURI = "http://localhost:4001/heat-loss/components/";
-      const response = await fetch(itemDeleteURI + id, {
-        method: "DELETE",
-      });
-      if (response.ok) {
-        const responseToJson = await response.json();
-        let _components = components.filter(
-          (_component) =>
-            _component.component_id !== responseToJson.component_id
-        );
-        setComponents(_components);
-      }
+      apiCalls.deleteItem(id);
     }
   };
 
-  const handleUpdate = async (id) => {
-    setToggle(!toggle);
-    setIsDisabled(false);
-    console.log("ready to update");
-    console.log("Edit item", id);
+  const handleUpdateIconClick = async (item) => {
+    setUpdateToggle(!updateToggle);
+    setItemName(item.component_name);
+    setItemCateg(item.component_Categ);
+    setItemUvalue(item.component_value);
   };
 
   const handleUpdateSave = async (e, item) => {
     e.preventDefault();
     const itemToUpdate = {
+      ...item,
       component_name: itemName,
       component_categ: itemCateg,
       component_uvalue: itemUvalue,
     };
-    const projectUpdateURI = "http://localhost:4001/heat-loss/components/";
-    const response = await fetch(projectUpdateURI + item.component_id, {
-      method: "PATCH",
-      body: JSON.stringify(itemToUpdate),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const responseToJson = await response.json();
-    if (!response.ok) {
-      setError(responseToJson.error);
-      console.log(error);
-    }
-    if (response.ok) {
-      setError(null);
-      setToggle(!toggle);
-      console.log("building updated");
-      let updatedComponent = components.find(
-        (_component) => _component.component_id === responseToJson.component_id
-      );
-      Object.assign(updatedComponent, responseToJson);
-      setComponents(components);
-    }
+
+    apiCalls.updateItem(item.component_id, itemToUpdate);
+    setUpdateToggle(!updateToggle);
   };
 
   return (
     <tr className="materials-table-data-row">
       <td className="materials-table-cell">
-        {toggle ? (
+        {!updateToggle ? (
           <span className="materials-table-cell-name-span">
             {component.component_name}
           </span>
@@ -84,14 +55,12 @@ const ItemTableRow = ({ component, components, setComponents }) => {
             className="materials-table-cell-name-input"
             value={itemName}
             placeholder={component.component_name}
-            disabled={isDisabled}
             onChange={(e) => setItemName(e.target.value)}
-            onSubmit={handleUpdateSave}
           />
         )}
       </td>
       <td className="materials-table-cell">
-        {toggle ? (
+        {!updateToggle ? (
           <span className="materials-table-cell-categ-span">
             {component.component_categ}
           </span>
@@ -100,9 +69,7 @@ const ItemTableRow = ({ component, components, setComponents }) => {
             className="materials-table-cell-select-categ"
             value={itemCateg}
             placeholder={component.component_categ}
-            disabled={isDisabled}
             onChange={(e) => setItemCateg(e.target.value)}
-            onSubmit={handleUpdateSave}
           >
             <option value="window">window</option>
             <option value="door">door</option>
@@ -112,7 +79,7 @@ const ItemTableRow = ({ component, components, setComponents }) => {
         )}
       </td>
       <td className="materials-table-cell">
-        {toggle ? (
+        {!updateToggle ? (
           <span className="materials-table-cell-uvalue-span">
             {component.component_uvalue}
           </span>
@@ -122,7 +89,6 @@ const ItemTableRow = ({ component, components, setComponents }) => {
             className="materials-table-cell-uvalue-input"
             value={itemUvalue}
             placeholder={component.component_uvalue}
-            disabled={isDisabled}
             onChange={(e) => setItemUvalue(e.target.value)}
             onSubmit={handleUpdateSave}
           />
@@ -133,24 +99,24 @@ const ItemTableRow = ({ component, components, setComponents }) => {
       </td>
 
       <td className="materials-table-cell-icon ">
-        {toggle ? (
-          <button onClick={() => handleUpdate(component.component_id)}>
-            <span class="material-symbols-outlined">edit_note</span>
+        {!updateToggle ? (
+          <button onClick={() => handleUpdateIconClick(component)}>
+            <span className="material-symbols-outlined">edit_note</span>
           </button>
         ) : (
           <>
             <button onClick={(e) => handleUpdateSave(e, component)}>
-              <span class="material-symbols-outlined">save</span>
+              <span className="material-symbols-outlined">save</span>
             </button>
-            <button onClick={() => setToggle(!toggle)}>
-              <span class="material-symbols-outlined">cancel</span>
+            <button onClick={() => setUpdateToggle(!updateToggle)}>
+              <span className="material-symbols-outlined">cancel</span>
             </button>
           </>
         )}
       </td>
       <td className="materials-table-cell-icon">
         <button onClick={() => handleDelete(component.component_id)}>
-          <span class="material-symbols-outlined">delete</span>
+          <span className="material-symbols-outlined">delete</span>
         </button>
       </td>
     </tr>

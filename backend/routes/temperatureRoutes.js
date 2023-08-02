@@ -7,10 +7,10 @@ const temperatureControllers = require("../controllers/temperatureController");
 
 //////////////////////////////////////////////////////////////////////////
 // get all temperatures
-router.get("/all", temperatureControllers.getAllItems);
+router.get("/:project_id/all", temperatureControllers.getAllItems);
 
 // create new temperature
-router.post("/create", temperatureControllers.createItem);
+router.post("/:project_id/create", temperatureControllers.createItem);
 
 // get a single temperature
 router.get("/:temperature_id(\\d+$)", temperatureControllers.getItemInfo);

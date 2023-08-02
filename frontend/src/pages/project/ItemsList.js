@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import ErrorDialog from "../../components/ErrorDialog";
 import { useProjectsContext } from "../../hooks/useProjectsContext";
@@ -7,57 +7,47 @@ import CreateProject from "./CreateProject";
 import ProjectTableRow from "./ProjectTableRow";
 
 const ItemsList = () => {
-  // const [projects, setProjects] = useState(null);
-  let { projects, dispatch } = useProjectsContext();
+  let { state, apiCalls, uiCalls } = useProjectsContext();
+  let projects = state?.projects || [];
+  let error = state?.error;
+  let open = state?.open;
+  const createToggle = state?.createToggle;
   const [toggle, setToggle] = useState(false);
-  // const [projectName, setProjectName] = useState("");
-  const [error, setError] = useState(null);
-  const [open, setOpen] = useState(false);
-
-  // const inputRef = useRef();
-
-  useEffect(() => {
-    let allProjectsURI = "http://localhost:4001/heat-loss/projects/all";
-    const fetchProjects = async () => {
-      const response = await fetch(allProjectsURI);
-      const responseJson = await response.json();
-
-      if (response.ok) {
-        dispatch({ type: "SET_PROJECTS", payload: responseJson });
-      }
-    };
-
-    fetchProjects();
-  }, [dispatch]);
 
   const setParentToggle = (value) => {
     setToggle(value);
   };
-
+  const setParentOpen = (value) => {
+    uiCalls.setOpen(value);
+  };
   const setParentError = (value) => {
-    setError(value);
-    setOpen(true);
+    uiCalls.setError(value);
   };
-  const setParentOpen = () => {
-    setOpen(false);
+
+  const handleCreatePlusButtonClick = () => {
+    setToggle(true);
+    uiCalls.setCreateToggle(true);
   };
-  // const handlePlusButtonClick = () => {
-  //   setToggle(true);
-  //   setTimeout(() => {
-  //     inputRef.current.focus();
-  //     inputRef.current.scrollIntoView();
-  //   }, 0);
-  // };
+
+  useEffect(() => {
+    apiCalls.getProjects();
+  }, []);
 
   return (
     <>
       {error && (
-        <ErrorDialog error={error} open={open} setParentOpen={setParentOpen} />
+        <ErrorDialog
+          error={error}
+          open={open}
+          setParentOpen={setParentOpen}
+          setParentToggle={setParentToggle}
+        />
       )}
       <div className="items">
         <div>
-          {/* <button onClick={handlePlusButtonClick}> */}
-          <button onClick={() => setToggle(true)}>
+          <button onClick={handleCreatePlusButtonClick}>
+            {/* <button onClick={() => uiCalls.setCreateToggle(true)}> */}
+            {/* <button onClick={() => setToggle(true)}> */}
             <span className="material-symbols-outlined">add</span>
           </button>
           <span>add a project</span>
@@ -68,23 +58,19 @@ const ItemsList = () => {
               <th>Project name</th>
               <th></th>
             </tr>
-            {toggle ? (
+            {/* {toggle ? <CreateProject /> : null} */}
+            {toggle && (
               <CreateProject
-                toggle={toggle}
-                setParentToggle={setParentToggle}
+                error={error}
                 setParentError={setParentError}
-                open={open}
-                setParentOpen={setParentOpen}
+                setParentToggle={setParentToggle}
               />
-            ) : null}
+            )}
+            {/* ) : null} */}
 
             {projects &&
               projects.map((project, index) => (
-                <ProjectTableRow
-                  key={index + 2}
-                  project={project}
-                  setParentError={setParentError}
-                />
+                <ProjectTableRow key={index + 2} project={project} />
               ))}
           </tbody>
         </table>

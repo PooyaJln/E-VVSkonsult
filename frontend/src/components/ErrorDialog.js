@@ -6,15 +6,22 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
+import { useProjectsContext } from "../hooks/useProjectsContext";
 
 // const Transition = forwardRef(function Transition(props, ref) {
 //   return <Slide direction="up" ref={ref} {...props} />;
 // });
 
 const ErrorDialog = (props) => {
+  // let { state, uiCalls } = useProjectsContext();
+  // let error = state?.error || undefined;
+  // let open = state?.open || false;
+
   const handleClose = () => {
-    props.setParentOpen();
+    props.setParentOpen(false);
+    // props.setParentToggle(true);
   };
+
   return (
     <div>
       <Dialog

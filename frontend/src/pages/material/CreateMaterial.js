@@ -1,21 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useComponentsContext } from "../../hooks/useComponentsContext";
 
-const CreateItem = ({
-  project,
-  components,
-  setComponents,
-  setParentToggle,
-  setParentError,
-  trigger,
-}) => {
-  const project_id = useParams().project_id || project?.project_id;
+const CreateItem = (props) => {
+  const { state, apiCalls, uiCalls } = useComponentsContext();
+  const project_id = useParams().project_id;
 
   const [itemName, setItemName] = useState("");
   const [itemCateg, setItemCateg] = useState("");
   const [itemUvalue, setItemUvalue] = useState("");
-
-  const createFormRef = useRef();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,48 +18,13 @@ const CreateItem = ({
       component_uvalue: itemUvalue,
       project_id: project_id,
     };
-
-    const createItemURI = "http://localhost:4001/heat-loss/components/create";
-
-    const response = await fetch(createItemURI, {
-      method: "POST",
-      body: JSON.stringify(newItem),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const responseToJson = await response.json();
-    if (!response.ok) {
-      setParentError(responseToJson.error);
-    }
-    if (response.ok) {
-      setParentError(null);
-      setItemName("");
-      setItemCateg("");
-      setItemUvalue("");
-      setComponents([...components, responseToJson]);
-      setParentToggle(false);
-    }
+    apiCalls.createItem(project_id, newItem);
+    setItemName("");
+    setItemCateg("");
+    setItemUvalue("");
+    !props.error ? props.setParentToggle(false) : props.setParentToggle(true);
   };
 
-  const handlePlusButtonClick = () => {
-    setParentToggle(true);
-    // setTimeout(() => {
-    //   createFormRef.current.scrollIntoView();
-    // }, 0);
-  };
-
-  useEffect(() => {
-    if (trigger) handlePlusButtonClick();
-  }, [trigger]);
-
-  // <form
-  //   className="create-form-in-table-row"
-  //   onSubmit={handleSubmit}
-  //   ref={createFormRef}
-  // >
-  // </form>
   return (
     <tr className="materials-table-data-row">
       <td className="materials-table-cell">
@@ -75,8 +33,8 @@ const CreateItem = ({
           placeholder="enter component name"
           type="text"
           onChange={(e) => setItemName(e.target.value)}
-          onFocus={() => setParentError(undefined)}
           value={itemName}
+          autoFocus
         />
       </td>
       <td className="materials-table-cell">
@@ -99,19 +57,18 @@ const CreateItem = ({
           placeholder="enter the U-värde"
           type="text"
           onChange={(e) => setItemUvalue(e.target.value)}
-          onFocus={() => setParentError(undefined)}
           value={itemUvalue}
         />
       </td>
       <td className="materials-table-cell"></td>
       <td className="materials-table-cell-icon">
         <button onClick={(e) => handleSubmit(e)}>
-          <span class="material-symbols-outlined">save</span>
+          <span className="material-symbols-outlined">save</span>
         </button>
       </td>
       <td className="materials-table-cell-icon">
-        <button onClick={() => setParentToggle(false)}>
-          <span class="material-symbols-outlined">cancel</span>
+        <button onClick={() => props.setParentToggle(false)}>
+          <span className="material-symbols-outlined">cancel</span>
         </button>
       </td>
     </tr>

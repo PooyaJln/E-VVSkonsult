@@ -1,11 +1,15 @@
-import React, { useEffect } from "react";
-import { Outlet, useOutletContext, useParams } from "react-router-dom";
-import { useProjectDataContext } from "../../hooks/useProjectDataContext";
+import { Outlet, useOutletContext } from "react-router-dom";
+import { BuildingsContextProvider } from "../../contexts/BuildingsContext";
 
 const BuildingsLayout = () => {
-  const project = useOutletContext();
+  // const project = useOutletContext();
+  // return <Outlet context={project} />;
 
-  return <Outlet context={project} />;
+  return (
+    <BuildingsContextProvider>
+      <Outlet />
+    </BuildingsContextProvider>
+  );
 };
 
 export default BuildingsLayout;

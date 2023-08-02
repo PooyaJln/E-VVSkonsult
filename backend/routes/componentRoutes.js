@@ -6,10 +6,10 @@ const componentControllers = require("../controllers/componentController");
 
 //////////////////////////////////////////////////////
 // get all envelope types
-router.get("/all", componentControllers.getAllItems);
+router.get("/:project_id/all", componentControllers.getAllItems);
 
 // create new envelope type
-router.post("/create", componentControllers.createItem);
+router.post("/:project_id/create", componentControllers.createItem);
 
 // get a single envelope
 router.get("/:component_id(\\d+$)", componentControllers.getItemInfo);

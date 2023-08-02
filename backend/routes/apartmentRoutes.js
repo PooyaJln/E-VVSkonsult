@@ -4,8 +4,9 @@ const apartmentControllers = require("../controllers/apartmentController");
 
 //-----------------------------------------------------------------------
 
+router.get("/:storey_id/all", apartmentControllers.getAllItems);
 // create new apartment
-router.post("/create", apartmentControllers.createItem);
+router.post("/:storey_id/create", apartmentControllers.createItem);
 
 // get a single apartment with all its rooms
 router.get("/:apartment_id(\\d+$)", apartmentControllers.getItemInfo);

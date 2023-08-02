@@ -52,11 +52,12 @@ componentDbServices.getItem = async (id) => {
   }
 };
 
-componentDbServices.itemNameExists = async (_name) => {
+componentDbServices.itemNameExists = async (query) => {
   try {
     const item = await db.component.findOne({
       where: {
-        component_name: _name,
+        project_id: query.project_id,
+        component_name: query.component_name,
       },
     });
     if (item) return item;
@@ -67,8 +68,25 @@ componentDbServices.itemNameExists = async (_name) => {
 };
 
 componentDbServices.createItem = async (query) => {
+  let newItem = {};
   try {
-    const newItem = await db.component.create(query);
+    if (
+      query.component_categ === "window" ||
+      query.component_categ === "door"
+    ) {
+      const parameter = await db.thermalParameter.findOne({
+        where: {
+          parameter_name: "Specific infiltration flow",
+          project_id: query.project_id,
+        },
+      });
+      newItem = await db.component.create({
+        ...query,
+        component_qinf: parameter.parameter_id,
+      });
+    } else {
+      newItem = await db.component.create(query);
+    }
     const newId = newItem.component_id;
     const item = await componentDbServices.itemsPublicInfo(newId);
     return item;
@@ -84,6 +102,7 @@ componentDbServices.getAllItems = async (id) => {
         project_id: id,
       },
       attributes: [
+        "component_id",
         "component_name",
         "component_categ",
         "component_uvalue",
@@ -91,7 +110,7 @@ componentDbServices.getAllItems = async (id) => {
       ],
       include: {
         model: db.thermalParameter,
-        attributes: ["parameter_name", "parameter_value"],
+        attributes: ["parameter_id", "parameter_name", "parameter_value"],
       },
     });
     return components;

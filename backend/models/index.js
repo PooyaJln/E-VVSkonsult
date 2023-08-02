@@ -203,8 +203,6 @@ try {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-console.log(db);
-
 module.exports = db;
 
 // module.exports.db = db;

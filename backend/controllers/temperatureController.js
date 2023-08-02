@@ -8,9 +8,16 @@ const temperatureControllers = {};
 // create new temperature
 temperatureControllers.createItem = async (req, res, next) => {
   try {
-    const preCreateCheck = await temperatureServices.preCreateCheck(req.body);
+    const project_id = req.params.project_id;
+    const preCreateCheck = await temperatureServices.preCreateCheck({
+      ...req.body,
+      project_id,
+    });
     if (preCreateCheck) {
-      const newTemperature = await temperatureDbServices.createItem(req.body);
+      const newTemperature = await temperatureDbServices.createItem({
+        ...req.body,
+        project_id,
+      });
       res.status(201).json(newTemperature);
     }
   } catch (error) {
@@ -33,7 +40,7 @@ temperatureControllers.getItemInfo = async (req, res, next) => {
 //get all temperaturea
 temperatureControllers.getAllItems = async (req, res, next) => {
   try {
-    const { project_id } = req.body;
+    const project_id = req.params.project_id;
     let temperatures = await temperatureDbServices.getAllItems(project_id);
     res.status(200).json(temperatures);
   } catch (error) {
@@ -64,10 +71,10 @@ temperatureControllers.updateItem = async (req, res, next) => {
 //delete a single temperature
 temperatureControllers.deleteItem = async (req, res, next) => {
   try {
-    let message = await temperatureDbServices.deleteItem(
+    let deletedItem = await temperatureDbServices.deleteItem(
       req.params.temperature_id
     );
-    res.status(200).json({ message });
+    res.status(200).json(deletedItem);
   } catch (error) {
     next(error);
   }

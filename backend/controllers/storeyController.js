@@ -8,9 +8,17 @@ const storeyControllers = {};
 // create new projects
 storeyControllers.createItem = async (req, res, next) => {
   try {
-    const preCreateCheck = await storeyServices.preCreateCheck(req.body);
+    const building_id = req.params.building_id;
+
+    const preCreateCheck = await storeyServices.preCreateCheck({
+      ...req.body,
+      building_id,
+    });
     if (preCreateCheck) {
-      const newStorey = await storeyDbServices.createItem(req.body);
+      const newStorey = await storeyDbServices.createItem({
+        ...req.body,
+        building_id,
+      });
       res.status(201).json(newStorey);
     }
   } catch (error) {
@@ -21,15 +29,23 @@ storeyControllers.createItem = async (req, res, next) => {
 //get a single project
 storeyControllers.getItemInfo = async (req, res, next) => {
   try {
-    let storey = await storeyDbServices.getItemAndchildren(
-      req.params.storey_id
-    );
+    let storey = await storeyDbServices.itemsPublicInfo(req.params.storey_id);
     res.status(200).json(storey);
   } catch (error) {
     next(error);
   }
 };
 
+// get all projects
+storeyControllers.getAllItems = async (req, res, next) => {
+  try {
+    const building_id = req.params.building_id;
+    const allItems = await storeyDbServices.getAllItems(building_id);
+    res.status(200).json(allItems);
+  } catch (error) {
+    next(error);
+  }
+};
 // update an project
 storeyControllers.updateItem = async (req, res, next) => {
   try {

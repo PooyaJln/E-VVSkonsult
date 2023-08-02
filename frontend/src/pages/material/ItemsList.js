@@ -4,52 +4,37 @@ import ErrorDialog from "../../components/ErrorDialog";
 
 import CreateMaterial from "./CreateMaterial";
 import MaterialTableRow from "./MaterialTableRow";
+import { useComponentsContext } from "../../hooks/useComponentsContext";
 
 const ItemsList = () => {
-  const project = useOutletContext();
-  const project_id = useParams().project_id || project.project_id;
-
-  const [components, setComponents] = useState(project?.components || []);
+  const { state, apiCalls, uiCalls } = useComponentsContext();
+  const project_id = useParams().project_id;
+  let components = state?.items || [];
+  // const [components, setComponents] = useState(project?.components || []);
+  let error = state?.error || undefined;
+  let open = state?.open || false;
+  const createToggle = state?.createToggle;
   const [toggle, setToggle] = useState(false);
-  const [error, setError] = useState(null);
-  const [open, setOpen] = useState(false);
 
   const [trigger, setTrigger] = useState(0);
 
-  const componentsList = async () => {
-    let projectsDataURI =
-      "http://localhost:4001/heat-loss/projects/" + project_id + "/data";
-    const fetchProject = async () => {
-      const response = await fetch(projectsDataURI);
-      const responseJson = await response.json();
-      if (response.ok) {
-        setComponents(responseJson.components);
-      }
-    };
-
-    fetchProject();
-  };
-
-  const setParentError = (value) => {
-    setError(value);
-    setOpen(true);
-  };
-
-  const setParentOpen = () => {
-    setOpen(false);
-  };
   const setParentToggle = (value) => {
     setToggle(value);
   };
-
-  const handlePlusButtonClick = () => {
+  const setParentError = (value) => {
+    uiCalls.setError(value);
+  };
+  const setParentOpen = (value) => {
+    uiCalls.setOpen(value);
+  };
+  const handleCreatePlusButtonClick = () => {
     setToggle(true);
-    setTrigger(true);
+    uiCalls.setCreateToggle(true);
   };
 
-  // useEffect(() => {
-  //   componentsList();
-  // }, []);
+  useEffect(() => {
+    apiCalls.getItems(project_id);
+  }, []);
 
   return (
     <>
@@ -59,10 +44,10 @@ const ItemsList = () => {
       <div className="items">
         <div>
           <button
-            onClick={handlePlusButtonClick}
+            onClick={handleCreatePlusButtonClick}
             // onClick={() => setToggle(true)}
           >
-            <span class="material-symbols-outlined">add</span>
+            <span className="material-symbols-outlined">add</span>
           </button>
           <span>add a Component</span>
         </div>
@@ -78,29 +63,13 @@ const ItemsList = () => {
                 </p>
               </th>
             </tr>
-            {toggle ? (
-              <CreateMaterial
-                project={project}
-                // toggle={toggle}
-                setParentToggle={setParentToggle}
-                setParentError={setParentError}
-                setParentOpen={setParentOpen}
-                // error={setError}
-                components={components}
-                setComponents={setComponents}
-                componentsList={componentsList}
-                // trigger={trigger}
-              />
-            ) : null}
+            {toggle && createToggle && (
+              <CreateMaterial setParentToggle={setParentToggle} />
+            )}
 
             {components &&
               components.map((component, index) => (
-                <MaterialTableRow
-                  key={index + 2}
-                  component={component}
-                  components={components}
-                  setComponents={setComponents}
-                />
+                <MaterialTableRow key={index + 2} component={component} />
               ))}
           </tbody>
         </table>

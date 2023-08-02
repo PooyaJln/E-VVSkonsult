@@ -148,6 +148,7 @@ export const RoomBoundariesContextProvider = ({ children }) => {
       const room_id = id;
       const response = await axios.get(`${URI}${id}/all`);
       if (response.statusText === "OK") {
+        console.log(response.data);
         dispatchCalls.getItems(response.data);
       }
     } catch (err) {

@@ -24,16 +24,16 @@ roomDbServices.itemsPublicInfo = async (id) => {
       where: {
         room_id: id,
       },
-      attributes: ["room_name"],
+      attributes: ["room_id", "room_name"],
       include: [
         {
           model: db.temperature,
           attributes: ["temperature_id", "temperature_value"],
         },
-        {
-          model: db.apartment,
-          attributes: ["apartment_id", "apartment_name"],
-        },
+        // {
+        //   model: db.apartment,
+        //   attributes: ["apartment_id", "apartment_name"],
+        // },
       ],
     });
     if (item) return item;
@@ -122,9 +122,7 @@ roomDbServices.getItemAndchildren = async (id) => {
     if (!foundItem) {
       throw new Errors.badRequestError("no room was found");
     }
-    const room_name = foundItem.room_name;
 
-    let itemsArray = [];
     const items = await db.roomBoundary.findAll({
       where: {
         room1_id: id,
@@ -133,19 +131,13 @@ roomDbServices.getItemAndchildren = async (id) => {
       // raw: true,
     });
 
-    if (items.length == 0) {
-      return { room: room_name, boundaries: [], roomHeatLoss: 0 };
-    }
-    // items.map((item) => {
-    //   itemsArray.push(item["boundary_name"]);
-    // });
     const totalHeatLoss = await roomDbServices.calculateRoomsHeatLoss(items);
 
     if (items)
       return {
         ...foundItem,
         boundaries: items,
-        roomHeatLoss: totalHeatLoss,
+        roomHeatLoss: totalHeatLoss.toFixed(1),
       };
 
     return false;

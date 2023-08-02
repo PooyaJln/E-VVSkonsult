@@ -6,7 +6,8 @@ const roomControllers = require("../controllers/roomController");
 // create new roomBoundary
 router.post("/:room1_id/create", roomBoundaryControllers.createItem);
 
-router.get("/:room_id/all", roomControllers.getItemInfo);
+// router.get("/:room_id/all", roomControllers.getItemInfo);
+router.get("/:room_id/all", roomBoundaryControllers.getAllItems);
 
 // get a single roomBoundary with all its walls, roof, floor
 router.get("/:id(\\d+$)", roomBoundaryControllers.getItemInfo);

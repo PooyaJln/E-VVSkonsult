@@ -21,7 +21,7 @@ roomControllers.createItem = async (req, res, next) => {
 //get a single room
 roomControllers.getItemInfo = async (req, res, next) => {
   try {
-    let room = await roomDbServices.getItemAndchildren(req.params.room_id);
+    let room = await roomDbServices.itemsPublicInfo(req.params.room_id);
     res.status(200).json(room);
   } catch (error) {
     next(error);

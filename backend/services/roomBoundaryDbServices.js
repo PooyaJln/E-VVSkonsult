@@ -6,6 +6,7 @@ const roomBoundaryDbServices = {};
 
 roomBoundaryDbServices.createItem = async (query) => {
   try {
+    query.boundary_parent_id === "" ? (query.boundary_parent_id = null) : query;
     let newBoundary = await db.roomBoundary.create(query);
 
     await setProperties.setBoundaryParentOpeningProp(newBoundary);
@@ -37,7 +38,11 @@ roomBoundaryDbServices.updateItem = async (id, query) => {
 
 roomBoundaryDbServices.deleteItem = async (id) => {
   try {
-    let foundItem = await db.roomboundary.findByPk(id);
+    let foundItem = await db.roomBoundary.findOne({
+      where: {
+        boundary_id: id,
+      },
+    });
     if (!foundItem) {
       throw new Errors.badRequestError("no room boundary was found");
     }
@@ -128,6 +133,46 @@ roomBoundaryDbServices.itemsPublicInfo = async (id) => {
   }
 };
 
+roomBoundaryDbServices.getAllItems = async (id) => {
+  try {
+    let foundItem = await db.room.findOne({
+      where: {
+        room_id: id,
+      },
+      attributes: ["room_id", "room_name"],
+      raw: true,
+    });
+    if (!foundItem) {
+      throw new Errors.badRequestError("no room was found");
+    }
+
+    const items = await db.roomBoundary.findAll({
+      where: {
+        room1_id: id,
+      },
+      // attributes: ["boundary_id", "boundary_name"],
+      // raw: true,
+    });
+    const totalHeatLoss = await (async () => {
+      let roomHeatLoss = 0;
+      for (let item of items) {
+        roomHeatLoss += await roomBoundaryDbServices.getItemsHeatLoss(item);
+      }
+      return roomHeatLoss;
+    })();
+    if (items)
+      return {
+        ...foundItem,
+        boundaries: items,
+        roomHeatLoss: totalHeatLoss.toFixed(1),
+      };
+
+    return false;
+  } catch (error) {
+    throw error;
+  }
+};
+
 //------------------------------------------------
 roomBoundaryDbServices.setProperties = async (obj) => {
   try {
@@ -145,10 +190,10 @@ roomBoundaryDbServices.setProperties = async (obj) => {
 
 roomBoundaryDbServices.itemNameExists = async (_name, id) => {
   try {
-    const item = await db.room.findOne({
+    const item = await db.roomBoundary.findOne({
       where: {
-        room_name: _name,
-        apartment_id: id,
+        boundary_name: _name,
+        room1_id: id,
       },
     });
     if (item) return item;

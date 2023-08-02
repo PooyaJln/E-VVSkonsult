@@ -3,21 +3,15 @@ import { useParams } from "react-router-dom";
 import { useRoomsContext } from "../../hooks/useRoomsContext";
 import CreateRoomBoundary from "./CreateRoomBoundary";
 import RoomBoundaryTableRow from "./RoomBoundaryTableRow";
+import { useRoomBoundariesContext } from "../../hooks/useRoomBoundariesContext";
+
 import ErrorDialog from "../../components/ErrorDialog";
 
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import IconButton from "@mui/material/IconButton";
-import AddBoxRoundedIcon from "@mui/icons-material/AddBoxRounded";
-import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import {
-  Box,
-  Container,
-  ListSubheader,
-  Stack,
-  Typography,
-} from "@mui/material";
+
+import { Box, Stack, Typography } from "@mui/material";
 
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -27,53 +21,69 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import EditNoteIcon from "@mui/icons-material/EditNote";
-import SaveIcon from "@mui/icons-material/Save";
-import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CreateBoundaryDialog from "./CreateBoundaryDialog";
 
 const ItemsList = (props) => {
-  const { state, apiCalls, uiCalls } = useRoomsContext();
-
   const room_id = useParams().room_id;
+  const project_id = useParams().project_id;
+  const roomState = useRoomsContext().state;
+  const roomApiCalls = useRoomsContext().apiCalls;
+  const room = roomState?.item || {};
+  const roomBoundaryState = useRoomBoundariesContext().state;
+  const roomBoundaryApiCalls = useRoomBoundariesContext().apiCalls;
+  let roomBoundaries = roomBoundaryState?.items || [];
+  const roomHeatLoss = roomBoundaries.reduce(
+    (sum, boundary) => sum + boundary.total_heat_loss,
+    0
+  );
 
-  let roomBoundaries = props?.room.boundaries || [];
-  let temperatures = props?.temperatures || [];
-  let error = state?.error || undefined;
-  let errorOpen = state?.open || false;
-  const createToggle = state?.createToggle;
+  let error = roomBoundaryState?.error || undefined;
+  let errorOpen = roomBoundaryState?.open || false;
+  const createToggle = roomBoundaryState?.createToggle;
 
   const [toggle, setToggle] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [UpdateDialogOpen, setUpdateDialogOpen] = useState(false);
 
-  const handleOpen = () => setCreateDialogOpen(true);
-  const handleClose = () => setCreateDialogOpen(false);
+  const handleClose = () => {
+    setCreateDialogOpen(false);
+  };
 
-  const setParentToggle = (value) => {
-    setToggle(value);
-  };
-  const setParentError = (value) => {
-    uiCalls.setError(value);
-  };
-  const setParentOpen = (value) => {
-    uiCalls.setOpen(value);
-  };
   const handleCreatePlusButtonClick = () => {
     setCreateDialogOpen(true);
-    setToggle(true);
-    uiCalls.setCreateToggle(true);
   };
+  const handleUpdateButtonClick = () => {
+    setUpdateDialogOpen(true);
+  };
+
+  const handleDelete = async (obj) => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete this ${obj.boundary_type}? `
+      )
+    ) {
+      roomBoundaryApiCalls.deleteItem(obj.boundary_id);
+    }
+  };
+
+  useEffect(() => {
+    roomApiCalls.getItem(room_id);
+    roomBoundaryApiCalls.getItems(room_id);
+  }, [room_id]);
 
   return (
     <>
-      {error && (
+      <h2>Room: {room?.room_name}</h2>
+      <h2>heat loss: {roomHeatLoss} W</h2>
+      {/* {error && (
         <ErrorDialog
           error={error}
           open={errorOpen}
           setParentOpen={setParentOpen}
           setParentToggle={setParentToggle}
         />
-      )}
+      )} */}
       <Stack spacing={3}>
         <Box sx={{ display: "flex", width: "100%", gap: 1 }}>
           <Button
@@ -96,7 +106,7 @@ const ItemsList = (props) => {
             setParentToggle={setParentToggle}
           />
         )} */}
-        {toggle && (
+        {/* {toggle && (
           <CreateBoundaryDialog
             open={createDialogOpen}
             temperatures={temperatures}
@@ -104,7 +114,22 @@ const ItemsList = (props) => {
             setParentToggle={setParentToggle}
             handleClose={handleClose}
           />
-        )}
+        )} */}
+        {/* <CreateBoundaryDialog
+          open={createDialogOpen}
+          // temperatures={temperatures}
+          roomBoundaries={roomBoundaries}
+          setParentToggle={setParentToggle}
+          setParentError={setParentError}
+          setParentOpen={setParentOpen}
+          handleClose={handleClose}
+        /> */}
+        <CreateBoundaryDialog
+          open={createDialogOpen}
+          roomBoundaries={roomBoundaries}
+          handleClose={handleClose}
+        />
+
         <TableContainer component={Paper}>
           <Table
             sx={{ minWidth: 650 }}
@@ -116,13 +141,19 @@ const ItemsList = (props) => {
                 <TableCell align="center">Name</TableCell>
                 <TableCell align="center">Type</TableCell>
                 <TableCell align="center">Parent boundary</TableCell>
-                <TableCell align="center">U-Value</TableCell>
-                <TableCell align="center">Total Area</TableCell>
-                <TableCell align="center">Net Area</TableCell>
-                <TableCell align="center">ΔT</TableCell>
-                <TableCell align="center">Inf. heat loss</TableCell>
-                <TableCell align="center">trans. heat loss</TableCell>
-                <TableCell align="center">Total heat loss</TableCell>
+                <TableCell align="center">
+                  U-Value [W/m<sup>2</sup>.K]
+                </TableCell>
+                <TableCell align="center">
+                  Total Area [ m<sup>2</sup>]
+                </TableCell>
+                <TableCell align="center">
+                  Net Area [ m<sup>2</sup>]
+                </TableCell>
+                <TableCell align="center">ΔT [℃]</TableCell>
+                <TableCell align="center">Inf. heat loss [W]</TableCell>
+                <TableCell align="center">trans. heat loss [W]</TableCell>
+                <TableCell align="center">Total heat loss [W]</TableCell>
                 <TableCell align="center">-</TableCell>
                 <TableCell align="center">-</TableCell>
               </TableRow>
@@ -156,22 +187,16 @@ const ItemsList = (props) => {
                     {boundary.total_heat_loss}
                   </TableCell>
                   <TableCell align="center">
-                    <Button>
-                      <IconButton
-                      // onClick={(e) => handleUpdateSave(e, roomBoundary)}
-                      >
-                        <EditNoteIcon />
-                      </IconButton>
-                    </Button>
+                    <IconButton
+                      onClick={(e) => handleUpdateButtonClick(e, boundary)}
+                    >
+                      <EditNoteIcon />
+                    </IconButton>
                   </TableCell>
                   <TableCell align="center">
-                    <Button>
-                      <IconButton
-                      // onClick={(e) => handleDelete(e, roomBoundary)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Button>
+                    <IconButton onClick={(e) => handleDelete(boundary)}>
+                      <DeleteIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
@@ -179,7 +204,7 @@ const ItemsList = (props) => {
           </Table>
         </TableContainer>
 
-        <TableContainer component={Paper}>
+        {/* <TableContainer component={Paper}>
           <Table
             sx={{ minWidth: 650 }}
             size="medium"
@@ -208,7 +233,7 @@ const ItemsList = (props) => {
                 ))}
             </TableBody>
           </Table>
-        </TableContainer>
+        </TableContainer> */}
       </Stack>
     </>
   );

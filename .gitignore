@@ -11,3 +11,4 @@ docker-compose.yml
 E-VVSkonsult.code-workspace
 heatLossApp.odb
 .dockerignore
+node_modules

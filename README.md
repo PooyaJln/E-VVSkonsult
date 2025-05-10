@@ -1,4 +1,4 @@
-# E-VVSkonsult
+# building heat loss calculator
 This project is a proof-of-concept for calculating building heat load during cold period of the year.
 
 Under backend folder you find A REST API that is developed using nodeJS, ExpressJS, MySQL and Sequelize ORM.

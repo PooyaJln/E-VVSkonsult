@@ -1,38 +1,39 @@
 "use strict";
 const { Sequelize, DataTypes } = require("sequelize");
 
-const User = (sequelize) => {
+const HashedPass = (sequelize) => {
   return sequelize.define(
-    "user",
+    "hashedPass",
     {
-      user_id: {
+      hashed_pass_id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
       },
-      user_email: {
-        type: DataTypes.STRING,
-        isEmail: true,
+      user_id: {
+        type: DataTypes.INTEGER,
         required: true,
         notNull: true,
         notEmpty: true,
         allowNull: false,
-        unique: true,
       },
-      user_role: {
+      hashed_pass: {
         type: DataTypes.STRING,
-        allowNull: true,
+        required: true,
+        notNull: true,
+        notEmpty: true,
+        allowNull: false,
       },
     },
     {
-      tableName: "users",
+      tableName: "hashedPasses",
       underscored: true,
       timestamps: false,
     }
   );
 };
 
-module.exports = User;
+module.exports = HashedPass;
 
 //////////////////// MOngoDB
 

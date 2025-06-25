@@ -55,13 +55,22 @@ Object.keys(db).forEach((modelName) => {
     db[modelName].associate(db);
   }
 });
-
+//-------------------------------
 db.user.hasMany(db.project, {
   foreignKey: "owner_id",
 });
 db.project.belongsTo(db.user, {
   foreignKey: "owner_id",
   onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
+});
+//-------------------------------
+db.user.hasOne(db.hashedPass, {
+  foreignKey: "user_id",
+});
+db.hashedPass.belongsTo(db.project, {
+  foreignKey: "user_id",
+  onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
 

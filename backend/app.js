@@ -122,7 +122,7 @@ const appFnDb = (database) => {
 
   app.use("/heat-loss/projects(.html)?", projectRoutes);
 
-  app.use("/usersData(.html)?", userRoutes);
+  app.use("/user(.html)?", userRoutes);
 
   app.use(errorHandler);
 

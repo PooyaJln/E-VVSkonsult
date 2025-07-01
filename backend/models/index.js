@@ -2,14 +2,15 @@
 require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
-const Sequelize = require("sequelize");
+const { Sequelize, DataTypes } = require("sequelize");
+
 const process = require("process");
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
 const config = require("../config/config")[env];
 // const config = require(__dirname + "/../config/config.js")[env];
+const { sequelize } = require("../connections/dbConnection");
 
-const db = {};
 
 // let sequelize;
 // if (config.use_env_variable) {
@@ -22,16 +23,20 @@ const db = {};
 //     config
 //   );
 // }
-const sequelize = new Sequelize(
-  config.database,
-  config.username,
-  config.password,
-  {
-    host: config.host,
-    dialect: "mysql",
-    logging: false,
-  }
-);
+// const sequelize = new Sequelize(
+//   config.database,
+//   config.username,
+//   config.password,
+//   {
+//     host: config.host,
+//     dialect: "mysql",
+//     logging: false,
+//   }
+// );
+
+const db = {};
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
 
 fs.readdirSync(__dirname)
   .filter((file) => {
@@ -45,7 +50,7 @@ fs.readdirSync(__dirname)
   .forEach((file) => {
     const model = require(path.join(__dirname, file))(
       sequelize,
-      Sequelize.DataTypes
+      DataTypes
     );
     db[model.name] = model;
   });
@@ -209,90 +214,6 @@ try {
   console.error(err);
 }
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
+
 
 module.exports = db;
-
-// module.exports.db = db;
-
-/* test database */
-// const dbTest = {};
-// const testENV = process.env.NODE_TEST_ENV || "test";
-// console.log("testENV: ", testENV);
-// const configTest = require("../config/config")[testENV];
-// console.log("configTest: ", configTest);
-// const sequelizeTest = new Sequelize(
-//   configTest.database,
-//   config.username,
-//   config.password,
-//   {
-//     host: config.host,
-//     dialect: "mysql",
-//   }
-// );
-// fs.readdirSync(__dirname)
-//   .filter((file) => {
-//     return (
-//       file.indexOf(".") !== 0 &&
-//       file !== basename &&
-//       file.slice(-3) === ".js" &&
-//       file.indexOf(".test.js") === -1
-//     );
-//   })
-//   .forEach((file) => {
-//     const model = require(path.join(__dirname, file))(
-//       sequelizeTest,
-//       Sequelize.DataTypes
-//     );
-//     dbTest[model.name] = model;
-//   });
-
-// Object.keys(dbTest).forEach((modelName) => {
-//   if (dbTest[modelName].associate) {
-//     dbTest[modelName].associate(dbTest);
-//   }
-// });
-
-// dbTest.sequelize = sequelizeTest;
-// dbTest.Sequelize = Sequelize;
-
-// dbTest.project.hasMany(dbTest.building, {
-//   foreignKey: "project_id",
-// });
-// dbTest.building.belongsTo(dbTest.project);
-
-// dbTest.building.hasMany(dbTest.storey, {
-//   foreignKey: "building_id",
-// });
-// dbTest.storey.belongsTo(dbTest.building);
-
-// dbTest.storey.hasMany(dbTest.apartment, {
-//   foreignKey: "storey_id",
-// });
-// dbTest.apartment.belongsTo(dbTest.storey);
-
-// dbTest.apartment.hasMany(dbTest.room, {
-//   foreignKey: "apartment_id",
-// });
-// dbTest.room.belongsTo(dbTest.apartment);
-
-// dbTest.roomBoundary.hasMany(dbTest.room, {
-//   foreignKey: "room_id",
-// });
-// dbTest.room.belongsTo(dbTest.roomBoundary);
-
-// sequelizeTest
-//   .authenticate()
-//   .then(() => {
-//     console.log(
-//       `Connection to ${configTest.database} has been established successfully.`
-//     );
-//   })
-//   .catch((err) => {
-//     console.error(
-//       `Unable to connect to the ${configTest.database} database:`,
-//       err
-//     );
-//   });
-// module.exports.dbTest = dbTest;

@@ -2,6 +2,8 @@
 // const Errors = require("../utils/errors");
 
 // ----------------------------------------------Sequelize model definition
+const { Sequelize, DataTypes } = require("sequelize");
+const { sequelize } = require("../connections/dbConnection");
 const Component = (sequelize, DataTypes) => {
   return sequelize.define(
     "component",
@@ -58,8 +60,9 @@ const Component = (sequelize, DataTypes) => {
       timestamps: false,
       paranoid: true,
     }
-  );
+  )
 };
+
 module.exports = Component;
 
 //------ Mysql Model definition

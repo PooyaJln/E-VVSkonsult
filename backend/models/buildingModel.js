@@ -1,5 +1,6 @@
 "use strict";
-const { poolPromise, pool } = require("../connections/dbConnection");
+const { sequelize } = require("../connections/dbConnection");
+const { Sequelize, DataTypes } = require("sequelize");
 
 const Building = (sequelize, DataTypes) => {
   return sequelize.define(
@@ -31,6 +32,7 @@ const Building = (sequelize, DataTypes) => {
       timestamps: false,
       paranoid: true,
     }
-  );
+  )
 };
+
 module.exports = Building;

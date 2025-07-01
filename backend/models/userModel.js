@@ -1,7 +1,8 @@
 "use strict";
+const { sequelize } = require("../connections/dbConnection");
 const { Sequelize, DataTypes } = require("sequelize");
 
-const User = (sequelize) => {
+const User = (sequelize, DataTypes) => {
   return sequelize.define(
     "user",
     {
@@ -9,6 +10,10 @@ const User = (sequelize) => {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
+      },
+      user_name: {
+        type: DataTypes.STRING,
+        allowNull: true,
       },
       user_email: {
         type: DataTypes.STRING,
@@ -29,7 +34,7 @@ const User = (sequelize) => {
       underscored: true,
       timestamps: false,
     }
-  );
+  )
 };
 
 module.exports = User;

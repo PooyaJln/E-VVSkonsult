@@ -1,9 +1,9 @@
 require("dotenv").config();
-const { pool, poolPromise, prisma } = require("./connections/dbConnection");
 const { appFnDb } = require("./app");
 const db = require("./models");
 
 const SERVER_PORT = process.env.SERVER_PORT;
+
 try {
   (async () => {
     await db.sequelize.sync();

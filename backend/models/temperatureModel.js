@@ -1,11 +1,13 @@
 "use strict";
-const { poolPromise, pool } = require("../connections/dbConnection");
+// const { poolPromise, pool } = require("../connections/dbConnection");
+const { sequelize } = require("../connections/dbConnection");
 const Errors = require("../utils/errors");
 const { Sequelize, DataTypes } = require("sequelize");
 
 // --------------------------------- Sequelize Model
 const Temperature = (sequelize, DataTypes) => {
   return sequelize.define(
+
     "temperature",
     {
       temperature_id: {
@@ -35,8 +37,9 @@ const Temperature = (sequelize, DataTypes) => {
       timestamps: false,
       paranoid: true,
     }
-  );
+  )
 };
+
 
 module.exports = Temperature;
 

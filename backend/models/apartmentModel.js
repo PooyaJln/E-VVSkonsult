@@ -1,5 +1,5 @@
 "use strict";
-
+const { sequelize } = require("../connections/dbConnection");
 const { Sequelize, DataTypes } = require("sequelize");
 
 const Apartment = (sequelize, DataTypes) => {
@@ -32,7 +32,7 @@ const Apartment = (sequelize, DataTypes) => {
       timestamps: false,
       paranoid: true,
     }
-  );
+  )
 };
 module.exports = Apartment;
 // ---------------------------- MySQL

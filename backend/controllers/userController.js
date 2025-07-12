@@ -62,9 +62,17 @@ userControllers.logout = async (req, res, next) => {
   }
 };
 
+userControllers.getAllUsers = async (req, res, next) => {
+  try {
+    res.status(200).json({ message: "get All users" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 userControllers.getUser = async (req, res, next) => {
   try {
-    res.status(200).json({ message: "get user" });
+    res.status(200).json({ message: `get user with id ${req.params.id}` });
   } catch (error) {
     next(error);
   }
@@ -86,13 +94,7 @@ userControllers.deleteUser = async (req, res, next) => {
   }
 };
 
-userControllers.getAllUsers = async (req, res, next) => {
-  try {
-    res.status(200).json({ message: "getAll users" });
-  } catch (error) {
-    next(error);
-  }
-};
+
 module.exports = userControllers;
 // //---------------------------------------MySql-------------------------------------------
 // //------------------------ logic functions

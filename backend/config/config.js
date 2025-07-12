@@ -5,13 +5,16 @@ const password = process.env.MYSQL_PASSWORD;
 const database = process.env.MYSQL_DATABASE;
 const testDatabase = process.env.MYSQL_TEST_DATABASE;
 const host = process.env.MYSQL_HOST;
+const node_env = process.env.NODE_ENV || "development";
 
 const config = {
   development: {
-    username,
-    password,
-    database,
-    host,
+    db: {
+      username,
+      password,
+      database,
+      host
+    }
   },
   test: {
     username,
@@ -19,7 +22,14 @@ const config = {
     database: testDatabase,
     host,
   },
-  production: {},
+  production: {
+    db: {
+      username,
+      password,
+      database,
+      host
+    }
+  },
 };
 
-module.exports = config;
+module.exports = config[node_env];

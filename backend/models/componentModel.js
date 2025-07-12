@@ -3,7 +3,7 @@
 
 // ----------------------------------------------Sequelize model definition
 const { Sequelize, DataTypes } = require("sequelize");
-const { sequelize } = require("../connections/dbConnection");
+// const { sequelize } = require("../connections/dbConnection");
 const Component = (sequelize, DataTypes) => {
   return sequelize.define(
     "component",

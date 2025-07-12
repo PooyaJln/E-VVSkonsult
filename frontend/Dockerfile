@@ -1,6 +1,6 @@
 FROM node:lts-bookworm AS development
 
-WORKDIR /webapps/heatLossApp/frontend
+WORKDIR /heatLossApp/frontend
 COPY package*.json .
 RUN npm install
 COPY . .

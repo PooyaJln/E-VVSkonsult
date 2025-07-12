@@ -1,5 +1,5 @@
 "use strict";
-const { sequelize } = require("../connections/dbConnection");
+// const { sequelize } = require("../connections/dbConnection");
 const { Sequelize, DataTypes } = require("sequelize");
 
 const Building = (sequelize, DataTypes) => {

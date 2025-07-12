@@ -1,6 +1,6 @@
 "use strict";
 const { Sequelize, DataTypes } = require("sequelize");
-const { sequelize } = require("../connections/dbConnection");
+// const { sequelize } = require("../connections/dbConnection");
 
 const HashedPass = (sequelize) => {
   return sequelize.define(

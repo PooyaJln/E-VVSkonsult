@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "debug": "nodemon --inspect server.js",
+    "debug": "nodemon --inspect=0.0.0.0 server.js",
     "test:mocha": "mocha",
     "test:jest": "jest"
   },

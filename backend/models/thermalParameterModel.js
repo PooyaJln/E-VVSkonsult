@@ -1,6 +1,6 @@
 "use strict";
 
-const { sequelize } = require("../connections/dbConnection");
+// const { sequelize } = require("../connections/dbConnection");
 // --------------------------------- Sequelize Model
 const thermalParameter = (sequelize, DataTypes) => {
   return sequelize.define(

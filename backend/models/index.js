@@ -7,9 +7,11 @@ const { Sequelize, DataTypes } = require("sequelize");
 const process = require("process");
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
-const config = require("../config/config")[env];
-// const config = require(__dirname + "/../config/config.js")[env];
-const { sequelize } = require("../connections/dbConnection");
+const config = require("../config/config");
+console.log("🚀 ~ index.js:11 ~ config=", config)
+
+
+// const { sequelize } = require("../connections/dbConnection");
 
 
 // let sequelize;
@@ -23,20 +25,19 @@ const { sequelize } = require("../connections/dbConnection");
 //     config
 //   );
 // }
-// const sequelize = new Sequelize(
-//   config.database,
-//   config.username,
-//   config.password,
-//   {
-//     host: config.host,
-//     dialect: "mysql",
-//     logging: false,
-//   }
-// );
+const sequelize = new Sequelize(
+  config.db.database,
+  config.db.username,
+  config.db.password,
+  {
+    host: config.db.host,
+    dialect: "mysql",
+  }
+);
+
 
 const db = {};
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
+
 
 fs.readdirSync(__dirname)
   .filter((file) => {
@@ -214,6 +215,7 @@ try {
   console.error(err);
 }
 
-
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
 
 module.exports = db;

@@ -31,6 +31,10 @@ router.post("/login", userControllers.login);
 // router.get('/logout', handleLogOut)
 router.get("/logout", userControllers.logout);
 
+// get all user
+router.get("/allusersVerified", verifyJWT4, userControllers.getAllUsers);
+router.get("/all", userControllers.getAllUsers);
+
 // get a single user
 // router.get('/get/:id', verifyJWT, getSingleUser)
 router.get("/with_verification/:id", verifyJWT4, userControllers.getUser);
@@ -46,9 +50,7 @@ router.patch("/:id", userControllers.updateUser);
 router.delete("/with_verification/:id", verifyJWT4, userControllers.deleteUser);
 router.delete("/:id", userControllers.deleteUser);
 
-// get all user
-router.get("/allusersVerified", verifyJWT4, userControllers.getAllUsers);
-router.get("/all", userControllers.getAllUsers);
+
 // (req, res) => {res.json({ mssg: "show input data page" })})
 //////////////////////////////////////////////////////////////////////////
 

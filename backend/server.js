@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { appFnDb } = require("./app");
+const { app, appFnDb } = require("./app");
 const db = require("./models");
 
 const SERVER_PORT = process.env.SERVER_PORT;
@@ -10,7 +10,7 @@ try {
     console.log(
       `${db.sequelize.config.database} is synchronized successfully.`
     );
-    const app = appFnDb(db);
+    // const app = appFnDb(db);
 
     app.listen(SERVER_PORT, () => {
       console.log(`server started. Go to http://localhost:${SERVER_PORT}/`);

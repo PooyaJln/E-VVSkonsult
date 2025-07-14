@@ -66,4 +66,16 @@ userDbServices.createItem = async (query) => {
     throw error;
   }
 };
+
+userDbServices.emailExists = async (email) => {
+  try {
+    const foundUser = await db.user.findOne({ where: { user_email: email } });
+    if (foundUser) return foundUser;
+    else return null;
+  } catch (error) {
+    throw error;
+  }
+}
+
+
 module.exports = userDbServices;

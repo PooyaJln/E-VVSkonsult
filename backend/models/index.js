@@ -61,6 +61,10 @@ Object.keys(db).forEach((modelName) => {
     db[modelName].associate(db);
   }
 });
+
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+
 //-------------------------------
 db.user.hasMany(db.project, {
   foreignKey: "owner_id",
@@ -215,7 +219,6 @@ try {
   console.error(err);
 }
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
+
 
 module.exports = db;

@@ -3,6 +3,8 @@ const { app, appFnDb } = require("./app");
 const db = require("./models");
 
 const SERVER_PORT = process.env.SERVER_PORT;
+const NODE_ENV = process.env.NODE_ENV;
+const SERVER_URI = process.env.SERVER_URI;
 
 try {
   (async () => {
@@ -13,7 +15,8 @@ try {
     // const app = appFnDb(db);
 
     app.listen(SERVER_PORT, () => {
-      console.log(`server started. Go to http://localhost:${SERVER_PORT}/`);
+      if (NODE_ENV == 'development') console.log(`server started. Go to http://${SERVER_URI}:${SERVER_PORT}/`);
+      else console.log(`server started. Go to https://${SERVER_URI}:${SERVER_PORT}/`);
     });
   })();
 } catch (error) {

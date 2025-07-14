@@ -2,9 +2,10 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
-
+const { userDbServices } = require("./userDbServices")
 const db = require("../models");
 const Errors = require("../utils/errors");
+const userDbServices = require("./userDbServices");
 
 var maxAgeToken = 2 * 60 * 1000;
 var maxAgeCookie = 2 * 60 * 1000;
@@ -62,7 +63,7 @@ userServices.loginValidate = async (query) => {
   if (!validator.isEmail(user_email)) {
     throw new Errors.badRequestError("email is not valid");
   }
-  const foundUser = await db.user.findOne({ where: { user_email: email } });
+  const foundUser = await userDbServices.emailExists(user_email)
   if (!foundUser) {
     throw new Errors.validationError("Incorrect email");
   }
@@ -78,9 +79,10 @@ userServices.loginValidate = async (query) => {
 
 /* function checks if user Email already exists
 return true if it's already taken, false otherwise*/
-userServices.emailExists = async (email) => {
+userServices.emailExists = async (query) => {
   try {
-    const foundUser = await db.user.findOne({ where: { user_email: email } });
+    const user_email = query.user_email;
+    const foundUser = await userDbServices.emailExists(user_email);
     if (foundUser) throw new Errors.badRequestError("Email already in use");
     return false;
   } catch (error) {

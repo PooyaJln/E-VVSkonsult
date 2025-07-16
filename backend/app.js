@@ -6,6 +6,9 @@ const cookieParser = require("cookie-parser");
 const corsOptions = require("./config/corsOptions");
 const { logger } = require("./middlewares/logEvents");
 const errorHandler = require("./middlewares/errorHandler");
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const session = require('express-session');
 
 // import routes
 const roomBoundaryRoutes = require("./routes/roomBoundaryRoutes");
@@ -96,6 +99,17 @@ const appFnDb = (database) => {
 
   //To be able to parse the form data we can add an optional middleware from express as below.
   app.use(express.urlencoded({ extended: true }));
+
+  // authentication
+  app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false
+  }));
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+
 
   //routes
   app.get("^/$|/index(.html)?", (req, res) => {

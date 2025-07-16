@@ -2,7 +2,7 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
-const { userDbServices } = require("./userDbServices")
+const userDbServices = require("./userDbServices")
 const db = require("../models");
 const Errors = require("../utils/errors");
 const userDbServices = require("./userDbServices");
@@ -82,9 +82,20 @@ return true if it's already taken, false otherwise*/
 userServices.emailExists = async (query) => {
   try {
     const user_email = query.user_email;
-    const foundUser = await userDbServices.emailExists(user_email);
+    const foundUser = await userDbServices.findUserByEmail(user_email);
     if (foundUser) throw new Errors.badRequestError("Email already in use");
-    return false;
+    else return false;
+  } catch (error) {
+    throw error;
+  }
+};
+
+userServices.findUserByEmail = async (query) => {
+  try {
+    const user_email = query.user_email;
+    const foundUser = await userDbServices.findUserByEmail(user_email);
+    if (foundUser) return foundUser;
+    else return false;
   } catch (error) {
     throw error;
   }

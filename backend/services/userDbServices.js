@@ -37,12 +37,14 @@ userDbServices.itemsPublicInfo = async (id) => {
 
 userDbServices.userExists = async (id) => {
   try {
-    const user = await db.user.findOne({
-      where: {
-        user_id: id,
-      },
-      raw: true,
-    });
+    const user = await db.user.findOne(
+      {
+        where: {
+          user_id: id,
+        },
+        raw: true,
+      }
+    );
 
     if (user) return user;
     return false;
@@ -69,9 +71,28 @@ userDbServices.createItem = async (query) => {
 
 userDbServices.emailExists = async (email) => {
   try {
-    const foundUser = await db.user.findOne({ where: { user_email: email } });
+    const foundUser = await db.user.findOne(
+      {
+        where:
+          { user_email: email }
+      }
+    );
     if (foundUser) return foundUser;
-    else return null;
+    else return false;
+  } catch (error) {
+    throw error;
+  }
+}
+userDbServices.findUserByEmail = async (email) => {
+  try {
+    const foundUser = await db.user.findOne(
+      {
+        where:
+          { user_email: email }
+      }
+    );
+    if (foundUser) return foundUser;
+    else return false;
   } catch (error) {
     throw error;
   }

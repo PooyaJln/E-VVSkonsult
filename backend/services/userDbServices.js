@@ -58,10 +58,7 @@ userDbServices.createItem = async (query) => {
     const { user_email, user_role, password } = query;
     const newUser = await db.user.create({ user_email, user_role });
     const userId = newUser.user_id;
-    await hashedPassDbServices.createItem({
-      userId,
-      password,
-    });
+    await hashedPassDbServices.createItem(userId, password);
     const user = await userDbServices.itemsPublicInfo(userId);
     return user;
   } catch (error) {
@@ -78,7 +75,7 @@ userDbServices.emailExists = async (email) => {
       }
     );
     if (foundUser) return foundUser;
-    else return false;
+    else return null;
   } catch (error) {
     throw error;
   }
@@ -92,7 +89,7 @@ userDbServices.findUserByEmail = async (email) => {
       }
     );
     if (foundUser) return foundUser;
-    else return false;
+    else return null;
   } catch (error) {
     throw error;
   }

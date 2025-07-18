@@ -1,14 +1,13 @@
-require("dotenv").config();
 var express = require('express');
-const router = express.Router();
 var passport = require('passport');
-var LocalStrategy = require('passport-local');
-var crypto = require('crypto');
+const router = express.Router();
 
 
 
-router.post("/", passport.authenticate('local'), (req, res) => {
+router.post("/", passport.authenticate('local', { session: false }), (req, res) => {
 
+    console.log(req.body)
+    res.status(200).json({ user: req.user })
 });
 
 module.exports = router;

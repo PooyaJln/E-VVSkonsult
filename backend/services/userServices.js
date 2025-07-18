@@ -5,7 +5,7 @@ const validator = require("validator");
 const userDbServices = require("./userDbServices")
 const db = require("../models");
 const Errors = require("../utils/errors");
-const userDbServices = require("./userDbServices");
+
 
 var maxAgeToken = 2 * 60 * 1000;
 var maxAgeCookie = 2 * 60 * 1000;
@@ -23,6 +23,7 @@ userServices.generateHash = async (password) => {
   const hashed = await bcrypt.hash(password, salt);
   return hashed;
 };
+
 userServices.generatecookieHash = async (id) => {
   const salt = await bcrypt.genSalt(10);
   const hashedId = await bcrypt.hash(id, salt);
@@ -65,7 +66,7 @@ userServices.loginValidate = async (query) => {
   }
   const foundUser = await userDbServices.emailExists(user_email)
   if (!foundUser) {
-    throw new Errors.validationError("Incorrect email");
+    throw new Errors.validationError("A user with this email does not exist");
   }
   const user_id = foundUser.user_id;
   // retrieve hashedpass from the database
@@ -79,10 +80,10 @@ userServices.loginValidate = async (query) => {
 
 /* function checks if user Email already exists
 return true if it's already taken, false otherwise*/
-userServices.emailExists = async (query) => {
+userServices.emailExists = async (email) => {
   try {
-    const user_email = query.user_email;
-    const foundUser = await userDbServices.findUserByEmail(user_email);
+    // const user_email = query.user_email;
+    const foundUser = await userDbServices.findUserByEmail(email);
     if (foundUser) throw new Errors.badRequestError("Email already in use");
     else return false;
   } catch (error) {
@@ -90,10 +91,10 @@ userServices.emailExists = async (query) => {
   }
 };
 
-userServices.findUserByEmail = async (query) => {
+userServices.findUserByEmail = async (email) => {
   try {
-    const user_email = query.user_email;
-    const foundUser = await userDbServices.findUserByEmail(user_email);
+
+    const foundUser = await userDbServices.findUserByEmail(email);
     if (foundUser) return foundUser;
     else return false;
   } catch (error) {

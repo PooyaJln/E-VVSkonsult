@@ -1,10 +1,11 @@
 require("dotenv").config();
-const { app, appFnDb } = require("./app");
+const app = require("./app");
 const db = require("./models");
+const config = require("./config/config")
 
-const SERVER_PORT = process.env.SERVER_PORT;
 const NODE_ENV = process.env.NODE_ENV;
-const SERVER_URI = process.env.SERVER_URI;
+const SERVER_PORT = config.serverPort;
+const MYSQL_HOST = config.db.host;
 
 try {
   (async () => {
@@ -15,8 +16,8 @@ try {
     // const app = appFnDb(db);
 
     app.listen(SERVER_PORT, () => {
-      if (NODE_ENV == 'development') console.log(`server started. Go to http://${SERVER_URI}:${SERVER_PORT}/`);
-      else console.log(`server started. Go to https://${SERVER_URI}:${SERVER_PORT}/`);
+      if (NODE_ENV == 'development') console.log(`server started. Go to http://${MYSQL_HOST}:${SERVER_PORT}/`);
+      else console.log(`server started. Go to https://${MYSQL_HOST}:${SERVER_PORT}/`);
     });
   })();
 } catch (error) {

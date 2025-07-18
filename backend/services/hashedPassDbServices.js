@@ -5,7 +5,7 @@ const hashedPassDbServices = {};
 
 hashedPassDbServices.findItemByID = async (id) => {
   try {
-    const item = await db.hashedpass.findOne({
+    const item = await db.hashedPass.findOne({
       where: {
         user_id: id,
       },

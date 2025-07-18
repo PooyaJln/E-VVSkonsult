@@ -1,11 +1,12 @@
 require("dotenv").config();
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const validator = require("validator");
-const { poolPromise } = require("../connections/dbConnection");
-const accessTokenCollection = require("../models/tokenModel");
+const Errors = require("../utils/errors");
+// const validator = require("validator");
+// const bcrypt = require("bcrypt");
+// const { poolPromise } = require("../connections/dbConnection");
+// const accessTokenCollection = require("../models/tokenModel");
+// const users = require("../models/userModel");
 
-const users = require("../models/userModel");
 const userDbServices = require("../services/userDbServices");
 const userServices = require("../services/userServices");
 
@@ -20,16 +21,14 @@ const createToken = (id) => {
 
 const userControllers = {};
 
-// create new user
+// create newconst Errors = require("../utils/errors"); user
 userControllers.createItem = async (req, res, next) => {
   try {
     const emailExists = await userServices.emailExists(req.body.user_email);
     if (!emailExists) {
       const preCreateCheck = await userServices.signUpValidate(req.body);
       if (preCreateCheck) {
-        const hashedPassword = await userServices.generateHash(
-          req.body.password
-        );
+        const hashedPassword = await userServices.generateHash(req.body.password);
         const newUser = await userDbServices.createItem({
           ...req.body,
           password: hashedPassword,
@@ -47,6 +46,7 @@ userControllers.login = async (req, res, next) => {
   try {
     const loginValidation = await userServices.loginValidate(req.body);
     if (!loginValidation) {
+      throw new Errors.badRequestError("Email and password must be filled");
     }
     res.status(200).json({ message: "user login" });
   } catch (error) {

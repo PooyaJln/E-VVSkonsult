@@ -6,9 +6,7 @@ const userControllers = require("../controllers/userController");
 
 const {
   verifyJWT,
-  verifyJWT2,
-  verifyJWT3,
-  verifyJWT4,
+  verifyJWT2
 } = require("../middlewares/verifyJWT");
 
 router.get("/", (req, res) => {
@@ -32,22 +30,22 @@ router.post("/login", userControllers.login);
 router.get("/logout", userControllers.logout);
 
 // get all user
-router.get("/allusersVerified", verifyJWT4, userControllers.getAllUsers);
+router.get("/allusersVerified", verifyJWT, userControllers.getAllUsers);
 router.get("/all", userControllers.getAllUsers);
 
 // get a single user
 // router.get('/get/:id', verifyJWT, getSingleUser)
-router.get("/with_verification/:id", verifyJWT4, userControllers.getUser);
+router.get("/with_verification/:id", verifyJWT, userControllers.getUser);
 router.get("/:id", userControllers.getUser);
 
 //update an user
-router.patch("/with_verification/:id", verifyJWT4, userControllers.updateUser);
+router.patch("/with_verification/:id", verifyJWT, userControllers.updateUser);
 router.patch("/:id", userControllers.updateUser);
 // (req, res) => {res.json({ mssg: "update users input data page" })})
 
 //delete an user
 // router.delete('/delete/:id', verifyJWT, deleteUser)
-router.delete("/with_verification/:id", verifyJWT4, userControllers.deleteUser);
+router.delete("/with_verification/:id", verifyJWT, userControllers.deleteUser);
 router.delete("/:id", userControllers.deleteUser);
 
 

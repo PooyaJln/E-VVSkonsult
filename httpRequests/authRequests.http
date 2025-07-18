@@ -1,0 +1,15 @@
+@hostname = {{HostAddress}}
+@port = 4001
+@host = {{hostname}}:{{port}}
+@contentType = application/json
+@routeName = heat-loss/auth
+
+
+# @name authenticate
+POST {{host}}/{{routeName}}
+Content-Type: {{contentType}}
+
+{
+    "user_email": "p.j@mailbox.org",
+    "password": "testPassWord123!"
+}

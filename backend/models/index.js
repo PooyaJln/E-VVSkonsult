@@ -194,12 +194,12 @@ db.component.belongsTo(db.thermalParameter, {
 try {
   (async () => {
     await sequelize.authenticate();
-    console.log(
-      `Connection to ${config.database} has been established successfully.`
-    );
+    // console.log(
+    //   `Connection to ${config.db.database} has been established successfully.`
+    // );
   })();
 } catch (error) {
-  console.log(`Unable to connect to the ${config.database} database:`);
+  console.log(`Unable to connect to the ${config.db.database} database:`);
   console.error(err);
 }
 

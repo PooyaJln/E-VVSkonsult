@@ -5,7 +5,7 @@ const password = process.env.MYSQL_PASSWORD;
 const database = process.env.MYSQL_DATABASE;
 // const testDatabase = process.env.MYSQL_TEST_DATABASE;
 const host = process.env.MYSQL_HOST;
-const node_env = process.env.NODE_ENV;
+const node_env = process.env.NODE_ENV || 'development';
 const sessionSecret = process.env.SESSION_SECRET;
 const serverPort = process.env.SERVER_PORT;
 

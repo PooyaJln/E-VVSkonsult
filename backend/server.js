@@ -11,7 +11,7 @@ try {
   (async () => {
     await db.sequelize.sync();
     console.log(
-      `${db.sequelize.config.database} is synchronized successfully.`
+      `server.js: ${db.sequelize.config.database} is synchronized successfully.`
     );
     // const app = appFnDb(db);
 
@@ -21,6 +21,6 @@ try {
     });
   })();
 } catch (error) {
-  console.log(`Unable to connect to the ${config.database} database:`);
-  console.error(err);
+  console.log(`Unable to connect to the ${config.db.database} database:`);
+  console.error(error);
 }

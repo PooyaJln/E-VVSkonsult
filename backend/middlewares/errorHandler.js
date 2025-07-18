@@ -10,21 +10,23 @@ const errorHandler = (err, req, res, next) => {
   // res.locals.message = err.message;
   // res.locals.error = req.app.get("env") === "development" ? err : {};
   try {
+    console.error(err);
     if ((err && err.status == 400) || (err && err.status == 404)) {
-      console.error(err);
       return res.status(err.status).json({ error: err.message });
     }
     if (err && err.errors[0]) {
-      console.error(err);
+
       if (err && err?.errors[0].type == "Validation error") {
         return res.status(400).json({ error: err.errors[0].message });
       }
     }
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "internal server error" });
+    return res.status(500).json({ error });
   }
 
-  next();
+
+
+
 };
 module.exports = errorHandler;

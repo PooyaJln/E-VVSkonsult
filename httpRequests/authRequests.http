@@ -13,3 +13,9 @@ Content-Type: {{contentType}}
     "user_email": "p.j@mailbox.org",
     "password": "testPassWord123!"
 }
+
+###
+# @name getAuthStatus
+Get {{host}}/{{routeName}}/status
+Content-Type: {{contentType}}
+

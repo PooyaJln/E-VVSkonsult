@@ -26,6 +26,7 @@ const storeyRoutes = require("./routes/storeyRoutes");
 const userRoutes = require("./routes/userRoutes");
 const thermalParameterRoutes = require("./routes/thermalParameterRoutes");
 const authRoutes = require("./routes/authRoutes")
+require("./middlewares/passport")
 
 // //express app
 // const app = express();
@@ -176,20 +177,19 @@ app.use(express.static(path.join(__dirname, "public")));
 //To be able to parse the form data we can add an optional middleware from express as below.
 app.use(express.urlencoded({ extended: true }));
 
-app.use(passport.initialize())
-require("./middlewares/passport")
 
-var sess = session({
-  secret: config.session_secret,
+
+let sess = session({
+  secret: config.sessionSecret,
   cookie: {
     secure: false,
     maxAge: 1000 * 60 * 60 * 24 * 90
   },
   resave: false,
   saveUninitialized: false,
-  store: new SequelizeStore({
-    db: db.sequelize,
-  }),
+  // store: new SequelizeStore({
+  //   db: db.sequelize,
+  // }),
 })
 
 if (process.env.NODE_ENV == 'production') {
@@ -198,8 +198,9 @@ if (process.env.NODE_ENV == 'production') {
   sess.saveUninitialized = true
 }
 
-app.use(session(sess))
-
+app.use(sess)
+app.use(passport.initialize())
+app.use(passport.session())
 
 //routes
 

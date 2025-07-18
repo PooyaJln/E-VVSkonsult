@@ -8,11 +8,11 @@ const database = process.env.MYSQL_DATABASE
 const port = Number(process.env.MYSQL_PORT)
 
 // switching to sequelize
-const { Sequelize } = require('sequelize');
-const connectionString = `mysql://${user}:${password}@${host}:${port}/${database}`
-const sequelize = new Sequelize(connectionString, {
-  logging: (...msg) => console.log(msg),
-})
+// const { Sequelize } = require('sequelize');
+// const connectionString = `mysql://${user}:${password}@${host}:${port}/${database}`
+// const sequelize = new Sequelize(connectionString, {
+//   logging: (...msg) => console.log(msg),
+// })
 
 
 
@@ -36,7 +36,7 @@ pool.on("connection", function (connection, err) {
   console.log("Connection %d acquired", connection.threadId);
 });
 
-module.exports = { sequelize, pool, poolPromise };
+module.exports = { pool, poolPromise };
 
 //----------------------MongoDB connection
 // const mongoose = require("mongoose");

@@ -1,7 +1,7 @@
 require("dotenv").config();
 const config = require("./config/config")
-console.log("🚀 ~ app.js:3 ~ config=", config)
 const express = require("express");
+const session = require('express-session');
 const cors = require("cors");
 const path = require("path");
 const cookieParser = require("cookie-parser");
@@ -9,7 +9,6 @@ const corsOptions = require("./config/corsOptions");
 const { logger } = require("./middlewares/logEvents");
 const errorHandler = require("./middlewares/errorHandler");
 const passport = require('passport');
-const session = require('express-session');
 const db = require("./models");
 
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
@@ -26,7 +25,7 @@ const storeyRoutes = require("./routes/storeyRoutes");
 const userRoutes = require("./routes/userRoutes");
 const thermalParameterRoutes = require("./routes/thermalParameterRoutes");
 const authRoutes = require("./routes/authRoutes")
-require("./middlewares/passport")
+require("./middlewares/Auth/LocalStrategy")
 
 // //express app
 // const app = express();
@@ -112,10 +111,6 @@ const appFnDb = (database) => {
     resave: false,
     saveUninitialized: false
   }));
-  app.use(passport.initialize());
-  app.use(passport.session());
-
-
 
   //routes
   app.get("^/$|/index(.html)?", (req, res) => {
@@ -125,6 +120,10 @@ const appFnDb = (database) => {
   app.get("/about(.html)?", (req, res) => {
     res.render("about", { title: "About me" });
   });
+
+  app.use(passport.initialize());
+  app.use(passport.session());
+
   app.use("/heat-loss/thermal-parameters(.html)?", thermalParameterRoutes);
   app.use("/heat-loss/roomBoundaries(.html)?", roomBoundaryRoutes);
 
@@ -187,9 +186,9 @@ let sess = session({
   },
   resave: false,
   saveUninitialized: false,
-  // store: new SequelizeStore({
-  //   db: db.sequelize,
-  // }),
+  store: new SequelizeStore({
+    db: db.sequelize,
+  }),
 })
 
 if (process.env.NODE_ENV == 'production') {
@@ -197,6 +196,16 @@ if (process.env.NODE_ENV == 'production') {
   sess.cookie.secure = true;
   sess.saveUninitialized = true
 }
+
+
+app.get("^/$|/index(.html)?", (req, res) => {
+  res.render("index", { title: "Homepage" });
+});
+
+app.get("/about(.html)?", (req, res) => {
+  res.render("about", { title: "About me" });
+});
+
 
 app.use(sess)
 app.use(passport.initialize())
@@ -206,6 +215,8 @@ app.use(passport.session())
 
 
 app.use("/heat-loss/auth(.html)?", authRoutes);
+
+app.use("/user(.html)?", userRoutes);
 
 app.use("/heat-loss/thermal-parameters(.html)?", thermalParameterRoutes);
 
@@ -225,15 +236,8 @@ app.use("/heat-loss/buildings(.html)?", buildingRoutes);
 
 app.use("/heat-loss/projects(.html)?", projectRoutes);
 
-app.use("/user(.html)?", userRoutes);
 
-app.get("^/$|/index(.html)?", (req, res) => {
-  res.render("index", { title: "Homepage" });
-});
 
-app.get("/about(.html)?", (req, res) => {
-  res.render("about", { title: "About me" });
-});
 
 app.use(errorHandler);
 module.exports = app;

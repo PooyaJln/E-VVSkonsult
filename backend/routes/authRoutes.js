@@ -4,21 +4,34 @@ const router = express.Router();
 
 
 
-router.post("/", passport.authenticate('local'), (req, res) => {
-    try {
-        console.log("🚀 ~ authRoutes.js:8 ~ router.post(/auth)", req.body)
+router.post("/login", passport.authenticate("local"),
+    (request, response, next) => {
+        try {
+            if (error) throw error
+            response.sendStatus(200);
+        } catch (error) {
+            throw error
+        }
+        next()
+    }
+);
 
-        res.status(200).json({ user: req.user })
-    } catch (error) {
-        console.log("🚀 ~ authRoutes.js:13 ~ router.post ~ error=", error)
-        console.error(error)
+router.post("/logout", (req, res, next) => {
+    if (!req.user) return res.sendStatus(401)
+    if (req.isAuthenticated()) {
+        req.logOut((err) => {
+            if (err) return res.sendStatus(400)
+            req.session.destroy()
+            res.clearCookie('connect.sid')
+            res.status(200).json({ message: " logged out successfully" })
+        })
     }
 });
+
+
+
 router.get("/status", (req, res) => {
-    console.log("inside /auth/status")
-    console.log(req.user)
-    console.log(req.session)
-    return req.user ? res.send(req.user) : res.sendStatus(401)
+    return req.user ? res.status(200).json("logged in") : res.sendStatus(401)
 });
 
 module.exports = router;

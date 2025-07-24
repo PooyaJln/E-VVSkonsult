@@ -9,6 +9,7 @@ const basename = path.basename(__filename);
 // const env = process.env.NODE_ENV || "development";
 const config = require("../config/config");
 
+
 const sequelize = new Sequelize(
   config.db.database,
   config.db.username,
@@ -62,10 +63,19 @@ db.project.belongsTo(db.user, {
 db.user.hasOne(db.hashedPass, {
   foreignKey: "user_id",
 });
-db.hashedPass.belongsTo(db.project, {
+db.hashedPass.belongsTo(db.user, {
   foreignKey: "user_id",
   onDelete: "CASCADE",
   onUpdate: "CASCADE",
+});
+
+//-------------------------------
+db.role.hasMany(db.user, {
+  foreignKey: "role_id",
+
+});
+db.user.belongsTo(db.role, {
+  foreignKey: "role_id",
 });
 
 //-------------------------------

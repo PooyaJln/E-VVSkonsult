@@ -2,62 +2,30 @@
 // const { sequelize } = require("../connections/dbConnection");
 const { Sequelize, DataTypes } = require("sequelize");
 
-const User = (sequelize, DataTypes) => {
-  const UserModel = sequelize.define(
-    "user",
+const Role = (sequelize, DataTypes) => {
+  return sequelize.define(
+    "role",
     {
-      user_id: {
+      role_id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
       },
-      user_email: {
-        type: DataTypes.STRING,
-        isEmail: true,
-        required: true,
-        notNull: true,
-        notEmpty: true,
-        allowNull: false,
-        unique: true,
-      },
-      user_name: {
+
+      role_title: {
         type: DataTypes.STRING,
         allowNull: true,
-        // set(value) {
-        //   if (value) {
-        //     this.setDataValue('user_name', value);
-        //   }
-        //   else {
-        //     this.setDataValue('user_name', this.user_email.split("@")[0]);
-        //   }
-        // },
-      },
-      user_role: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      role_id: {
-        type: DataTypes.INTEGER,
-        required: true,
-        allowNull: true
       },
     },
     {
-      tableName: "users",
+      tableName: "roles",
       underscored: true,
       timestamps: false,
     }
   )
-
-  UserModel.beforeCreate((user) => {
-    if (!user.user_name && user.user_email) {
-      user.user_name = user.user_email.split("@")[0];
-    }
-  });
-  return UserModel;
 };
 
-module.exports = User;
+module.exports = Role;
 
 //////////////////// MOngoDB
 

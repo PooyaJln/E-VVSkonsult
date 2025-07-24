@@ -26,7 +26,7 @@ userDbServices.itemsPublicInfo = async (id) => {
       where: {
         user_id: id,
       },
-      attributes: ["user_email", "user_role"],
+      attributes: ["user_email", "role_id"],
     });
     if (item) return item;
     return false;
@@ -35,7 +35,7 @@ userDbServices.itemsPublicInfo = async (id) => {
   }
 };
 
-userDbServices.userExists = async (id) => {
+userDbServices.itemExists = async (id) => {
   try {
     const user = await db.user.findOne(
       {
@@ -55,12 +55,12 @@ userDbServices.userExists = async (id) => {
 
 userDbServices.createItem = async (query) => {
   try {
-    const { user_email, user_role, password } = query;
-    const newUser = await db.user.create({ user_email, user_role });
+    const { user_email, password, user_role, role_id, user_name } = query;
+    const newUser = await db.user.create({ user_email, user_role, user_name, role_id });
     const userId = newUser.user_id;
     await hashedPassDbServices.createItem(userId, password);
-    const user = await userDbServices.itemsPublicInfo(userId);
-    return user;
+    // const user = await userDbServices.itemsPublicInfo(userId);
+    return newUser;
   } catch (error) {
     throw error;
   }
@@ -80,7 +80,7 @@ userDbServices.emailExists = async (email) => {
     throw error;
   }
 }
-userDbServices.findUserByEmail = async (email) => {
+userDbServices.findItemByEmail = async (email) => {
   try {
     const foundUser = await db.user.findOne(
       {

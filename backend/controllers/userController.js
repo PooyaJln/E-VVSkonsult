@@ -1,13 +1,9 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const Errors = require("../utils/errors");
-// const validator = require("validator");
-// const bcrypt = require("bcrypt");
-// const { poolPromise } = require("../connections/dbConnection");
-// const accessTokenCollection = require("../models/tokenModel");
-// const users = require("../models/userModel");
 
 const userDbServices = require("../services/userDbServices");
+const roleDbServices = require("../services/roleDbServices");
 const userServices = require("../services/userServices");
 
 var maxAgeToken = 2 * 60 * 1000;
@@ -21,46 +17,7 @@ const createToken = (id) => {
 
 const userControllers = {};
 
-// create newconst Errors = require("../utils/errors"); user
-userControllers.createItem = async (req, res, next) => {
-  try {
-    const emailExists = await userServices.emailExists(req.body.user_email);
-    if (!emailExists) {
-      const preCreateCheck = await userServices.signUpValidate(req.body);
-      if (preCreateCheck) {
-        const hashedPassword = await userServices.generateHash(req.body.password);
-        const newUser = await userDbServices.createItem({
-          ...req.body,
-          password: hashedPassword,
-        });
-        // hashedPasses services and Dbservices is not created yet.
-        res.status(201).json(newUser);
-      }
-    }
-  } catch (error) {
-    next(error);
-  }
-};
 
-userControllers.login = async (req, res, next) => {
-  try {
-    const loginValidation = await userServices.loginValidate(req.body);
-    if (!loginValidation) {
-      throw new Errors.badRequestError("Email and password must be filled");
-    }
-    res.status(200).json({ message: "user login" });
-  } catch (error) {
-    next(error);
-  }
-};
-
-userControllers.logout = async (req, res, next) => {
-  try {
-    res.status(200).json({ message: "user logout" });
-  } catch (error) {
-    next(error);
-  }
-};
 
 userControllers.getAllUsers = async (req, res, next) => {
   try {
@@ -72,7 +29,9 @@ userControllers.getAllUsers = async (req, res, next) => {
 
 userControllers.getUser = async (req, res, next) => {
   try {
-    res.status(200).json({ message: `get user with id ${req.params.id}` });
+    const user_id = req.session?.passport?.user
+    const foundUser = await userDbServices.findItemByID(user_id)
+    res.status(200).json({ foundUser });
   } catch (error) {
     next(error);
   }

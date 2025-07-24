@@ -9,21 +9,31 @@ const errorHandler = (err, req, res, next) => {
   // set locals, only providing error in development
   // res.locals.message = err.message;
   // res.locals.error = req.app.get("env") === "development" ? err : {};
-  try {
-    console.error(err);
-    if ((err && err.status == 400) || (err && err.status == 404)) {
-      return res.status(err.status).json({ error: err.message });
-    }
-    if (err && err.errors[0]) {
-
-      if (err && err?.errors[0].type == "Validation error") {
-        return res.status(400).json({ error: err.errors[0].message });
-      }
-    }
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error });
+  if ((err && err.status == 400) || (err && err.status == 404)) {
+    return res.status(err.status).json({ error: err.message });
   }
+  // if (err && err.errors[0]) {
+  //   if (err && err?.errors[0].type == "Validation error") {
+  //     return res.status(400).json({ error: err.errors[0].message });
+  //   }
+  // }
+  else {
+    if (err.name || err.code || err.sqlMessage || err.sql || err.parameters) {
+      console.error(err.name, err.code, err.sqlMessage, err.sql, err.parameters);
+    }
+    console.debug(err)
+    // res.locals.message = err.message
+    // res.locals.error = req.app.get('env') === 'development' ? err : {}
+    return res.status(err.status || 500).json({ error: "internal server error" });
+
+  }
+  // try {
+
+
+  // } catch (error) {
+  //   console.error(error);
+  //   return res.status(500).json({ error });
+  // }
 
 
 

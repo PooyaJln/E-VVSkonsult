@@ -10,7 +10,7 @@ const { logger } = require("./middlewares/logEvents");
 const errorHandler = require("./middlewares/errorHandler");
 const passport = require('passport');
 const db = require("./models");
-
+const isLoggedIn = require("./middlewares/isLoggedIn")
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
 
 // import routes
@@ -25,7 +25,7 @@ const storeyRoutes = require("./routes/storeyRoutes");
 const userRoutes = require("./routes/userRoutes");
 const thermalParameterRoutes = require("./routes/thermalParameterRoutes");
 const authRoutes = require("./routes/authRoutes")
-require("./middlewares/Auth/LocalStrategy")
+
 
 // //express app
 // const app = express();
@@ -182,10 +182,10 @@ let sess = session({
   secret: config.sessionSecret,
   cookie: {
     secure: false,
-    maxAge: 1000 * 60 * 60 * 24 * 90
+    maxAge: 1000 * 60 * 60 * 24 * 1
   },
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
   store: new SequelizeStore({
     db: db.sequelize,
   }),
@@ -199,24 +199,47 @@ if (process.env.NODE_ENV == 'production') {
 
 
 app.get("^/$|/index(.html)?", (req, res) => {
-  res.render("index", { title: "Homepage" });
+  console.log(req.session)
+  res.send('homepage');
 });
 
 app.get("/about(.html)?", (req, res) => {
-  res.render("about", { title: "About me" });
+  // res.render("about", { title: "About me" });
+  res.send('about');
 });
 
+app.use((req, res, next) => {
+  console.log("before passport.initialize")
+  console.log(req.session)
+  console.log(req.user)
+  next()
+})
 
+require("./middlewares/passportStrategies/LocalStrategy")
 app.use(sess)
+
 app.use(passport.initialize())
 app.use(passport.session())
 
+app.use((req, res, next) => {
+  console.log("after passport.initialize")
+  console.log(req.session)
+  console.log(req.user)
+  next()
+})
 //routes
-
-
 app.use("/heat-loss/auth(.html)?", authRoutes);
 
-app.use("/user(.html)?", userRoutes);
+app.use((req, res, next) => {
+  console.log("after /auth")
+  console.log(req.session)
+  console.log(req.user)
+  next()
+})
+
+app.use(isLoggedIn)
+
+app.use("/heat-loss/user(.html)?", userRoutes);
 
 app.use("/heat-loss/thermal-parameters(.html)?", thermalParameterRoutes);
 
@@ -235,9 +258,6 @@ app.use("/heat-loss/stories(.html)?", storeyRoutes);
 app.use("/heat-loss/buildings(.html)?", buildingRoutes);
 
 app.use("/heat-loss/projects(.html)?", projectRoutes);
-
-
-
 
 app.use(errorHandler);
 module.exports = app;

@@ -1,0 +1,72 @@
+@hostname = {{HostAddress}}
+@port = 4001
+@host = {{hostname}}:{{port}}
+@contentType = application/json
+@routeName = heat-loss/auth
+
+###
+# @name signupAdmin
+POST {{host}}/{{routeName}}/signup
+Content-Type: {{contentType}}
+
+{
+    "user_email": "p.j@mailbox.org",
+    "password": "testPassWord123!",
+    "user_role":"admin"
+}
+
+###
+# @name signupEngineer
+POST {{host}}/{{routeName}}/signup
+Content-Type: {{contentType}}
+
+{
+    "user_email": "pooya.jalilian@rejlers.se",
+    "password": "testPassWord123!",
+    "user_role":"engineer",
+    "user_name":"the engineer pooya"
+}
+###
+# @name signupManager
+POST {{host}}/{{routeName}}/signup
+Content-Type: {{contentType}}
+
+{
+    "user_email": "pooya.jln@outlook.org",
+    "password": "testPassWord123!",
+    "user_role":"manager"
+}
+###
+# @name loginAdmin
+POST {{host}}/{{routeName}}/login
+Content-Type: {{contentType}}
+
+{
+    "user_email": "p.j@mailbox.org",
+    "password": "testPassWord123!"
+}
+
+###
+# @name loginEngineer
+POST {{host}}/{{routeName}}/login
+Content-Type: {{contentType}}
+
+{
+    "user_email": "pooya.jalilian@rejlers.se",
+    "password": "testPassWord123!"
+}
+###
+# @name loginManager
+POST {{host}}/{{routeName}}/login
+Content-Type: {{contentType}}
+
+{
+    "user_email": "pooya.jln@outlook.org",
+    "password": "testPassWord123!"
+}
+
+###
+# @name getAuthStatus
+Get {{host}}/{{routeName}}/status
+Content-Type: {{contentType}}
+

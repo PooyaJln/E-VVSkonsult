@@ -55,7 +55,10 @@ authControllers.logout = (req, res, next) => {
 
 
 authControllers.checkStatus = async (req, res, next) => {
-  return req.user ? res.status(200).json("logged in") : res.status(401).json("not authorized")
+  if (!req.user) {
+    res.status(401).json("not authorized")
+  }
+  res.status(200).json("logged in")
 }
 
 module.exports = authControllers;

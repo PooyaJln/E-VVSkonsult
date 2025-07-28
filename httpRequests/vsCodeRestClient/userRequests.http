@@ -2,10 +2,10 @@
 @port = 4001
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@routeName = user
+@routeName = heat-loss/user
 
-# @name usersPage
-GET {{host}}/{{routeName}}
+# @name userPage
+GET {{host}}/{{routeName}}/profile
 Content-Type: {{contentType}}
 
 ###
@@ -18,13 +18,4 @@ Content-Type: {{contentType}}
 # @name getUser
 GET {{host}}/{{routeName}}/1
 Content-Type: {{contentType}}
-###
 
-# @name createUser
-POST {{host}}/{{routeName}}/signup
-Content-Type: {{contentType}}
-
-{
-    "user_email": "p.j@mailbox.org",
-    "password": "testPassWord123!"
-}

@@ -1,0 +1,22 @@
+meta {
+  name: login manager
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{HostAddress}}:{{port}}/{{authRoutePart}}/login
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+      "user_email": "pooya.jln@outlook.org",
+      "password": "testPassWord123!"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

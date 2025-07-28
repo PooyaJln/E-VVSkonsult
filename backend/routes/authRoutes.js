@@ -10,7 +10,15 @@ router.post("/login", validationsMiddleware.login, passport.authenticate("local"
 
 router.post("/logout", authControllers.logout);
 
-router.get("/status", passport.authenticate("local"), authControllers.checkStatus);
+router.get("/status",
+    //     (req, res, next) => {
+    //     console.log("🚀 ~ authRoutes.js:14 ~ router.status ~ before passport ~ req=", req)
+    // },
+    //     passport.authenticate("local"), 
+    //     (req, res, next) => {
+    //         console.log("🚀 ~ authRoutes.js:14 ~ router.status ~ after passport ~ req=", req)
+    //     },
+    authControllers.checkStatus);
 
 module.exports = router;
 

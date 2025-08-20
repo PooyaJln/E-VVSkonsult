@@ -1,9 +1,10 @@
 "use strict";
-
+// const { sequelize } = require("../connections/dbConnection");
 const { Sequelize, DataTypes } = require("sequelize");
 
 const Storey = (sequelize, DataTypes) => {
   return sequelize.define(
+
     "storey",
     {
       storey_id: {
@@ -32,6 +33,7 @@ const Storey = (sequelize, DataTypes) => {
       timestamps: false,
       paranoid: true,
     }
-  );
+  )
 };
+
 module.exports = Storey;

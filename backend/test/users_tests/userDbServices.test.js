@@ -2,7 +2,7 @@
 const userDbServices = require("../../services/userServices/userDbServices");
 
 //import test database
-const db = require("../../models/index");
+const db = require("../../models");
 
 // import test assertion components
 const chai = require("chai");

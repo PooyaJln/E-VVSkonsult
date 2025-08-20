@@ -3,6 +3,7 @@ const { poolPromise, pool } = require("../connections/dbConnection");
 const Errors = require("../utils/errors");
 const { Sequelize, DataTypes } = require("sequelize");
 const db = require("../models");
+// const { sequelize } = require("../connections/dbConnection");
 
 const roomBoundary = (sequelize, DataTypes) => {
   return sequelize.define(
@@ -176,8 +177,9 @@ const roomBoundary = (sequelize, DataTypes) => {
       timestamps: false,
       paranoid: true,
     }
-  );
+  )
 };
+
 module.exports = roomBoundary;
 //--------------------------------------- MongoDB
 // const mongoose = require('mongoose')

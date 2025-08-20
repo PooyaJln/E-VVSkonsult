@@ -1,0 +1,22 @@
+meta {
+  name: login engineer
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{HostAddress}}:{{port}}/{{authRoutePart}}/login
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+      "user_email": "pooya.jalilian@rejlers.se",
+      "password": "testPassWord123!"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

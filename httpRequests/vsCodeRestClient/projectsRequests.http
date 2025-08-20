@@ -1,0 +1,24 @@
+@hostname = {{HostAddress}}
+@port = 4001
+@host = {{hostname}}:{{port}}
+@contentType = application/json
+@routeName = heat-loss/projects
+
+# @name getAllprojects
+GET {{host}}/{{routeName}}/all
+Content-Type: {{contentType}}
+
+###
+
+# @name getItem
+GET {{host}}/{{routeName}}/1
+Content-Type: {{contentType}}
+###
+
+# @name createItem
+POST {{host}}/{{routeName}}/create
+Content-Type: {{contentType}}
+
+{
+    
+}

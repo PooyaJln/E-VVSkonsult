@@ -1,11 +1,17 @@
 require("dotenv").config();
+const config = require("./config/config")
 const express = require("express");
+const session = require('express-session');
 const cors = require("cors");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const corsOptions = require("./config/corsOptions");
 const { logger } = require("./middlewares/logEvents");
 const errorHandler = require("./middlewares/errorHandler");
+const passport = require('passport');
+const db = require("./models");
+const isLoggedIn = require("./middlewares/isLoggedIn")
+const SequelizeStore = require("connect-session-sequelize")(session.Store);
 
 // import routes
 const roomBoundaryRoutes = require("./routes/roomBoundaryRoutes");
@@ -18,6 +24,8 @@ const buildingRoutes = require("./routes/buildingRoutes");
 const storeyRoutes = require("./routes/storeyRoutes");
 const userRoutes = require("./routes/userRoutes");
 const thermalParameterRoutes = require("./routes/thermalParameterRoutes");
+const authRoutes = require("./routes/authRoutes")
+
 
 // //express app
 // const app = express();
@@ -97,6 +105,13 @@ const appFnDb = (database) => {
   //To be able to parse the form data we can add an optional middleware from express as below.
   app.use(express.urlencoded({ extended: true }));
 
+  // authentication
+  app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false
+  }));
+
   //routes
   app.get("^/$|/index(.html)?", (req, res) => {
     res.render("index", { title: "Homepage" });
@@ -105,6 +120,10 @@ const appFnDb = (database) => {
   app.get("/about(.html)?", (req, res) => {
     res.render("about", { title: "About me" });
   });
+
+  app.use(passport.initialize());
+  app.use(passport.session());
+
   app.use("/heat-loss/thermal-parameters(.html)?", thermalParameterRoutes);
   app.use("/heat-loss/roomBoundaries(.html)?", roomBoundaryRoutes);
 
@@ -122,7 +141,7 @@ const appFnDb = (database) => {
 
   app.use("/heat-loss/projects(.html)?", projectRoutes);
 
-  app.use("/usersData(.html)?", userRoutes);
+  app.use("/user(.html)?", userRoutes);
 
   app.use(errorHandler);
 
@@ -133,4 +152,112 @@ const appFnDb = (database) => {
   return app;
 };
 
-module.exports = { appFnDb };
+
+//express app
+const app = express();
+
+// const morgan = require('morgan');
+
+//custom middleware
+app.use(cors(corsOptions));
+
+// using the custom-written request logging middleware by Dave Gray
+app.use(logger);
+
+//built-in middleware
+app.use(express.json());
+app.use(cookieParser());
+
+// register view engine
+app.set("view engine", "ejs");
+
+app.use(express.static(path.join(__dirname, "public")));
+
+//To be able to parse the form data we can add an optional middleware from express as below.
+app.use(express.urlencoded({ extended: true }));
+
+
+
+let sess = session({
+  secret: config.sessionSecret,
+  cookie: {
+    secure: false,
+    maxAge: 1000 * 60 * 60 * 24 * 1
+  },
+  resave: false,
+  saveUninitialized: true,
+  store: new SequelizeStore({
+    db: db.sequelize,
+  }),
+})
+
+if (process.env.NODE_ENV == 'production') {
+  app.set('trust proxy', 1);
+  sess.cookie.secure = true;
+  sess.saveUninitialized = true
+}
+
+
+app.get("^/$|/index(.html)?", (req, res) => {
+  console.log(req.session)
+  res.send('homepage');
+});
+
+app.get("/about(.html)?", (req, res) => {
+  // res.render("about", { title: "About me" });
+  res.send('about');
+});
+
+app.use((req, res, next) => {
+  console.log("before passport.initialize")
+  console.log(req.session)
+  console.log(req.user)
+  next()
+})
+
+require("./middlewares/passportStrategies/LocalStrategy")
+app.use(sess)
+
+app.use(passport.initialize())
+app.use(passport.session())
+
+app.use((req, res, next) => {
+  console.log("after passport.initialize")
+  console.log(req.session)
+  console.log(req.user)
+  next()
+})
+//routes
+app.use("/heat-loss/auth(.html)?", authRoutes);
+
+app.use((req, res, next) => {
+  console.log("after /auth")
+  console.log(req.session)
+  console.log(req.user)
+  next()
+})
+
+app.use(isLoggedIn)
+
+app.use("/heat-loss/user(.html)?", userRoutes);
+
+app.use("/heat-loss/thermal-parameters(.html)?", thermalParameterRoutes);
+
+app.use("/heat-loss/roomBoundaries(.html)?", roomBoundaryRoutes);
+
+app.use("/heat-loss/components(.html)?", componentRoutes);
+
+app.use("/heat-loss/temperatures(.html)?", temperatureRoutes);
+
+app.use("/heat-loss/rooms(.html)?", roomRoutes);
+
+app.use("/heat-loss/apartments(.html)?", apartmentRoutes);
+
+app.use("/heat-loss/stories(.html)?", storeyRoutes);
+
+app.use("/heat-loss/buildings(.html)?", buildingRoutes);
+
+app.use("/heat-loss/projects(.html)?", projectRoutes);
+
+app.use(errorHandler);
+module.exports = app;

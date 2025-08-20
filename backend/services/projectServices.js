@@ -1,6 +1,6 @@
 const Errors = require("../utils/errors");
 const projectDbServices = require("./projectDbServices");
-const userDbServices = require("./userServices/userDbServices");
+const userDbServices = require("./userDbServices");
 
 const projectServices = {};
 

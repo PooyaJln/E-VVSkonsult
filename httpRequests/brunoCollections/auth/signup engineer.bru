@@ -1,0 +1,24 @@
+meta {
+  name: signup engineer
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{HostAddress}}:{{port}}/{{authRoutePart}}/signup
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+      "user_email": "pooya.jalilian@rejlers.se",
+      "password": "testPassWord123!",
+      "user_role":"engineer",
+      "user_name":"the engineer pooya"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

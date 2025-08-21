@@ -8,15 +8,13 @@ services:
     #   dockerfile: Dockerfile
     # command: '--default-authentication-plugin=mysql_native_password'
     restart: always
-    env_file: 
-      - ./backend/.env
+    env_file:
+      - ./backend/src/.env
     ports:
-      - 3306:3306
+      - 3307:3306
     volumes:
       - ./db/init:/docker-entrypoint-initdb.d
       - mysql_data:/var/lib/mysql
-
-        
 
 volumes:
   mysql_data:

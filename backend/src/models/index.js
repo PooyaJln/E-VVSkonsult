@@ -8,6 +8,7 @@ const process = require("process");
 const basename = path.basename(__filename);
 // const env = process.env.NODE_ENV || "development";
 const config = require("../config/config");
+console.log("🚀 ~ index.js:11 ~ config=", config)
 
 
 const sequelize = new Sequelize(
@@ -15,8 +16,10 @@ const sequelize = new Sequelize(
   config.db.username,
   config.db.password,
   {
-    host: config.db.host,
     dialect: "mysql",
+    host: config.db.host,
+    port: config.db.dbPort,
+    // logging: console.log, 
   }
 );
 

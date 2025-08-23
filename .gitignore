@@ -13,3 +13,4 @@ heatLossApp.odb
 .dockerignore
 node_modules
 .qodo
+backend/.env.container

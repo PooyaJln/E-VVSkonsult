@@ -9,6 +9,8 @@ import {
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Help from "./pages/Help";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import Projects from "./pages/project/Projects";
 import Buildings from "./pages/building/ItemsList";
 import Materials from "./pages/material/Materials";
@@ -50,6 +52,8 @@ const router = createBrowserRouter(
     <Route path="/" element={<RootLayout />}>
       <Route index element={<Home />} />
       <Route path="about" element={<About />} />
+      <Route path="login" element={<Login />} />
+      <Route path="signup" element={<Signup />} />
       <Route path="heat-loss" element={<HeatLossLayout />}>
         <Route path="help" element={<Help />} />
         <Route path="projects" element={<ProjectsLayout />}>

@@ -1,0 +1,23 @@
+# docker-compose.override.yml;
+# This file overrides/adds port mappings so you can access services on your host.
+# Docker Compose automatically picks up docker-compose.override.yml when you run docker-compose up. That means for dev, you don’t have to do anything special.
+# Usage
+# Dev (default) → runs docker-compose.yml + docker-compose.override.yml:
+# docker compose up --build
+
+# Doesn't work with vs code container extension
+
+services:
+  mysql:
+    ports:
+      - 
+  phpmyadmin:
+    ports:
+      - 
+  backend:
+    ports:
+      - 
+      - 
+  frontend:
+    ports:
+      - 

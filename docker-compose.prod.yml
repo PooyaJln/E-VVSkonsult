@@ -1,0 +1,15 @@
+# docker-compose.prod.yml
+# should be included in .gitignore
+# Here you explicitly choose which ports are public.
+# MySQL and phpMyAdmin are only accessible inside the Docker network (not from the host/public). Debug port is also omitted.
+# Usage
+# Production → run with prod override:
+# docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+
+services:
+  backend:
+    ports:
+      - 
+  frontend:
+    ports:
+      - 

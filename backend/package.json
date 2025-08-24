@@ -4,13 +4,14 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "JS:dev": "nodemon ./dist/server.js",
-    "JS:debug": "nodemon --inspect=0.0.0.0 ./dist/server.js",
     "TS:dev": "nodemon ./src/server.ts",
     "TS:debug": "nodemon --inspect=0.0.0.0 ./src/server.ts",
     "test:mocha": "mocha",
+    "JS:dev": "nodemon ./dist/server.js",
+    "JS:debug": "nodemon --inspect=0.0.0.0 ./dist/server.js",
     "test:jest": "jest",
-    "build": "tsc --build"
+    "build": "tsc --build",
+    "start:server": "node ./dist/server.js"
   },
   "author": "Pooya.JLN",
   "license": "ISC",

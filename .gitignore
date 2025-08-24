@@ -6,7 +6,6 @@ trash
 init
 mysql
 .gitignore
-docker-compose.yml
 .vscode
 E-VVSkonsult.code-workspace
 heatLossApp.odb
@@ -14,3 +13,4 @@ heatLossApp.odb
 node_modules
 .qodo
 backend/.env.container
+.github/dependabot.yml

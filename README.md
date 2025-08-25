@@ -39,10 +39,19 @@ The system calculates heat loss by analyzing thermal properties of room boundari
 - **Hierarchical Project Management**: Create and manage projects with nested building structures
 - **Heat Loss Calculations**: Calculate room heat loss by analyzing boundary thermal properties
 - **User Authentication**: Role-based access control with JWT authentication
+- **User Registration & Login**: Complete authentication system with signup and login pages
 - **CRUD Operations**: Full create, read, update, delete functionality for all entities
 - **Responsive UI**: Modern React-based user interface with Material-UI components
 - **RESTful API**: Comprehensive REST API for all operations
 - **Database Integration**: MySQL database with Sequelize ORM
+- **TypeScript Support**: Backend migrated to TypeScript for better type safety and development experience
+
+### Recent Updates (switch_to_typescript branch)
+- **TypeScript Migration**: Backend codebase migrated from JavaScript to TypeScript
+- **Enhanced Type Safety**: Strict TypeScript configuration with comprehensive type checking
+- **New Authentication Pages**: Added dedicated Login and Signup pages with improved UI
+- **Updated Development Workflow**: TypeScript compilation and development tools integration
+- **Docker Configuration Updates**: Updated Docker setup to support TypeScript compilation
 
 ### Planned Features
 - Object copying functionality for faster project setup
@@ -70,6 +79,7 @@ The application follows a modern full-stack architecture:
 ### Backend
 - **Runtime**: Node.js
 - **Framework**: Express.js
+- **Language**: TypeScript (migrated from JavaScript)
 - **Database**: MySQL 8.0
 - **ORM**: Sequelize
 - **Authentication**: JWT + Passport.js (Local Strategy)
@@ -77,7 +87,8 @@ The application follows a modern full-stack architecture:
 - **Session Management**: express-session with connect-session-sequelize
 - **Validation**: Custom validation middleware
 - **Testing**: Jest, Mocha, Chai, Supertest
-- **Development**: Nodemon
+- **Development**: ts-node-dev, Nodemon
+- **Type Checking**: TypeScript with strict mode
 - **Containerization**: Docker
 
 ### Frontend
@@ -317,33 +328,42 @@ Content-Type: application/json
 
 ```
 E-VVSkonsult/
-├── backend/                    # Node.js API server
-│   ├── config/                # Configuration files
-│   ├── connections/           # Database connections
-│   ├── controllers/           # Route controllers
-│   ├── middlewares/           # Custom middleware
-│   ├── migrations/            # Database migrations
-│   ├── models/                # Sequelize models
-│   ├── routes/                # API routes
-│   ├── test/                  # Backend tests
-│   ├── utils/                 # Utility functions
-│   ├── views/                 # EJS templates (legacy)
-│   ├── app.js                 # Express app configuration
-│   └── server.js              # Server entry point
+├── backend/                    # Node.js API server (TypeScript)
+│   ├── dist/                  # Compiled TypeScript output
+│   ├── src/                   # TypeScript source files
+│   │   ├── config/            # Configuration files
+│   │   ├── connections/       # Database connections
+│   │   ├── controllers/       # Route controllers
+│   │   ├── middlewares/       # Custom middleware
+│   │   ├── migrations/        # Database migrations
+│   │   ├── models/            # Sequelize models
+│   │   ├── routes/            # API routes
+│   │   ├── test/              # Backend tests
+│   │   ├── utils/             # Utility functions
+│   │   ├── views/             # EJS templates (legacy)
+│   │   ├── app.js             # Express app configuration
+│   │   └── server.ts          # TypeScript server entry point
+│   ├── tsconfig.json          # TypeScript configuration
+│   └── package.json           # Backend dependencies
 ├── frontend/                   # React application
 │   ├── public/                # Static assets
-│   └── src/
-│       ├── components/        # Reusable components
-│       ├── contexts/          # React contexts
-│       ├── hooks/             # Custom hooks
-│       ├── layouts/           # Layout components
-│       ├── pages/             # Page components
-│       ├── templates/         # Template components
-│       ├── App.js             # Main app component
-│       └── index.js           # React entry point
+│   ├── src/
+│   │   ├── components/        # Reusable components
+│   │   ├── contexts/          # React contexts
+│   │   ├── hooks/             # Custom hooks
+│   │   ├── layouts/           # Layout components
+│   │   ├── pages/             # Page components
+│   │   │   ├── Login.js       # User login page
+│   │   │   ├── Signup.js      # User registration page
+│   │   │   └── ...            # Other pages
+│   │   ├── templates/         # Template components
+│   │   ├── App.js             # Main app component
+│   │   └── index.js           # React entry point
+│   └── package.json           # Frontend dependencies
 ├── httpRequests/              # API testing collections
 ├── db/                        # Database initialization
 ├── Dockerfile                 # Docker configuration
+├── docker-compose.yml         # Main Docker Compose configuration
 ├── mysql-docker-compose.yml   # Database container setup
 └── README.md                  # This file
 ```
@@ -405,7 +425,7 @@ Authorization: Bearer <your-jwt-token>
 ### Running in Development Mode
 
 ```bash
-# Backend with auto-reload
+# Backend with TypeScript auto-reload
 cd backend
 npm run dev
 
@@ -413,6 +433,29 @@ npm run dev
 cd frontend
 npm start
 ```
+
+### TypeScript Development
+
+The backend uses TypeScript with strict configuration for enhanced type safety:
+
+```bash
+# Compile TypeScript
+cd backend
+npm run build
+
+# Type checking only
+npm run type-check
+
+# Development with TypeScript compilation
+npm run dev
+```
+
+**TypeScript Configuration Features:**
+- Strict mode enabled for comprehensive type checking
+- Source maps for debugging
+- Declaration files generation
+- Module detection and isolation
+- Comprehensive type definitions for Node.js and Express
 
 ### Code Style
 
@@ -500,51 +543,6 @@ Use the provided HTTP request collections:
    npm start
    ```
 
-## Troubleshooting
-
-### Common Issues
-
-**Database Connection Issues**
-```bash
-# Check if MySQL is running
-docker ps
-
-# Check database logs
-docker logs mysqlContainer
-
-# Verify environment variables
-cat backend/.env
-```
-
-**Port Conflicts**
-- Backend default: `http://localhost:5000`
-- Frontend default: `http://localhost:3000`
-- MySQL default: `localhost:3306`
-
-**Authentication Issues**
-- Verify JWT secrets are set
-- Check token expiration
-- Ensure user roles are properly assigned
-
-**Build Issues**
-```bash
-# Clear npm cache
-npm cache clean --force
-
-# Delete node_modules and reinstall
-rm -rf node_modules package-lock.json
-npm install
-```
-
-### Debug Mode
-
-Start the backend in debug mode:
-```bash
-cd backend
-npm run debug
-```
-
-Then attach your debugger to `localhost:9229`.
 
 ## Credits
 

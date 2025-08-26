@@ -1,0 +1,29 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "driver": "MySQL",
+            "name": "mysqlInContainer",
+            "database": "heatLossApp",
+            "username": "root",
+            "connectString": "mysql://Pooya:pj8NEJ92@@localhost:3307/heatLossApp"
+        }
+    ],
+    "rest-client.environmentVariables": {
+        "$shared": {},
+        "dev": {
+            "HostAddress": "http://localhost"
+        },
+        "test": {
+            "HostAddress": "http://localhost"
+        },
+        "production": {
+            "HostAddress": "https://heatlossapp.com"
+        }
+    }
+}

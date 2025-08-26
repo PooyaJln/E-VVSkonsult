@@ -1,0 +1,23 @@
+# Combined frontend + backend in single container
+FROM node:lts-bookworm
+
+# Setup backend
+WORKDIR /heatLossApp/backend
+COPY backend/package*.json .
+RUN npm install
+COPY backend/ .
+RUN chown -R node:node /heatLossApp/backend
+
+# Setup frontend
+WORKDIR /heatLossApp/frontend
+COPY frontend/package*.json .
+RUN npm install
+COPY frontend/ .
+RUN chown -R node:node /heatLossApp/frontend
+# Expose both frontend and backend ports
+EXPOSE 3000 4001 9229
+
+# Switch to node user for security
+USER node
+# Start both services
+CMD ["bash", "-c", "cd /heatLossApp/backend && npm run TS:dev & cd /heatLossApp/frontend && npm run start"]

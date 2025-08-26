@@ -1,8 +1,9 @@
+# Combined frontend + backend in single container
 # ports should be removed when commiting this file.
 # they will be overriden using docker-compose.override.yml
 #
 
-name: heat-loss-jsapp-fullstack-in-several-container
+name: heat-loss-jsapp-combined-container
 services:
   mysql:
     container_name: mysqlContainer
@@ -14,33 +15,29 @@ services:
     ports:
       - 3307:3306
     volumes:
-      # - ./db/mysql/lib_mysql:/var/lib/mysql
+      # - ./db/init/:/docker-entrypoint-initdb.d/
       - heatloss_js_app_mysql_data:/var/lib/mysql
-      - ./db/init/:/docker-entrypoint-initdb.d/
+      # - ./db/mysql/lib_mysql:/var/lib/mysql
     healthcheck:
       # Add this
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
-      # timeout: 20s
-      # retries: 
+      # timeout: 5s
+      # retries: 3
 
-      # phpmyadmin:
-      #   container_name: phpmyAdminContainer
-      #   image: phpmyadmin:5.2.2
-      #   env_file:
-      #     - ./backend/.env.container
-      #   ports:
-      #     - 8080:80
-      #   depends_on:
-      #     - mysql
-  backend:
+  fullstack:
+    container_name: fullstackContainer
     env_file:
       - ./backend/.env.container
     build:
-      context: ./backend
+      context: .
+      dockerfile: Dockerfile.combined
     volumes:
       - ./backend:/heatLossApp/backend
       - backend_node_modules:/heatLossApp/backend/node_modules
+      - ./frontend:/heatLossApp/frontend
+      - frontend_node_modules:/heatLossApp/frontend/node_modules
     ports:
+      - 3000:3000
       - 4001:4001
       - 9229:9229
     stdin_open: true
@@ -49,16 +46,6 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-
-  frontend:
-    env_file: ./frontend/.env
-    build:
-      context: ./frontend
-    ports:
-      - 3000:3000
-    volumes:
-      - ./frontend:/heatLossApp/frontend
-      - frontend_node_modules:/heatLossApp/frontend/node_modules
 
 volumes:
   heatloss_js_app_mysql_data:

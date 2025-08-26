@@ -5,10 +5,10 @@
   "main": "server.js",
   "scripts": {
     "TS:dev": "nodemon ./src/server.ts",
-    "TS:debug": "nodemon --inspect=0.0.0.0 ./src/server.ts",
+    "TS:debug": "node -r ts-node/register --inspect=0.0.0.0:9229 ./src/server.ts",
     "test:mocha": "mocha",
     "JS:dev": "nodemon ./dist/server.js",
-    "JS:debug": "nodemon --inspect=0.0.0.0 ./dist/server.js",
+    "JS:debug": "nodemon --inspect=0.0.0.0:9229 ./dist/server.js",
     "test:jest": "jest",
     "build": "tsc --build",
     "start:server": "node ./dist/server.js"

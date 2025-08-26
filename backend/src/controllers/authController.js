@@ -20,10 +20,8 @@ authControllers.signUp = async (req, res, next) => {
       req.login(newUser, (err) => {
         if (err) { return next(err); }
         console.log("🚀 ~ authController.js:25 ~ signUp.req.login ~ user=", newUser)
-        // res.status(201).json({ message: " logged out successfully" })
-        res.redirect(201, "../../user/profile")
+        res.status(201).json({ message: "signup successful", })
       })
-      // res.status(201).json({ message: "signup successful", })
     }
   } catch (error) {
     next(error);
@@ -55,10 +53,16 @@ authControllers.logout = (req, res, next) => {
 
 
 authControllers.checkStatus = async (req, res, next) => {
-  if (!req.user) {
-    res.status(401).json("not authorized")
+  try {
+    if (!req.user) {
+      res.status(401).json("not authorized")
+    }
+    else res.status(200).json("logged in")
+  } catch (error) {
+    next(error);
   }
-  res.status(200).json("logged in")
+
+
 }
 
 module.exports = authControllers;

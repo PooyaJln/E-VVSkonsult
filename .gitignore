@@ -1,16 +1,12 @@
-
 backupData
 tests
 trash
 */trash
 init
 mysql
-.gitignore
-.vscode
 E-VVSkonsult.code-workspace
 heatLossApp.odb
-.dockerignore
 node_modules
 .qodo
 backend/.env.container
-.github/dependabot.yml
+.github/

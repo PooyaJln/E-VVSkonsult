@@ -6,18 +6,20 @@ WORKDIR /heatLossApp/backend
 COPY backend/package*.json .
 RUN npm install
 COPY backend/ .
-RUN chown -R node:node /heatLossApp/backend
+RUN chown -R node:node /heatLossApp/backend/src \
+    && chown node:node /heatLossApp/backend/package*.json \
+    && chown node:node /heatLossApp/backend/tsconfig*.json
 
 # Setup frontend
 WORKDIR /heatLossApp/frontend
 COPY frontend/package*.json .
 RUN npm install
 COPY frontend/ .
-RUN chown -R node:node /heatLossApp/frontend
+RUN chown -R node:node /heatLossApp/frontend/src \
+    && chown -R node:node /heatLossApp/frontend/public \
+    && chown node:node /heatLossApp/frontend/package*.json
 # Expose both frontend and backend ports
 EXPOSE 3000 4001 9229
 
-# Switch to node user for security
-USER node
-# Start both services
-CMD ["bash", "-c", "cd /heatLossApp/backend && npm run TS:dev & cd /heatLossApp/frontend && npm run start"]
+# Start both services (run as root to avoid permission issues with mounted volumes)
+CMD ["bash", "-c", "cd /heatLossApp/backend && npm run TS:debug & cd /heatLossApp/frontend && npm run start"]

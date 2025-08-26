@@ -15,7 +15,7 @@ services:
     ports:
       - 3307:3306
     volumes:
-      # - ./db/init/:/docker-entrypoint-initdb.d/
+      - ./db/init/:/docker-entrypoint-initdb.d/
       - heatloss_js_app_mysql_data:/var/lib/mysql
       # - ./db/mysql/lib_mysql:/var/lib/mysql
     healthcheck:

@@ -1,14 +1,12 @@
 # Combined frontend + backend in single container
 # ports should be removed when commiting this file.
 # they will be overriden using docker-compose.override.yml
-#
 
 name: heat-loss-jsapp-combined-container
 services:
   mysql:
     container_name: mysqlContainer
     image: mysql:8.0.42
-    # command: '--default-authentication-plugin=mysql_native_password'
     restart: always
     env_file:
       - ./backend/.env.container
@@ -17,9 +15,7 @@ services:
     volumes:
       - ./db/init/:/docker-entrypoint-initdb.d/
       - heatloss_js_app_mysql_data:/var/lib/mysql
-      # - ./db/mysql/lib_mysql:/var/lib/mysql
     healthcheck:
-      # Add this
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       # timeout: 5s
       # retries: 3

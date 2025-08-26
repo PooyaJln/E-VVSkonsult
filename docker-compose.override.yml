@@ -11,9 +11,6 @@ services:
   mysql:
     ports:
       - 
-  phpmyadmin:
-    ports:
-      - 
   backend:
     ports:
       - 
